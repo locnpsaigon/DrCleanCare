@@ -1,0 +1,110 @@
+﻿@using DrCleanCare.DAL;
+@model IList<Category>
+
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/Home.cshtml";
+}
+<div class="content_white">
+    <h2>Chào mừng bạn ghé thăm website chúng tôi!</h2>
+    <p>Chúng tôi chuyên cung cấp các sản phẩm hóa chất tẩy rửa công nghiệp và dân dụng.</p>
+</div>
+<div class="featured_content" id="feature">
+    <div class="container">
+
+        @{
+            var count = 0;
+            while (count <= Model.Count())
+            {
+                <div class="row text-center">
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        if (count + i < Model.Count())
+                        {
+                            Category item = Model[count + i];
+                            
+                            // check category icon image is available
+                            item.IconURL = item.IconURL ?? "~/Content/Images/no_image.gif";
+                            
+                            if (i < 3)
+                            {
+                                <div class="col-md-3 feature_grid1">
+                                    <div class="row" style="min-height:110px;">
+                                        <a href="/Home/Products/?categoryId=@item.CategoryId"><img src="@Href(item.IconURL)" /></a>
+                                    </div>
+                                    <div class="row" style="min-height:85px;">
+                                        <h3 class="m_1"><a href="/Home/Products/?categoryId=@item.CategoryId" class="cat-link cat-title">@item.CategoryName</a></h3>
+                                    </div>
+                                    <div class="row" style="min-height:75px;">
+                                        <p class="m_2">@item.Description</p>
+                                    </div>
+                                    <div class="row" style="min-height:40px;">
+                                        <a href="/Home/Products/?categoryId=@item.CategoryId" class="btn btn-primary">Xem thêm</a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-md-3 feature_grid2">
+                                    <div class="row" style="min-height:110px;">
+                                        <a href="/Home/Products/?categoryId=@item.CategoryId"><img src="@Href(item.IconURL)" /></a>
+                                    </div>
+                                    <div class="row" style="min-height:85px;">
+                                        <h3 class="m_1"><a href="/Home/Products/?categoryId=@item.CategoryId" class="cat-link cat-title">@item.CategoryName</a></h3>
+                                    </div>
+                                    <div class="row" style="min-height:75px;">
+                                        <p class="m_2">@item.Description</p>
+                                    </div>
+                                    <div class="row" style="min-height:40px;">
+                                        <a href="/Home/Products/?categoryId=@item.CategoryId" class="btn btn-primary">Xem thêm</a>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+
+                count += 4;
+            }
+        }
+        <div class="row" style="height:24px;"></div>
+        @*<div class="row text-center">
+                <div class="col-md-3 feature_grid1">
+                    <i class="fa fa-cloud fa-3x"></i>
+                    <h3 class="m_1"><a href="#">Sản phẩm lau và xử lý sàn</a></h3>
+                    <p class="m_2">Lorem ipsum dolor sit amet, facilisis egestas sodales non luctus, sem quas potenti malesuada vel phasellus.</p>
+                    <a href="#" class="feature_btn">Xem thêm</a>
+                </div>
+                <div class="col-md-3 feature_grid1">
+                    <i class="fa fa-shield fa-3x"></i>
+                    <h3 class="m_1"><a href="#">Sản phẩm lau và xử lý sàn</a></h3>
+                    <p class="m_2">Lorem ipsum dolor sit amet, facilisis egestas sodales non luctus, sem quas potenti malesuada vel phasellus.</p>
+                    <a href="#" class="feature_btn">Xem thêm</a>
+                </div>
+                <div class="col-md-3 feature_grid1">
+                    <i class="fa fa-flask fa-3x"></i>
+                    <h3 class="m_1"><a href="#">Sản phẩm rửa chén công nghiệp và dân dụng</a></h3>
+                    <p class="m_2">Lorem ipsum dolor sit amet, facilisis egestas sodales non luctus, sem quas potenti malesuada vel phasellus.</p>
+                    <a href="#" class="feature_btn">Xem thêm</a>
+                </div>
+                <div class="col-md-3 feature_grid2">
+                    <i class="fa fa-bar-chart fa-3x"></i>
+                    <h3 class="m_1"><a href="#">Sản phẩm chuyên tẩy rửa nhựa tái sinh</a></h3>
+                    <p class="m_2">Lorem ipsum dolor sit amet, facilisis egestas sodales non luctus, sem quas potenti malesuada vel phasellus.</p>
+                    <a href="#" class="feature_btn">Xem thêm</a>
+                </div>
+            </div>*@
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        jQuery(document).ready(function ($) {
+            $(".scroll").click(function (event) {
+                event.preventDefault();
+                $('html,body').animate({ scrollTop: $(this.hash).offset().top }, 1200);
+            });
+        });
+    </script>
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+}

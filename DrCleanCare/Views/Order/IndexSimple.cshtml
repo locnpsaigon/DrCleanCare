@@ -1,0 +1,157 @@
+﻿@model IEnumerable<DrCleanCare.DAL.SearchSaleOrdersResult>
+
+@{
+    ViewBag.Title = "Danh mục đơn hàng";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-database"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div style="display:table;">
+                <div style="display: table-row;">
+                    <div style="display:table-cell;">
+                        Thời gian
+                    </div>
+                    <div style="display:table-cell;" class="form-inline">
+                        @Html.TextBox("date-from", ViewBag.DateFrom as string, new { @class = "form-control text-center", @placeholder = "Từ ngày", @type = "text", @style = "width:120px; margin-left:12px;" })
+                        @Html.TextBox("date-to", ViewBag.DateTo as string, new { @class = "form-control text-center", @placeholder = "Đến ngày", @type = "text", @style = "width:120px;" })
+                        <a href="/Order/Add" class="btn btn-warning" style="width:120px;">Tạo đơn hàng</a>
+                    </div>
+                </div>
+                <div style="display: table-row;">
+                    <div style="display:table-cell; padding-top:8px;">
+                        Từ khóa
+                    </div>
+                    <div style="display:table-cell; padding-top:8px;" class="form-inline">
+                        @Html.TextBox("keyword", ViewBag.Keyword as string, new { @class = "form-control", @placeholder = "Từ khóa tìm kiếm", @type = "text", @style = "min-width: 245px; margin-left:12px;" })
+                        <input id="button-search" type="button" class="btn btn-success" onclick="doSearch()" value="Tra cứu" style="width:120px;" />
+                        <input id="button-search" type="button" class="btn btn-primary" onclick="exportExcel()" value="Xuất Excel" style="width:120px;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:24px;">
+        <div class="col-lg-12">
+            <table class="table table-hover table-bordered">
+                <tr class="alert-success">
+                    <th class="text-center">STT</th>
+                    <th class="text-center">Ngày</th>
+                    <th>Số đơn hàng</th>
+                    <th>Tên khách hàng</th>
+                    <th>Địa chỉ</th>
+                    <th>Điện thoại</th>
+                    <th class="text-center text-nowrap">Ngày giao</th>
+                </tr>
+                @{
+                    var count = 0;
+                    foreach (DrCleanCare.DAL.SearchSaleOrdersResult so in Model)
+                    {
+                        count++;
+
+                        <tr>
+                            <td class="text-center text-nowrap">@count</td>
+                            <td class="text-center text-nowrap">@so.OrderDate.ToString("dd-MM-yyyy")</td>
+                            <td>@Html.ActionLink(@so.OrderNo, "Details", new { id = @so.OrderId })</td>
+                            <td>@so.CustomerName</td>
+                            <td>@so.CustomerAddress</td>
+                            <td>@so.Phone</td>
+                            <td class="text-center">@so.ShippedDate.ToString("dd-MM-yyyy")</td>
+                        </tr>
+                    }
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script>
+
+        // set current active menu
+        $("#menu-sale").attr("class", "active");
+
+        $(document).ready(function () {
+            // setup datetime picker
+            $("#date-from").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#date-from').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#date-from').datepicker('update');
+            $('#date-from').blur(); // remove focus
+
+            $("#date-to").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#date-to').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#date-to').datepicker('update');
+        })
+
+        $("#date-from").change(function () {
+            doSearch();
+        })
+        $("#date-to").change(function () {
+            doSearch();
+        })
+        $("#button-search").click(function() {
+            doSearch();
+        });
+
+        function doSearch() {
+            // get date range
+            var d1 = $("#date-from").val();
+            var d2 = $("#date-to").val();
+            var keyword = $("#keyword").val();
+            var pathname = window.location.pathname;
+
+            window.location.replace(pathname + "?dateFrom=" + d1 + "&dateTo=" + d2 + "&keyword=" + keyword);
+        }
+
+        function deleteSO(orderId, orderNo) {
+            BootstrapDialog.show({
+                message: 'Bạn có muốn xóa đơn hàng số: ' + orderNo + ' không?',
+                buttons: [{
+                    label: 'Đồng ý xóa',
+                    cssClass: 'btn-danger btn-sm',
+                    action: function (dialog) {
+                        $.ajax({
+                            url: '/Order/Delete/' + orderId,
+                            type: 'POST',
+                            dataType: 'json',
+                            contentType: 'application/json; charset=utf-8',
+                            success: function (data) {
+                                if (data.Error == FLAG_SUCCESS) {
+                                    // success
+                                    location.reload();
+                                } else {
+                                    // error
+                                    showBootstrapDialog(FLAG_ERROR, 'Xóa đơn hàng thất bại!', data.Description);
+                                }
+                            },
+                            error: function (xhr) {
+                                // ajax error
+                                showBootstrapDialog(FLAG_ERROR, 'Xóa đơn hàng thất bại', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                            }
+                        });
+                        dialog.close();
+                    }
+                }, {
+                    label: 'Không xóa',
+                    cssClass: 'btn-primary btn-sm',
+                    action: function (dialog) {
+                        dialog.close();
+                    }
+                }]
+            });
+        };
+    </script>
+}

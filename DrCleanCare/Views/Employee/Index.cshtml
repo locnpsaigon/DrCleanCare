@@ -1,0 +1,255 @@
+﻿@{
+    ViewBag.Title = "Danh sách nhân viên";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-group"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                            <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                            <a href="/Employee/Add" class="btn btn-primary">Thêm nhân viên</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 8px;">
+        <div class="col-lg-12 emp-list">
+            <!--begin employee list-->
+            <table class="table table-hover table-bordered">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Tên NV</th>
+                    <th class="text-nowrap text-center">Giới tính</th>
+                    <th class="text-nowrap text-center">Ngày sinh</th>
+                    <th class="text-nowrap">Phone</th>
+                    <th class="text-nowrap">Email</th>
+                    <th class="text-nowrap">Ngày vào</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td colspan="7" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+            <!--end employee list-->
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    <script>
+        var g_employees;
+        var g_page_index = 1;
+        var g_page_total = 1;
+
+        $(document).ready(function () {
+            ajaxSearchEmployees(g_page_index);
+            // event handlers
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchEmployees(g_page_index);
+            });
+        })
+
+        function ajaxSearchEmployees(pageIndex) {
+            var searchText = $('#searchText').val();
+            // show loading status
+            $(".emp-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+
+            $.ajax({
+                url: '/Employee/Search/?searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_employees = data.Employees;
+                        // show employee list
+                        showEmployeesList(
+                            data.Employees,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".emp-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".emp-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchEmployees(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchEmployees(g_page_index);
+        }
+
+        function showEmployeesList(employees, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Tên NV</th>\r\n';
+            html += '                <th class="text-nowrap">Giới tính</th>\r\n';
+            html += '                <th class="text-nowrap">Ngày sinh</th>\r\n';
+            html += '                <th class="text-nowrap">Phone</th>\r\n';
+            html += '                <th class="text-nowrap">Email</th>\r\n';
+            html += '                <th class="text-nowrap">Ngày vào</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(employees, function (index, element) {
+                row_index++;
+                var dob = new Date(element.DOB.match(/\d+/)[0] * 1);
+                var hireDate = new Date(element.HireDate.match(/\d+/)[0] * 1);
+                var gender = "Nam";
+                if (element.Gender == 1) gender = "Nữ";
+                var phone = element.Phone;
+                if (phone == null) phone = "";
+                var email = element.Email;
+                if (email == null) email = "";
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.FullName + '</td>\r\n';
+                html += '                <td class="text-nowrap text-center">' + gender + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + formatDateVN(dob) + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + phone + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + email + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right">' + formatDateVN(hireDate) + '</td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Employee/Edit/' + element.EmployeeId + '" class="btn btn-sm btn-primary">Sửa</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteEmployee(' + element.EmployeeId + ');">Xóa</a>\r\n';
+                html += '                    <a href="/Task/AssignTask/?employeeid=' + element.EmployeeId + '" class="btn btn-sm btn-primary">Phân công</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchEmployees(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show accounts list
+            $(".emp-list").html(html);
+        }
+
+        function ajaxDeleteEmployee(id) {
+            // find role to delete
+            $.each(g_employees, function (index, element) {
+                if (id == element.EmployeeId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa nhân viên tên <b>' + element.FullName + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Employee/Delete/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchEmployees(g_page_index);
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-employee").attr("class", "active");
+    </script>
+}

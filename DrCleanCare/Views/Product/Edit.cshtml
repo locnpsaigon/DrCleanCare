@@ -1,0 +1,255 @@
+﻿@model DrCleanCare.Models.AddProductViewModel
+
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-cube"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-edit"></i> Cập nhật sản phẩm
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm(
+                        "Edit",
+                        "Product",
+                        FormMethod.Post,
+                        new
+                        {
+                            @class = "form-horizontal",
+                            enctype = "multipart/form-data"
+                        }))
+                    {
+
+                        Model.IconURL = Model.IconURL ?? "~/Content/Images/no_image.gif";
+                        Model.ImageURL = Model.ImageURL ?? "~/Content/Images/no_image.gif";
+
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    @Html.ValidationSummary(true)
+                                    @Html.HiddenFor(model => model.ProductId)
+                                    @Html.HiddenFor(model => model.IconURL)
+                                    @Html.HiddenFor(model => model.ImageURL)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Nhóm sản phẩm</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.DropDownListFor(model => model.CategoryId, Model.Categories, null, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.CategoryId)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Hình ảnh sản phẩm</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <input id="ProductImage" name="ProductImage" type="file" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">&nbsp;</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <a href="@Href(Model.ImageURL)" data-toggle="lightbox" data-title="@Model.ProductName" data-footer="@Model.ProductName">
+                                            <img src="@Href(Model.IconURL)" class="img-responsive">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Tên sản phẩm</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(model => model.ProductName, new { @class = "form-control", @placeholder = "Tên sản phẩm", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.ProductName)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Công dụng</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.TextAreaFor(model => model.ProductIntro, new { @class = "form-control", @placeholder = "Giới thiệu sản phẩm", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.ProductIntro)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Mô tả sản phẩm</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.TextAreaFor(model => model.ProductDescription, new { @class = "form-control", @placeholder = "Mô tả sản phẩm", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.ProductDescription)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Đơn vị</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(
+                                            model => model.QuantityPerUnit,
+                                            new
+                                            {
+                                                @class = "form-control",
+                                                @placeholder = "Đơn vị",
+                                                @type = "text",
+                                                @autofocus = ""
+                                            })
+                                        @Html.ValidationMessageFor(model => model.QuantityPerUnit)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Giá trước thuế</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(model => model.PriceBT,
+                                            new
+                                            {
+                                                @class = "form-control number-input",
+                                                @placeholder = "Giá trước thuế",
+                                                @type = "text",
+                                                @autofocus = ""
+                                            })
+                                        @Html.ValidationMessageFor(model => model.PriceBT)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Giá sau thuế</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.TextBoxFor(
+                                            model => model.Price,
+                                            new
+                                            {
+                                                @class = "form-control number-input",
+                                                @placeholder = "Giá sau thuế",
+                                                @type = "text",
+                                                @autofocus = ""
+                                            })
+                                        @Html.ValidationMessageFor(model => model.Price)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap">Hiển thị</label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.CheckBoxFor(model => model.Displayed)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2 text-right">
+                                        <label class="control-label text-nowrap"></label>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <input type="submit" value="Lưu sản phẩm" class="btn btn-sm btn-success" style="width:120px;" />
+                                        <input type="reset" value="Nhập lại" class="btn btn-sm btn-success" style="width:120px;" />
+                                        @Html.ActionLink("Trở về", "Index", null, new { @style = "width:100px;", @class = "btn btn-primary btn-sm" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/ekko-lightbox")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ekko-lightbox")
+    <script src="~/Plugins/ckeditor/ckeditor.js"></script>
+    <script src="~/Plugins/ckeditor/adapters/jquery.js"></script>
+    <script src="~/Scripts/jquery.number.min.js"></script>
+    <script>
+
+        // set ative admin menu
+        $("#menu-product").attr("class", "active");
+
+        $(document).ready(function () {
+            // install ckeditor
+            $("#ProductDescription").ckeditor();
+
+            // setup number input
+            $(".number-input").focus(function () {
+                $(this).number(true, 2);
+            });
+
+            $(document).delegate('*[data-toggle="lightbox"]', 'click', function (event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+        })
+
+    </script>
+}
+
+

@@ -1,0 +1,119 @@
+﻿@model DrCleanCare.Models.EditStockViewModel
+
+@{
+    ViewBag.Title = "Cập nhật kho";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-cubes"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-plus-square"></i> Thông tin kho
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("EditStock", "Stock", FormMethod.Post,
+        new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        @Html.HiddenFor(model => model.StockId)
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    @Html.ValidationSummary(true)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Tên kho</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(model => model.StockName, new { @class = "form-control", @placeholder = "Tên kho", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.StockName)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Địa chỉ</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(model => model.StockAddress, new { @class = "form-control", @placeholder = "Địa chỉ", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.StockAddress)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Điện thoại</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.Phone)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Mô tả</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", @placeholder = "Mô tả", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.Description)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap"></label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="submit" value="Lưu" class="btn btn-sm btn-success" style="width:120px;" />
+                                        <input type="reset" value="Nhập lại" class="btn btn-sm btn-success" style="width:120px;" />
+                                        @Html.ActionLink("Trở về", "StockList", null, new { @style = "width:120px;", @class = "btn btn-primary btn-sm" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.number.min.js"></script>
+
+    <script>
+        // active product menu
+        $("#menu-stock").attr("class", "active");
+    </script>
+}
+
+

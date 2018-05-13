@@ -1,0 +1,217 @@
+﻿@{
+    ViewBag.Title = "Báo cáo tài chính theo năm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+
+    // create years selected list
+    List<SelectListItem> yearItems = new List<SelectListItem>();
+    for (int i = 0; i < 3; i++)
+    {
+        var text = (DateTime.Now.Year - i).ToString();
+        yearItems.Add(new SelectListItem()
+        {
+            Value = (DateTime.Now.Year - i).ToString(),
+            Text = (DateTime.Now.Year - i).ToString(),
+            Selected = (i == 0)
+        });
+    }
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-list"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div style="display:table;">
+                <div style="display: table-row;">
+                    <div style="display:table-cell;">
+                        Chọn năm:
+                    </div>
+                    <div style="display:table-cell;">
+                        @Html.DropDownList("ReportYear", yearItems, new
+                            {
+                                @class = "form-control text-center",
+                                @style = "width:115px; margin-left:8px;"
+                            })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 text-right">
+            <div id="financeChart" style="width:100%; height:360px; margin-top:24px;"></div>
+        </div>
+    </div>
+    <div class="row" style="margin-top:24px;">
+        <div id="table-report" class="col-lg-12">
+            <table class="table table-hover table-bordered">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">Tháng</th>
+                    <th class="text-nowrap text-right">Chi phí</th>
+                    <th class="text-nowrap text-right">Bán hàng</th>
+                    <th class="text-nowrap text-right">Thanh toán</th>
+                    <th class="text-nowrap text-right">Công nợ</th>
+                </tr>
+                <tr>
+                    <td class="text-center text-primary" colspan="5">Đang nạp dữ liệu...</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div style="margin-top:240px;"></div>
+</div>
+
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+}
+
+@section Scripts {
+
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/canvasjs.min.js"></script>
+
+    <script>
+        // set current active menu
+        $("#menu-dashboard").attr("class", "active");
+
+        $(document).ready(function () {
+            $("#ReportYear").on("change", function () {
+                getFinanceByYearReport();
+            });
+
+            // get finance report
+            getFinanceByYearReport();
+        })
+
+        function getFinanceByYearReport() {
+            // get year to report
+            var selectedYear = $("#ReportYear").val();
+            // alert(selectedYear);
+            $.ajax({
+                type: "POST",
+                url: "/Report/GetFinanceReportByYear",
+                data: {
+                    year: selectedYear,
+                },
+                datatype: "json",
+                success: function (data) {
+                    //alert(JSON.stringify(data));
+                    showFinanceReportTable(data);
+                    showFinanceReportChart(data);
+                }
+            });
+        }
+
+        // function to show finance report data table
+        function showFinanceReportTable(data) {
+            var purTotal = 0;
+            var revTotal = 0;
+            var payTotal = 0;
+            var debtTotal = 0;
+
+            // generate finance report table
+            var html = '<table class="table table-hover table-bordered">';
+            html += '   <tr class="alert-success">';
+            html += '       <th class="text-nowrap text-center">Tháng</th>';
+            html += '       <th class="text-nowrap">Chi phí</th>';
+            html += '       <th class="text-nowrap">Bán hàng</th>';
+            html += '       <th class="text-nowrap">Thanh toán</th>';
+            html += '       <th class="text-nowrap">Công nợ</th>';
+            html += '   </tr>';
+
+            // scan finance report data
+            $.each(data, function (index, element) {
+
+                // get finance report element attributes
+                var mon = element.Month;
+                var pur = element.Purchase;
+                var rev = element.Revenue;
+                var pay = element.Payment;
+                var debt = element.Revenue - element.Payment;
+
+                // append finance report table row
+                html += '   <tr>';
+                html += '       <td class="text-center">' + mon.format(0, 3, ",", ".") + '</td>';
+                html += '       <td class="text-right text-danger">' + pur.format(0, 3, ',', '.') + '</td>';
+                html += '       <td class="text-right text-primary">' + rev.format(0, 3, ',', '.') + '</td>';
+                html += '       <td class="text-right text-success">' + pay.format(0, 3, ',', '.') + '</td>';
+                html += '       <td class="text-right text-warning">' + debt.format(0, 3, ',', '.') + '</td>';
+                html += '   </tr>';
+
+                // calculate total data
+                purTotal += pur;
+                revTotal += rev;
+                payTotal += pay;
+                debtTotal += debt;
+            });
+
+            // add finance report total row
+            html += '   <tr>';
+            html += '       <td class="text-center"><strong>Tổng cộng</strong></td>';
+            html += '       <td class="text-right text-danger"><strong>' + purTotal.format(0, 3, ',', '.') + '</strong></td>';
+            html += '       <td class="text-right text-primary"><strong>' + revTotal.format(0, 3, ',', '.') + '</strong></td>';
+            html += '       <td class="text-right text-success"><strong>' + payTotal.format(0, 3, ',', '.') + '</strong></td>';
+            html += '       <td class="text-right text-warning"><strong>' + debtTotal.format(0, 3, ',', '.') + '</strong></td>';
+            html += '   </tr>';
+            html += '</table>';
+
+            $("#table-report").html(html);
+        }
+
+        // function to draw finance report pie chart
+        function showFinanceReportChart(data) {
+            // data points array
+            var purchaseDataPoints = [];
+            var revenueDataPoints = [];
+            var debtDataPoints = [];
+            // generate chart data points
+            $.each(data, function (index, element) {
+                purchaseDataPoints.push({ x: element.Month, y: element.Purchase, label: "Tháng " + element.Month });
+                revenueDataPoints.push({ x: element.Month, y: element.Revenue, label: "Tháng " + element.Month });
+                debtDataPoints.push({ x: element.Month, y: element.Debt, label: "Tháng " + element.Month });
+            });
+            // create line chart
+            var chart = new CanvasJS.Chart("financeChart",
+            {
+                legend: {
+                    verticalAlign: "bottom",
+                    horizontalAlign: "center"
+                },
+                data: [
+                    {
+                        color: "#23bfaa",
+                        type: "column",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        legendText: "Doanh số",
+                        dataPoints: revenueDataPoints
+                    },
+                    {
+                        color: "#c0504e",
+                        type: "column",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        legendText: "Chi phí",
+                        dataPoints: purchaseDataPoints
+                    },
+                    {
+                        color: "#ff9e4c",
+                        type: "column",
+                        showInLegend: true,
+                        legendMarkerType: "square",
+                        legendText: "Công nợ",
+                        dataPoints: debtDataPoints
+                    }
+                ]
+            });
+            // render line chart
+            chart.render();
+        }
+
+    </script>
+}
+
+

@@ -1,0 +1,291 @@
+﻿@{
+    ViewBag.Title = "Khách hàng liên hệ";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-tag"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            @Html.ValidationSummary(true)
+            <div style="display:table; margin-bottom: 16px;">
+                <div style="display:table-row">
+                    <div style="display:table-cell">
+                        <span style="margin-right:8px;">Thời gian:</span>
+                    </div>
+                    <div style="display:table-cell">
+                        @Html.TextBox(
+                            "date-from", DateTime.Now.AddDays(-30).ToString("dd/MM/yyyy"),
+                            new
+                            {
+                                @class = "form-control text-center date-picker",
+                                @placeholder = "Từ ngày",
+                                @type = "text",
+                                @style = "width:100px; margin-right:8px;"
+                            })
+                    </div>
+                    <div style="display:table-cell">
+                        @Html.TextBox(
+                            "date-to", DateTime.Now.ToString("dd/MM/yyyy"),
+                            new
+                            {
+                                @class = "form-control text-center date-picker",
+                                @placeholder = "Đến ngày",
+                                @type = "text",
+                                @style = "width:100px; margin-right:8px;"
+                            })
+                    </div>
+                    <div style="display:table-cell">
+                        @Html.TextBox(
+                            "keyword", "",
+                            new
+                            {
+                                @class = "form-control text-center",
+                                @placeholder = "Từ khóa tra cứu",
+                                @type = "text",
+                                @style = "width:225px; margin-right:8px;"
+                            })
+                    </div>
+                    <div style="display:table-cell">
+                        <input type="button" class="btn btn-danger btn-sm" onclick="deleteFeedbacks()" value="Xóa" style="width:100px;" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="tb-feedback" class="col-lg-12">
+            Loading...
+        </div>
+    </div>
+</div>
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+
+    <script>
+
+        // globa vars
+        var g_feedbacks;
+
+        $(document).ready(function () {
+            var today = new Date();
+            var last30days = new Date();
+
+            last30days.setDate(last30days.getDate() - 30);
+
+            // setup date range picker
+            $("#date-from").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#date-from').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#date-from').datepicker('update');
+
+            $("#date-to").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#date-to').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#date-to').datepicker('update');
+
+            ajaxLoadFeedbacks();
+
+            // event hanlders
+            $('.date-picker').on('change', function (e) {
+                ajaxLoadFeedbacks();
+            })
+
+            registerCheckboxEvents();
+        });
+
+        function registerCheckboxEvents() {
+            // register checkboxes events
+            $('.chk-all-items').on('change', function (e) {
+                var checkAllStatus = $(this).prop('checked');
+                $('.chk-fb-item').prop('checked', checkAllStatus);
+            })
+
+            $('.chk-fb-item').on('change', function (e) {
+                var wasAllChecked = ($('.chk-fb-item:not(:checked)').length == 0);
+                $('.chk-all-items').prop('checked', wasAllChecked);
+            })
+        }
+
+        function ajaxLoadFeedbacks() {
+
+            // show ajax loading
+            showLoadingStatus();
+
+            // get date range
+            var date1 = $("#date-from").val();
+            var date2 = $("#date-to").val();
+
+            // ajax load feedbacks
+            $.ajax({
+                url: '/Feedback/GetFeedbacks/?dateFrom=' + date1 + '&dateTo=' + date2,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+
+                        // get feedbacks success
+                        g_feedbacks = data.Feedbacks;
+                        showFeedbacks(g_feedbacks);
+
+                        registerCheckboxEvents();
+                    }
+                    else {
+
+                        // get feedback errors
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DANGER,
+                            title: "Lỗi nạp danh sách liên hệ",
+                            message: data.Message,
+                            buttons: [{
+                                label: "Đóng",
+                                cssClass: "btn-primary btn-sm",
+                                action: function (dialog) {
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        title: "Lỗi",
+                        message: xhr.responseText,
+                        buttons: [{
+                            label: "Đóng",
+                            cssClass: "btn-primary btn-sm",
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+        }
+
+        function showLoadingStatus() {
+            var container = $("#tb-feedback");
+            var html = '';
+            html += '<table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '   <tr class="alert-success">\r\n';
+            html += '       <th class="text-nowrap text-center"><input class="chk-all-items" type="checkbox" /></th>\r\n';
+            html += '       <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '       <th class="text-nowrap">Ngày</th>\r\n';
+            html += '       <th class="text-nowrap">Người liên hệ</th>\r\n';
+            html += '       <th class="text-nowrap">Điện thoại</th>\r\n';
+            html += '       <th class="text-nowrap">Email</th>\r\n';
+            html += '       <th class="text-nowrap">Nội dung</th>\r\n';
+            html += '   </tr>\r\n';
+            html += '   <tr>\r\n';
+            html += '       <td colspan="7" class="text-nowrap text-danger"><img src="/Content/Images/ring.gif"> Đang nạp dữ liệu...</td>\r\n';
+            html += '   </tr>\r\n';
+            html += '</table>\r\n';
+
+            $(container).html(html);
+        }
+
+        function showFeedbacks(feedbacks) {
+            var container = $("#tb-feedback");
+            var counter = 0;
+            var html = '';
+            html += '<table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '   <tr class="alert-success">\r\n';
+            html += '       <th class="text-nowrap text-center"><input class="chk-all-items" type="checkbox" /></th>\r\n';
+            html += '       <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '       <th class="text-nowrap">Ngày</th>\r\n';
+            html += '       <th class="text-nowrap">Người liên hệ</th>\r\n';
+            html += '       <th class="text-nowrap">Điện thoại</th>\r\n';
+            html += '       <th class="text-nowrap">Email</th>\r\n';
+            html += '       <th class="text-nowrap">Nội dung</th>\r\n';
+            html += '   </tr>\r\n';
+
+            $.each(g_feedbacks, function (index, item) {
+                counter++;
+                var date = new Date(item.Date.match(/\d+/)[0] * 1);
+                html += '   <tr>\r\n';
+                html += '       <td class="text-nowrap text-center"><input type="checkbox" class="chk-fb-item" value="' + item.Id + '" /></td>\r\n';
+                html += '       <td class="text-nowrap text-center">' + counter + '</td>\r\n';
+                html += '       <td class="text-nowrap">' + formatDateTimeVN(date) + '</td>\r\n';
+                html += '       <td class="text-nowrap">' + item.Name + '</td>\r\n';
+                html += '       <td class="text-nowrap">' + item.Phone + '</td>\r\n';
+                html += '       <td class="text-nowrap">' + item.Email + '</td>\r\n';
+                html += '       <td>' + item.Message + '</td>\r\n';
+                html += '   </tr>\r\n';
+            });
+
+            if (counter == 0) {
+                html += '   <tr>\r\n';
+                html += '       <td colspan="7" class="text-danger text-nowrap">Không có phản hồi nào!</td>\r\n';
+                html += '   </tr>\r\n';
+            }
+
+            html += '</table>\r\n';
+
+            $(container).html(html);
+        }
+
+        // Delete feedbacks
+        function deleteFeedbacks() {
+
+            // get selected log items
+            var checkedValues = '';
+            $('.chk-fb-item:checked').each(function () {
+                if (checkedValues == '')
+                    checkedValues += $(this).val();
+                else
+                    checkedValues += ',' + $(this).val();
+            });
+
+            if (checkedValues.length == '')
+                return false;
+
+            // delete all selected log items
+            $.ajax({
+                url: '/Feedback/Delete?feedbackIds=' + checkedValues,
+                type: 'POST',
+                dataType: 'json',
+                async: false,
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_SUCCESS,
+                            title: "Xóa phản hồi",
+                            message: data.Message,
+                            buttons: [{
+                                label: "Đóng",
+                                cssClass: "btn-primary btn-sm",
+                                action: function (dialog) {
+                                    ajaxLoadFeedbacks();
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    }
+                    else {
+                        console.debug('DBG', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    console.debug('DBG', xhr.responseText);
+                }
+            });
+
+            return true;
+        }
+
+        // set current active menu
+        $("#menu-sale").attr("class", "active");
+    </script>
+}

@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Bảo trì";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="about">
+    <div class="container">
+        <section class="title-section">
+            <h1 class="title-header">Sự kiện</h1>
+        </section>
+    </div>
+</div>
+<div class="contact" style="margin-top:2em;">
+    <div class="container text-center">
+        <img src="~/Content/Images/construction.png" width="100" />
+        <h4 class="text-info" style="margin-top:24px;">Website đang bảo trì! Vui lòng quay lại sau.</h4>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        $("#menu-events").attr("class", "current");
+    </script>
+}

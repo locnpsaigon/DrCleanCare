@@ -1,0 +1,255 @@
+﻿@{
+    ViewBag.Title = "Tồn kho sản phẩm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-group"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            @Html.DropDownList("category-select", ViewBag.Categories as IEnumerable<SelectListItem>, "-- Nhóm --", new { @class = "form-control", @style = "width:250px;" })
+                            @Html.DropDownList("product-select", ViewBag.Products as IEnumerable<SelectListItem>, "-- Sản phẩm --", new { @class = "form-control", @style = "width:250px;" })
+                        </div>
+                    </div>
+                    <div style="display:table-row">
+                        <div style="display:table-cell; padding-top:4px;" class="form-inline">
+                            @Html.DropDownList("stock-select", ViewBag.Stocks as IEnumerable<SelectListItem>, "-- Kho --", new { @class = "form-control", @style = "width:250px;" })
+                            <a href="/Product/AddProductInStock" class="btn btn-primary">Thêm mới</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 product-list">
+            <table class="table table-hover table-bordered" style="width:auto;">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Sản phẩm</th>
+                    @*<th class="text-nowrap">Loại</th>*@
+                    <th class="text-nowrap">Kho</th>
+                    <th class="text-nowrap">Số tồn</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Scripts/jquery.number.min.js"></script>
+    <script>
+        var g_products;
+
+        $(document).ready(function () {
+            ajaxSearchProductInStocks();
+            $('#category-select').on("change", function () {
+                getProductsByCategoryId(this.value);
+                ajaxSearchProductInStocks();
+            })
+            $('#product-select').on("change", function () {
+                ajaxSearchProductInStocks();
+            })
+            $('#stock-select').on("change", function () {
+                ajaxSearchProductInStocks();
+            })
+        })
+
+        function getProductsByCategoryId(categoryId) {
+            if (categoryId != '') {
+                // get product select element
+                var select_products = document.getElementById('product-select');
+                // reset product select element
+                for (i = select_products.length - 1; i > 0; i--) {
+                    select_products.options[i] = null;
+                }
+                select_products.value = null;
+                // ajax get products by category
+                $.ajax({
+                    url: '/Product/GetProductsByCategory/?categoryId=' + categoryId,
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    async: false,
+                    success: function (data) {
+                        if (data.Error == 0) {
+                            // success
+                            $.each(data.Products, function (index, element) {
+                                select_products.options[select_products.options.length] = new Option(
+                                    element.ProductName, element.ProductId, false, false);
+                            });
+                        } else {
+                            showBootstrapDialog(1, 'Lỗi', data.Message);
+                        }
+                    },
+                    error: function (xhr) {
+                        showBootstrapDialog(1, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                    }
+                });
+            }
+        }
+
+        function ajaxSearchProductInStocks() {
+            var categoryId = $('#category-select').val();
+            var productId = $('#product-select').val();
+            var stockId = $('#stock-select').val();
+            $.ajax({
+                url: '/Product/SearchProductInStock/?categoryId=' + categoryId + '&productId=' + productId + '&stockId=' + stockId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        // show imports
+                        g_products = data.ProductInStocks;
+                        showProductInStocks(g_products);
+                    }
+                    else {
+                        $(".product-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".product-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function showProductInStocks(products) {
+            var html = '';
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr  class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Sản phẩm</th>\r\n';
+            //html += '                <th class="text-nowrap">Loại</th>\r\n';
+            html += '                <th class="text-nowrap">Kho</th>\r\n';
+            html += '                <th class="text-nowrap">Số tồn</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            var sum_quantity = 0;
+            $.each(products, function (index, element) {
+                sum_quantity += element.UnitInStock;
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + (index + 1) + '</td>\r\n';
+                html += '                <td>' + element.ProductName + '</td>\r\n';
+                //html += '                <td>' + element.CategoryName + '</td>\r\n';
+                html += '                <td>' + element.StockName + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right text-danger"><strong>' + element.UnitInStock.format(0, 3, ',', '.') + '</strong></td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Product/EditProductInStock/?productId=' + element.ProductId + '&stockId=' + element.StockId + '" class="btn btn-sm btn-primary">Edit</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteProductInStock(' + element.ProductId + ',' + element.StockId + ');">Xóa</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            // add total rows
+            html += '            <tr class="alert-success">\r\n';
+            html += '                <th colspan="3" class="text-right">Tổng cộng</th>\r\n';
+            html += '                <th class="text-nowrap text-right">' + sum_quantity.format(0, 3, ',', '.') + '</th>\r\n';
+            html += '                <th class="text-nowrap"></th>\r\n';
+            html += '            </tr>\r\n';
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // show exports list
+            $(".product-list").html(html);
+        }
+
+        function ajaxDeleteProductInStock(productId, stockId) {
+            // find role to delete
+            $.each(g_products, function (index, element) {
+                if (element.ProductId == productId && element.StockId == stockId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa tồn kho sản phẩm tên <b>' + element.ProductName + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Product/DeleteProductInStock/?productId=' + productId + '&stockId=' + stockId,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchProductInStocks();
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-stock").attr("class", "active");
+
+    </script>
+}

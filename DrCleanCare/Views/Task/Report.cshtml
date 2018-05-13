@@ -1,0 +1,271 @@
+﻿@{
+    ViewBag.Title = "Báo cáo công việc";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-cubes"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 text-right">
+            <label class="control-label text-nowrap">Nhân viên</label>
+        </div>
+        <div class="col-lg-4">
+            @Html.DropDownList("EmployeeSelect", new List<SelectListItem>(), "--Chọn nhân viên--", new { @class = "form-control search-filter" })
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 text-right">
+            <label class="control-label text-nowrap">Công việc</label>
+        </div>
+        <div class="col-lg-4">
+            @Html.DropDownList("TaskSelect", new List<SelectListItem>(), "--Tất cả công việc--", new { @class = "form-control search-filter" })
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2 text-right">
+            <label class="control-label text-nowrap">Từ ngày / đến ngày</label>
+        </div>
+        <div class="col-lg-4">
+            <div style="display:table;">
+                <div style="display:table-row;">
+                    <div style="display:table-cell;">
+                        @Html.TextBox("DateFrom", null, new { @class = "form-control search-filter text-center", @type = "text", @style = "width:120px;" })
+                    </div>
+                    <div style="display:table-cell; padding-left:4px;">
+                        @Html.TextBox("DateTo", null, new { @class = "form-control search-filter text-center", @type = "text", @style = "width:120px;" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-4">
+            <input id="btn-search" type="button" class="btn btn-success" value="Search" style="width:100px;" />
+            <input id="btn-export-excel" type="button" class="btn btn-primary" value="Export..." style="width:100px;" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 tasks-list">
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+
+    <script>
+        
+        // global vars
+        var g_tasks;
+        var g_employees;
+
+        // set current active menu
+        $("#menu-employee").attr("class", "active");
+
+        $(document).ready(function () {
+            // setup date picker
+            $("#DateFrom").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $("#DateTo").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+
+            // get date range
+            var now = new Date();
+            var dateFrom = new Date(now.getFullYear(), now.getMonth(), 2);
+            var dateTo = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+            $("#DateFrom").datepicker("update", dateFrom);
+            $("#DateTo").datepicker("update", dateTo);
+
+            // load employees/tasks
+            ajaxLoadTasks();
+            ajaxLoadEmployees();
+            ajaxLoadEmployeeTasks();
+
+            // handle events
+            $(".search-filter").on("change", function () {
+                ajaxLoadEmployeeTasks();
+            })
+
+            $("#btn-search").click(function () {
+                ajaxLoadEmployeeTasks();
+            });
+
+            $("#btn-export-excel").click(function () {
+                exportExcel();
+            })
+        })
+
+        // Function to load employees list
+        function ajaxLoadEmployees() {
+            $.ajax({
+                url: '/Employee/GetEmployeesList',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == FLAG_SUCCESS) {
+                        g_employees = data.Employees;
+                        // show employee list
+                        var select_element = document.getElementById("EmployeeSelect"); 
+                        $.each(g_employees, function (index, item) {
+                            select_element.options[select_element.options.length] =
+                                new Option(item.FullName, item.EmployeeId, false, false);
+                        });
+                    }
+                    else {
+                        showBootstrapDialog(FLAG_ERROR, 'Lỗi nạp danh sách nhân viên', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    showBootstrapDialog(FLAG_ERROR, 'Lỗi nạp danh sách nhân viên', xhr.responseText);
+                }
+            });
+        }
+
+        // Function to load task list
+        function ajaxLoadTasks() {
+            $.ajax({
+                url: '/Task/GetTasksList',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == FLAG_SUCCESS) {
+                        g_tasks = data.Tasks;
+                        // show task list
+                        var select_element = document.getElementById("TaskSelect");
+                        $.each(g_tasks, function (index, item) {
+                            select_element.options[select_element.options.length] =
+                                new Option(item.TaskName, item.TaskId, false, false);
+                        });
+                    }
+                    else {
+                        showBootstrapDialog(FLAG_ERROR, 'Lỗi nạp danh sách công việc', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    showBootstrapDialog(FLAG_ERROR, 'Lỗi nạp danh sách công việc', xhr.responseText);
+                }
+            });
+        }
+
+        // Function to load employee task assignments
+        function ajaxLoadEmployeeTasks() {
+            // get filter params
+            var empId = $("#EmployeeSelect").val();
+            var taskId = $("#TaskSelect").val();
+            var dateFrom = $("#DateFrom").val();
+            var dateTo = $("#DateTo").val();
+
+            // validate params
+            if (empId == '') return;
+            if (taskId == '') taskId = 0;
+
+            // show loading status
+            $("#tasks-list").html('<span class="text-danger">Đang nạp dữ liệu...</strong>');
+
+            $.ajax({
+                url: '/Task/SearchEmployeeTasks?dateFrom=' + dateFrom + '&dateTo=' + dateTo + '&employeeId=' + empId + '&taskId=' + taskId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == FLAG_SUCCESS) {
+                        g_tasks = data.UserTasks;
+                        // show employee list
+                        showEmployeeTasks(g_tasks);
+                    }
+                    else {
+                        showBootstrapDialog(FLAG_ERROR, 'Lỗi nạp danh sách phân công', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    showBootstrapDialog(FLAG_ERROR, 'Lỗi nạp danh sách phân công', xhr.responseText);
+                }
+            });
+        }
+
+        // Function to export excel
+        function exportExcel() {
+            // get filter params
+            var empId = $("#EmployeeSelect").val();
+            var taskId = $("#TaskSelect").val();
+            var dateFrom = $("#DateFrom").val();
+            var dateTo = $("#DateTo").val();
+
+            // validate params
+            if (empId == '') return;
+            if (taskId == '') taskId = 0;
+
+            var pathname = window.location.pathname;
+            window.location.href = '/Task/ExportEmployeeTasksToExcel?employeeId=' + empId + '&taskId=' + taskId + '&dateFrom=' + dateFrom + '&dateTo=' + dateTo;
+
+            return false;
+        }
+
+        // Function to show employee's tasks
+        function showEmployeeTasks(tasks) {
+            var html = '';
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Công việc</th>\r\n';
+            html += '                <th class="text-nowrap">Ghi chú</th>\r\n';
+            html += '                <th class="text-nowrap">Bắt đầu</th>\r\n';
+            html += '                <th class="text-nowrap">Kết thúc</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(tasks, function (index, element) {
+                var dateFrom = new Date(parseInt(element.StartTime.substr(6)));
+                var dateTo = new Date(parseInt(element.EndTime.substr(6)));
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + (index + 1) + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.TaskName + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.Note + '</td>\r\n';
+                html += '                <td class="text-nowrap text-center">' + formatDateTime(dateFrom) + '</td>\r\n';
+                html += '                <td class="text-nowrap text-center">' + formatDateTime(dateTo) + '</td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            
+            // show accounts list
+            $(".tasks-list").html(html);
+        }
+
+        /* Function to convert a date to dd/MM/yyyy HH:mm format */
+        function formatDateTime(date) {
+            var yy = date.getFullYear();
+            var mm = date.getMonth() + 1;
+            var dd = date.getDate();
+            var hh = date.getHours();
+            var mi = date.getMinutes();
+
+            var dateFormat =
+                (dd < 10 ? '0' + dd : dd + '') + '/' +
+                (mm < 10 ? '0' + mm : mm + '') + '/' +
+                yy + ' ' +
+                (hh < 10 ? '0' + hh : hh + '') + ':' +
+                (mi < 10 ? '0' + mi : mi + '');
+
+            return dateFormat;
+        }
+    </script>
+}
+
+
+
+
+

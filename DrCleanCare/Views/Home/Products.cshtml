@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="about">
+    <div class="container">
+        <section class="title-section">
+            <h1 class="title-header">Sản phẩm</h1>
+        </section>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            @Html.ActionLink("Trang chủ", "Index", null, new { @style = "font-weight:bold;" }) >
+            <span class="prd-title">Sản phẩm</span>
+        </div>
+    </div>
+    <div class="row form-inline" style="margin:1.3em 0;">
+        @Html.DropDownList("CategoryId", ViewBag.Categories as IEnumerable<SelectListItem>, "--Chọn nhóm sản phẩm--", new { @class = "form-control", @style = "width:360px; margin-top:8px;" })
+        @Html.TextBox("searchText", ViewBag.SearchText as string, new { @class = "form-control", @placeholder = "Từ khóa tìm kiếm", @type = "text", @autofocus = "", @style = "width:360px; margin-top:8px;" })
+        <button id="btn-search" type="submit" class="btn btn-success" style="width:120px; margin-top: 8px;">Tra cứu</button>
+    </div>
+    <div class="product-list"></div>
+    <br />
+    <br />
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    <script>
+        var g_products;
+        var g_page_index = 1;
+        var g_page_total = 1;
+
+        $(document).ready(function () {
+            ajaxSearchProducts(g_page_index);
+
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchProducts(g_page_index);
+            });
+
+            $("#CategoryId").on("change", function () {
+                g_page_index = 1;
+                ajaxSearchProducts(g_page_index);
+            })
+        })
+
+        function ajaxSearchProducts(pageIndex) {
+            var categoryId = $('#CategoryId').val();
+            var searchText = $('#searchText').val();
+            // show loading status
+            $(".product-list").html('<span class="text-danger">Đang tìm sản phẩm...</span>');
+            $.ajax({
+                url: '/Product/SearchDisplayedProducts/?categoryId=' + categoryId + '&searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_products = data.Products;
+                        // show employee list
+                        showProductsList(
+                            data.Products,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".product-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".product-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function showProductsList(products, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            if (products.length > 0) {
+                for (i = 0; i < products.length; i++) {
+                    var iconUrl = '/Content/Images/no_image.gif';
+                    if (products[i].IconURL != null) {
+                        iconUrl = products[i].IconURL.replace('~', '');
+                    }
+                    if (i % 4 == 0) html += '<div class="row">';
+                    html += '    <div class="col-sm-6 col-lg-3">';
+                    html += '        <div style="display:table; width:100%; margin-bottom:24px;">';
+                    html += '            <div style="display:table-row">';
+                    html += '                <div class="prd-table-cell text-center">';
+                    html += '                    <a href="/Home/ProductDetails/' + products[i].ProductId + '"><img src="' + iconUrl + '"></a>';
+                    html += '                </div>';
+                    html += '            </div>';
+                    html += '            <div style="display:table-row">';
+                    html += '                <div class="prd-table-cell text-center">';
+                    html += '                    <a href="/Home/ProductDetails/' + products[i].ProductId + '" class="cat-link"><span class="prd-title">' + products[i].ProductName + '</span></a>';
+                    html += '                </div>';
+                    html += '            </div>';
+                    html += '            <div style="display:table-row">';
+                    html += '                <div class="prd-table-cell text-justify">';
+                    html += '                    <span class="prd-desc">' + products[i].ProductIntro + '</span>';
+                    html += '                </div>';
+                    html += '            </div>';
+                    html += '        </div>';
+                    html += '    </div>';
+                    if ((i + 1) % 4 == 0 || (i + 1) == products.length) html += '</div>';
+                }
+                // paging
+                if (pageTotal > 1) {
+                    html += '<div class="row" style="margin-top:2em;">';
+                    html += '    <div class="col-lg-12 text-center">Trang ' + pageIndex + ' / ' + pageTotal + '</div>';
+                    html += '</div>';
+                    html += '<div class="row" style="margin-top:2em;">';
+                    html += '    <div class="col-lg-12 text-center">';
+                    html += '        <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                    html += '            <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                    for (var i = 1; i <= pageTotal; i++) {
+                        if (i == g_page_index) {
+                            html += '            <li><span><strong>' + i + '</strong></span></li>\r\n';
+                        } else {
+                            html += '            <li><a href="#" onclick="return ajaxSearchProducts(' + i + ')">' + i + '</a></li>\r\n';
+                        }
+                    }
+                    html += '            <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                    html += '        </ul>\r\n';
+                    html += '    </div>';
+                    html += '</div>';
+                }
+            } else {
+                // no products
+                html += '<span class="text-danger">Không có sản phẩm nào được tìm thấy</span>';
+            }
+
+            // show products
+            $(".product-list").html(html);
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchProducts(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchProducts(g_page_index);
+        }
+
+        // set current menu
+        $("#menu-product").attr("class", "current");
+    </script>
+}

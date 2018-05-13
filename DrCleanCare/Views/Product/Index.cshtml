@@ -1,0 +1,287 @@
+﻿@{
+    ViewBag.Title = "Danh mục sản phẩm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-group"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div style="display:table;" class="col-sm-8">
+            <div style="display:table-row;">
+                <div style="display:table-cell;">
+                    @Html.DropDownList("CategoryId", ViewBag.Categories as IEnumerable<SelectListItem>, "-- Nhóm sản phẩm --", new { @class = "form-control", @style = "width:300px;" })
+                </div>
+            </div>
+            <div style="display:table-row; height:4px;"></div>
+            <div style="display:table-row;">
+                <div style="display:table-cell;" class="form-inline">
+                    <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                    <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                    <a href="/Product/Add" class="btn btn-primary">Thêm mới</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 products-list" style="padding-top:4px;">
+            <table class="table table-hover table-bordered" style="width:auto;">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Tên SP</th>
+                    <th class="text-nowrap">Nhóm</th>
+                    <th class="text-nowrap">Hiển thị</th>
+                    <th class="text-nowrap">Hình ảnh</th>
+                    <th class="text-nowrap">Kho GV</th>
+                    <th class="text-nowrap">Kho CC</th>
+                    <th class="text-nowrap">Kho BĐ</th>
+                    <th class="text-nowrap">Tổng tồn</th>
+                    <th>Thao tác</th>
+                </tr>
+                <tr>
+                    <td colspan="10" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+    @Styles.Render("~/Content/ekko-lightbox")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    @Scripts.Render("~/bundles/ekko-lightbox")
+    <script>
+        var g_products;
+        var g_page_index = 1;
+        var g_page_total = 1;
+
+        $(document).ready(function () {
+
+            ajaxSearchProducts(g_page_index);
+
+            $(document).delegate('*[data-toggle="lightbox"]', 'click', function (event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchProducts(g_page_index);
+            });
+
+            $("#CategoryId").on("change", function () {
+                g_page_index = 1;
+                ajaxSearchProducts(g_page_index);
+            })
+        })
+
+        function ajaxSearchProducts(pageIndex) {
+            var categoryId = $("#CategoryId").val();
+            var searchText = $('#searchText').val();
+            $(".products-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+            $.ajax({
+                url: '/Product/Search/?categoryId=' + categoryId + '&searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_products = data.Products;
+                        // show user list
+                        showProductsList(
+                            data.Products,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".products-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".products-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchProducts(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchProducts(g_page_index);
+        }
+
+        function showProductsList(products, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Tên SP</th>\r\n';
+            html += '                <th class="text-nowrap">Nhóm</th>\r\n';
+            html += '                <th class="text-nowrap">Hiển thị</th>\r\n';
+            html += '                <th class="text-nowrap">Hình ảnh</th>\r\n';
+            html += '                <th class="text-nowrap">Kho GV</th>\r\n';
+            html += '                <th class="text-nowrap">Kho CC</th>\r\n';
+            html += '                <th class="text-nowrap">Kho BĐ</th>\r\n';
+            html += '                <th class="text-nowrap">Tổng tồn</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(products, function (index, element) {
+                row_index++;
+                var imageUrl = '/Content/Images/no_image.gif';
+                var iconUrl = '/Content/Images/no_image.gif';
+                var displayStatus = '';
+                if (element.ImageURL != null) {
+                    imageUrl = element.ImageURL.replace('~', '');
+                }
+                if (element.IconURL != null) {
+                    iconUrl = element.IconURL.replace('~', '');
+                }
+                if (element.Displayed) {
+                    displayStatus = 'Hiện';
+                }
+                else {
+                    displayStatus = 'Ẩn'
+                }
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td>' + element.ProductName + '</td>\r\n';
+                html += '                <td>' + element.CategoryName + '</td>\r\n';
+                html += '                <td class="text-nowrap text-center">' + displayStatus + '</td>\r\n';
+                html += '                <td class="text-nowrap text-center">\r\n';
+                html += '                   <a href="' + imageUrl + '" data-toggle="lightbox" data-title="' + element.ProductName + '" data-footer="' + element.ProductName + '">\r\n';
+                html += '                       <img src="' + iconUrl + '" style="width:30%;" />\r\n';
+                html += '                   </a>\r\n';
+                html += '                </td>\r\n';
+                html += '                <td class="text-right">' + element.UnitInStockGoVap.format(0, 3, ',', '.') + '</td>\r\n';
+                html += '                <td class="text-right">' + element.UnitInStockCuChi.format(0, 3, ',', '.') + '</td>\r\n';
+                html += '                <td class="text-right">' + element.UnitInStockBinhDuong.format(0, 3, ',', '.') + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right"><a href="/Product/ProductInStock/?ProductId=' + element.ProductId + '" class="text-danger">' + element.UnitInStock.format(0, 3, ',', '.') + '</a></td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Product/Edit/' + element.ProductId + '" class="btn btn-sm btn-primary">Sửa</a>\r\n';
+                html += '                    <a href="/Product/AddStockInput/?productId=' + element.ProductId + '" class="btn btn-sm btn-success">Nhập</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteProduct(' + element.ProductId + ');">Xóa</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchProducts(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show accounts list
+            $(".products-list").html(html);
+        }
+
+        /* Delete user */
+        function ajaxDeleteProduct(id) {
+            // find role to delete
+            $.each(g_products, function (index, element) {
+                if (id == element.ProductId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa sản phẩm tên <b>' + element.ProductName + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Product/Delete/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchProducts(g_page_index);
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-product").attr("class", "active");
+
+    </script>
+}

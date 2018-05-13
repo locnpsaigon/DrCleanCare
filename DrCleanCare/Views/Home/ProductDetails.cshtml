@@ -1,0 +1,117 @@
+﻿@model DrCleanCare.Models.ProductDetailsViewModel
+
+@{
+    ViewBag.Title = "Thông tin sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // check orphan product category
+    if (Model.Category == null)
+    {
+        DrCleanCare.DAL.Category category = new DrCleanCare.DAL.Category();
+        category.CategoryId = 0;
+        category.IconURL = "~/Content/Images/no_image.gif";
+    }
+}
+<div class="about">
+    <div class="container">
+        <section class="title-section">
+            <h1 class="title-header">@ViewBag.Title</h1>
+        </section>
+    </div>
+</div>
+<div class="container" style="padding:1em 0;">
+    <div class="row" style="margin-bottom:1.5em;">
+        <div class="col-lg-12">
+            @Html.ActionLink("Trang chủ", "Index", null, new { @style = "font-weight:bold;" }) >
+            @Html.ActionLink("Sản phẩm", "Products", new { categoryId = Model.Category.CategoryId }, new { @style = "font-weight:bold;" }) >
+            <span class="prd-title">@Model.Product.ProductName</span>
+        </div>
+    </div>
+
+    @if (Model.Product != null && Model.Category != null)
+    {
+
+        Model.Category.IconURL = Model.Category.IconURL ?? "~/Content/Images/no_image.gif";
+        Model.Product.IconURL = Model.Product.IconURL ?? "~/Content/Images/no_image.gif";
+        Model.Product.ImageURL = Model.Product.ImageURL ?? "~/Content/Images/no_image.gif";
+
+        <div class="row">
+            <div class="col-md-2">
+                <div>
+                    <a href="@Href(Model.Product.ImageURL)" data-toggle="lightbox" data-title="@Model.Product.ProductName" data-footer="@Model.Category.CategoryName">
+                        <img src="@Href(Model.Product.IconURL)" class="img-responsive" style="margin: 0 auto;">
+                    </a>
+                </div>
+                <div style="margin: 12px auto; text-align:center;">
+                    <a href="@Href(Model.Product.ImageURL)" data-toggle="lightbox" data-title="@Model.Product.ProductName" data-footer="@Model.Category.CategoryName">
+                        Xem ảnh to
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <table class="table table-bordered">
+                    <tr class="success">
+                        <th>Đặc tính</th>
+                        <th>Mô tả</th>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap;">Sản phẩm</td>
+                        <td>@Model.Product.ProductName</td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap;">Công dụng</td>
+                        <td>@Model.Product.ProductIntro</td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap;">Chủng loại</td>
+                        <td>@Model.Category.CategoryName</td>
+                    </tr>
+                    <tr>
+                        <td style="white-space:nowrap;">Thành phần</td>
+                        <td>@Html.Raw(@Model.Product.ProductDescription)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-12" style="color:#ff006e;">
+                Không tìm thấy thông tin sản phẩm
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/ekko-lightbox")
+
+    <style>
+        .prd-title {
+            font-weight: bold;
+            color: #ff006e;
+        }
+    </style>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/ekko-lightbox")
+
+    <script>
+
+        // set current menu
+        $("#menu-product").attr("class", "current");
+
+        // when user click on product image, use lightbox lib to show the image preview
+        $(document).delegate('*[data-toggle="lightbox"]', 'click', function (event) {
+            event.preventDefault();
+            $(this).ekkoLightbox();
+        });
+    </script>
+}
+
+
+
+

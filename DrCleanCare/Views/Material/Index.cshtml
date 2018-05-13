@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "Danh mục nguyên liệu";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-group"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                            <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                            <a href="/Material/Add" class="btn btn-primary">Thêm mới</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 materials-list">
+            <table class="table table-hover table-bordered" style="width:auto;">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Tên nguyên liệu</th>
+                    <th class="text-nowrap">Mô tả</th>
+                    <th class="text-nowrap">Đơn vị tính</th>
+                    <th class="text-nowrap">Kho GV</th>
+                    <th class="text-nowrap">Kho CC</th>
+                    <th class="text-nowrap">Kho BĐ</th>
+                    <th class="text-nowrap">Tổng tồn</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td colspan="9" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    <script>
+
+        var g_materials;
+        var g_page_index = 1;
+        var g_page_total = 1;
+
+        $(document).ready(function () {
+
+            ajaxSearchMaterials(g_page_index);
+
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchMaterials(g_page_index);
+            });
+        })
+
+
+        function ajaxSearchMaterials(pageIndex) {
+
+            var searchText = $('#searchText').val();
+
+            // show loading status
+            $(".materials-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+
+            $.ajax({
+                url: '/Material/Search/?searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_materials = data.Materials;
+                        // show user list
+                        showMaterialsList(
+                            data.Materials,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".materials-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".materials-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchMaterials(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchMaterials(g_page_index);
+        }
+
+        function showMaterialsList(materials, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Tên nguyên liệu</th>\r\n';
+            html += '                <th class="text-nowrap">Mô tả</th>\r\n';
+            html += '                <th class="text-nowrap">Đơn vị tính</th>\r\n';
+            html += '                <th class="text-nowrap">Kho GV</th>\r\n';
+            html += '                <th class="text-nowrap">Kho CC</th>\r\n';
+            html += '                <th class="text-nowrap">Kho BĐ</th>\r\n';
+            html += '                <th class="text-nowrap">Tổng tồn</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(materials, function (index, element) {
+                row_index++;
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.MaterialName + '</td>\r\n';
+                html += '                <td>' + element.Description + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right">' + element.QuantityPerUnit + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right">' + element.UnitInStockGoVap.format(2, 3, ',', '.') + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right">' + element.UnitInStockCuChi.format(2, 3, ',', '.') + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right">' + element.UnitInStockBinhDuong.format(2, 3, ',', '.') + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right"><a href="/Material/MaterialInStock/?materialId=' + element.MaterialId + '" class="text-danger" target="_blank">' + element.UnitInStock.format(2, 3, ',', '.') + '</a></td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Material/Edit/' + element.MaterialId + '" class="btn btn-sm btn-primary">Sửa</a>\r\n';
+                html += '                    <a href="/Material/AddImport/?materialId=' + element.MaterialId + '" class="btn btn-sm btn-success">Nhập</a>\r\n';
+                html += '                    <a href="/Material/AddExport/?materialId=' + element.MaterialId + '" class="btn btn-sm btn-info">Xuất</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteMaterial(' + element.MaterialId + ');">Xóa</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchMaterials(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show accounts list
+            $(".materials-list").html(html);
+        }
+
+        /* Delete user */
+        function ajaxDeleteMaterial(id) {
+            // find role to delete
+            $.each(g_materials, function (index, element) {
+                if (id == element.MaterialId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa nguyên liệu tên <b>' + element.MaterialName + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Material/Delete/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchMaterials(g_page_index);
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-material").attr("class", "active");
+
+    </script>
+}

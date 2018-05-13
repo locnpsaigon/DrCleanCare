@@ -1,0 +1,233 @@
+﻿@{
+    ViewBag.Title = "Danh mục vai trò";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-tag"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                            <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                            <a href="/Role/Add" class="btn btn-primary">Tạo vai trò</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-8 role-list">
+            <table class="table table-hover table-bordered">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Tên</th>
+                    <th class="text-nowrap">Mô tả vai trò</th>
+                    <th class="text-nowrap">Thao tác</th>
+                </tr>
+                <tr>
+                    <td colspan="4" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+
+    <script>
+        var g_roles;
+        var g_page_index = 1;
+        var g_page_total = 1;
+        $(document).ready(function () {
+            ajaxSearchRoles(g_page_index);
+            // event handlers
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchRoles(g_page_index);
+            });
+        })
+
+        function ajaxSearchRoles(pageIndex) {
+            var searchText = $('#searchText').val();
+            // show loading status
+            $(".role-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+
+            $.ajax({
+                url: '/Role/Search/?searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_roles = data.Roles;
+                        // show employee list
+                        showRolesList(
+                            data.Roles,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".user-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".user-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchRoles(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchRoles(g_page_index);
+        }
+
+        function showRolesList(roles, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Tên</th>\r\n';
+            html += '                <th class="text-nowrap">Mô tả</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(roles, function (index, element) {
+                row_index++;
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.RoleName + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.Description + '</td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Role/Edit/' + element.RoleId + '" class="btn btn-sm btn-primary">Sửa</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteRole(' + element.RoleId + ');">Xóa</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchRoles(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show accounts list
+            $(".role-list").html(html);
+        }
+
+        function ajaxDeleteRole(id) {
+            // find role to delete
+            $.each(g_roles, function (index, element) {
+                if (id == element.RoleId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa vai trò <b>' + element.RoleName + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Role/Delete/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchRoles(g_page_index);
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-system").attr("class", "active");
+
+    </script>
+}

@@ -1,0 +1,184 @@
+﻿@model DrCleanCare.Models.SODetailsViewModel
+@{
+    ViewBag.Title = "Kinh doanh";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+
+    decimal soAmountBT = 0;
+    decimal soVAT = 0;
+    decimal soGrandTotal = 0;
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-database"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-file-text"></i> Thông tin đơn hàng
+                </div>
+                <div class="panel-body">
+                    <a href="/Order/Edit/@Model.OrderID" class="btn btn-sm btn-primary">Điều chỉnh</a>
+                    <table class="table table-hover table-bordered" style="width:auto; margin-top:8px;">
+                        <tr>
+                            <th>Số hóa đơn</th>
+                            <td>@Model.OrderNo</td>
+                            <th>Ngày lập</th>
+                            <td>@Model.OrderDate</td>
+                        </tr>
+                        <tr>
+                            <th>Tên khách hàng</th>
+                            <td colspan="3">@Model.CustomerName</td>
+                        </tr>
+                        <tr>
+                            <th>Địa chỉ khách hàng</th>
+                            <td colspan="3">@Model.CustomerAddress</td>
+                        </tr>
+                        <tr>
+                            <th>Số điện thoại</th>
+                            <td>@Model.Phone</td>
+                            <th>Email</th>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <th>Loại đơn hàng</th>
+                            <td>@Model.OrderTypeName</td>
+                            <th>Hình thức TT</th>
+                            <td>@Model.PaymentTypeName</td>
+                        </tr>
+                        <tr>
+                            <th>Mã số thuế</th>
+                            <td colspan="3">@Model.TaxCode</td>
+                        </tr>
+                        <tr>
+                            <th>Nhân viên bán hàng</th>
+                            <td colspan="3">@Model.FullName</td>
+                        </tr>
+                        <tr>
+                            <th>Người giao</th>
+                            <td>@Model.DeliveryName</td>
+                            <th>Ngày giao</th>
+                            <td>@Model.ShippedDate</td>
+                        </tr>
+                        <tr>
+                            <th>Địa chỉ giao hàng</th>
+                            <td colspan="3">@Model.ShipAddress</td>
+                        </tr>
+                        <tr>
+                            <th>Người nhận</th>
+                            <td colspan="3">@Model.ShipName</td>
+                        </tr>
+                        <tr>
+                            <th>Ghi chú</th>
+                            <td colspan="3">@Model.Notes</td>
+                        </tr>
+                    </table>
+                    
+                    <table class="table table-hover table-bordered">
+                        <tr class="alert-success">
+                            <th class="text-nowrap text-center">STT</th>
+                            <th class="text-nowrap text-center">Sản phẩm</th>
+                            <th class="text-nowrap text-center">Kho xuất</th>
+                            <th class="text-nowrap">Số lượng</th>
+                            <th class="text-nowrap">Giá trước thuế</th>
+                            <th class="text-nowrap">Giá sau thuế</th>
+                            <th class="text-nowrap">Tổng</th>
+                        </tr>
+                        @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                        {
+                            var soLineTotal = Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
+
+                            soAmountBT += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
+                            soVAT += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
+                            soGrandTotal += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
+                            soGrandTotal += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
+
+                            <tr>
+                                <td class="text-center">@string.Format("{0}", (i + 1))</td>
+                                <td>
+                                    @Model.OrderDetails[i].ProductName
+                                </td>
+                                <td>
+                                    @Model.OrderDetails[i].StockName
+                                </td>
+                                <td class="text-right">
+                                    @Model.OrderDetails[i].Quantity
+                                </td>
+                                <td class="text-right">
+                                    @Model.OrderDetails[i].UnitPriceBT.ToString("#,##0.##")
+                                </td>
+                                <td class="text-right">
+                                    @Model.OrderDetails[i].UnitPrice.ToString("#,##0.##")
+                                </td>
+                                <td class="text-right">
+                                    @soLineTotal.ToString("#,##0.##")
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                    <div style="display:table;">
+                        <div style="display:table-row">
+                            <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                Cộng tiền hàng:
+                            </div>
+                            <div style="display:table-cell; padding:2px;">
+                                <input class="form-control valid text-right" id="TotalAmount" name="TotalAmount" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soAmountBT.ToString("#,##0.##")">
+                            </div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                Tiền thuế GTGT:
+                            </div>
+                            <div style="display:table-cell; padding:2px;">
+                                <input class="form-control valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
+                            </div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                Tổng tiền thanh toán:
+                            </div>
+                            <div style="display:table-cell; padding:2px;">
+                                <input class="form-control valid text-right" id="GrandTotal" name="GrandTotal" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soGrandTotal.ToString("#,##0.##")">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+@section Styles {
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        // set current active menu
+        $("#menu-sale").attr("class", "active");
+
+        $(document).ready(function () {
+
+            $(window).resize(function () {
+                resizeControlWidths();
+            });
+
+            resizeControlWidths();
+        });
+    </script>
+}
+
+
+
+
+
+
+

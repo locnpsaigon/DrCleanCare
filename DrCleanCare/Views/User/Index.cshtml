@@ -1,0 +1,250 @@
+﻿@{
+    ViewBag.Title = "Danh mục người dùng";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-user"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                            <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                            <a href="/User/Add" class="btn btn-primary">Tạo tài khoản</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 user-list">
+            <table class="table table-hover table-bordered">
+                <tr class="alert-success">
+                    <th class="text-center">STT</th>
+                    <th class="text-nowrap">Tài khoản</th>
+                    <th class="text-nowrap">Họ tên</th>
+                    <th class="text-nowrap">Email</th>
+                    <th class="text-nowrap">Kích hoạt</th>
+                    <th class="text-nowrap">Ngày tạo</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td colspan="6" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    <script>
+        var g_users;
+        var g_page_index = 1;
+        var g_page_total = 1;
+        $(document).ready(function () {
+            ajaxSearchUsers(g_page_index);
+            // event handlers
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchUsers(g_page_index);
+            });
+        })
+
+        function ajaxSearchUsers(pageIndex) {
+            var searchText = $('#searchText').val();
+            // show loading status
+            $(".user-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+
+            $.ajax({
+                url: '/User/Search/?searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_users = data.Users;
+                        // show employee list
+                        showUsersList(
+                            data.Users,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".user-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".user-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchUsers(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchUsers(g_page_index);
+        }
+
+        function showUsersList(users, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Tài khoản</th>\r\n';
+            html += '                <th class="text-nowrap">Họ tên</th>\r\n';
+            html += '                <th class="text-nowrap">Email</th>\r\n';
+            html += '                <th class="text-nowrap">Kích hoạt</th>\r\n';
+            html += '                <th class="text-nowrap">Ngày tạo</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(users, function (index, element) {
+                row_index++;
+                var fullName = element.FirstName + " " + element.LastName;
+                var email = element.Email;
+                if (email == null) email = "";
+                var createDate = new Date(element.CreateDate.match(/\d+/)[0] * 1);
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.Username + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + fullName + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + email + '</td>\r\n';
+                if (element.IsActive) {
+                    html += '                <td class="text-nowrap text-center text-primary">Đã kích hoạt</td>\r\n';
+                } else {
+                    html += '                <td class="text-nowrap text-center text-danger">Đang bị khóa</td>\r\n';
+                }
+                html += '                <td class="text-nowrap text-center">' + formatDateVN(createDate) + '</td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/User/Edit/' + element.UserId + '" class="btn btn-sm btn-primary">Sửa</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteUser(' + element.UserId + ');">Xóa</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchUsers(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show accounts list
+            $(".user-list").html(html);
+        }
+
+        function ajaxDeleteUser(id) {
+            // find role to delete
+            $.each(g_users, function (index, element) {
+                if (id == element.UserId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa tài khoản <b>' + element.Username + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/User/Delete/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchUsers(g_page_index);
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-system").attr("class", "active");
+    </script>
+}
+
+

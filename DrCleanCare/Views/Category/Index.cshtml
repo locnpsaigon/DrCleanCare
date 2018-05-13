@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "Nhóm sản phẩm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-group"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                            <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                            <a href="/Category/Add" class="btn btn-primary">Thêm mới</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 category-list">
+            <table class="table table-hover table-bordered" style="width:auto;">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Nhóm sản phẩm</th>
+                    <th class="text-nowrap">Mô tả</th>
+                    <th class="text-nowrap text-center">Thứ tự</th>
+                    <th class="text-nowrap text-center">Hình ảnh</th>
+                    <th class="text-nowrap text-center">Trạng thái</th>
+                    <th class="text-nowrap">Thao tác</th>
+                </tr>
+                <tr>
+                    <td colspan="7" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+    @Styles.Render("~/Content/ekko-lightbox")
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    @Scripts.Render("~/bundles/ekko-lightbox")
+    <script>
+        var g_categories;
+        var g_page_index = 1;
+        var g_page_total = 1;
+
+        $(document).ready(function () {
+            ajaxSearchCategories(g_page_index);
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchCategories(g_page_index);
+            });
+            $(document).delegate('*[data-toggle="lightbox"]', 'click', function (event) {
+                event.preventDefault();
+                $(this).ekkoLightbox();
+            });
+        })
+
+        function ajaxSearchCategories(pageIndex) {
+            var searchText = $('#searchText').val();
+            $(".category-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+            $.ajax({
+                url: '/Category/Search/?searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_categories = data.Categories;
+                        // show user list
+                        showCategriesList(
+                            data.Categories,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                    }
+                    else {
+                        $(".category-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".category-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchCategories(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchCategories(g_page_index);
+        }
+
+        function showCategriesList(categories, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Nhóm sản phẩm</th>\r\n';
+            html += '                <th class="text-nowrap">Mô tả</th>\r\n';
+            html += '                <th class="text-nowrap">Thứ tự</th>\r\n';
+            html += '                <th class="text-nowrap">Hình ảnh</th>\r\n';
+            html += '                <th class="text-nowrap">Trạng thái</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(categories, function (index, element) {
+                row_index++;
+                var iconUrl = '/Content/Images/no_image.gif';
+                var statusText = '<span class="text-success">Hiện</span>';
+                if (element.IconURL != null) {
+                    iconUrl = element.IconURL.replace('~', '');
+                }
+                if (!element.Displayed) statusText = '<span class="text-warning">Ẩn</span>';
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + element.CategoryName + '</td>\r\n';
+                html += '                <td>' + element.Description + '</td>\r\n';
+                html += '                <td class="text-center">' + element.OrderNumber + '</td>\r\n';
+                html += '                <td class="text-nowrap text-center">\r\n';
+                html += '                   <a href="' + iconUrl + '" data-toggle="lightbox" data-title="' + element.CategoryName + '" data-footer="' + element.CategoryName + '">\r\n';
+                html += '                       <img src="' + iconUrl + '" style="width:100%;" />\r\n';
+                html += '                   </a>\r\n';
+                html += '                </td>\r\n';
+                html += '                <td class="text-center">' + statusText + '</td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Category/Edit/' + element.CategoryId + '" class="btn btn-sm btn-primary">Sửa</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteCategory(' + element.CategoryId + ');">Xóa</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchCategories(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show category list
+            $(".category-list").html(html);
+        }
+
+        /* Delete user */
+        function ajaxDeleteCategory(id) {
+            // find role to delete
+            $.each(g_categories, function (index, element) {
+                if (id == element.CategoryId) {
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa nguyên liệu tên <b>' + element.CategoryName + '</b>?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Category/Delete/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchCategories(g_page_index);
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-product").attr("class", "active");
+
+    </script>
+}

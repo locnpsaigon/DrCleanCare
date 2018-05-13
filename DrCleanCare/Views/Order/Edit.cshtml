@@ -1,0 +1,515 @@
+﻿@model DrCleanCare.Models.AddSOViewModel
+
+@{
+    ViewBag.Title = "Kinh doanh";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+
+    decimal soAmountBT = 0;
+    decimal soVAT = 0;
+    decimal soGrandTotal = 0;
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-plus-square"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    @using (Html.BeginForm("Edit", "Order", FormMethod.Post, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.OrderID)
+        <!-- /.col-lg-12 -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-edit"></i> Cập nhật đơn hàng
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Số đơn hàng / ngày lập</label>
+                            <div class="col-sm-8 col-lg-9">
+                                <div style="display:table; width:100%;">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell;">
+                                            @Html.TextBoxFor(model => model.OrderNo, new { @class = "form-control", @placeholder = "Số đơn hàng", @type = "text", @style = "width: 148px;" })
+                                            @Html.ValidationMessageFor(model => model.OrderNo, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell; width:100%;">
+                                            @Html.TextBoxFor(model => model.OrderDate, new { @class = "form-control text-center", @placeholder = "Ngày bán", @type = "text", @style = "width: 148px; margin-left:4px;" })
+                                            @Html.ValidationMessageFor(model => model.OrderDate, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Tên khách hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @placeholder = "Tên khách hàng", @type = "text", @style = "width: 300px;" })
+                                @Html.ValidationMessageFor(model => model.CustomerName, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Địa chỉ khách hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.CustomerAddress, new { @class = "form-control", @placeholder = "Địa chỉ khách hàng", @type = "text" })
+                                @Html.ValidationMessageFor(model => model.CustomerAddress, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Điện thoại / Email</label>
+                            <div class="col-sm-8 col-lg-9">
+                                <div style="display:table; width:100%;">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell">
+                                            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", @placeholder = "Điện thoại", @type = "text", @style = "width:148px;" })
+                                            @Html.ValidationMessageFor(model => model.Phone, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell; width:100%;">
+                                            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @placeholder = "Email khách hàng", @type = "text", @style = "margin-left:4px;" })
+                                            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">MST / Loại hóa đơn / HTTT</label>
+                            <div class="col-sm-8 col-lg-9">
+                                <div style="display:table; width:100%;">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell;">
+                                            @Html.TextBoxFor(model => model.TaxCode, new { @class = "form-control", @placeholder = "Mã số thuế", @type = "text", @style = "width:148px;" })
+                                            @Html.ValidationMessageFor(model => model.TaxCode, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell;">
+                                            @Html.DropDownListFor(model => model.OrderType, ViewBag.OrderTypes as IEnumerable<SelectListItem>, null, new { @class = "form-control", @style = "width:148px; margin-left:4px;" })
+                                            @Html.ValidationMessageFor(model => model.OrderType, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell; width: 100%;">
+                                            @Html.DropDownListFor(model => model.PaymentTypeId, ViewBag.PaymentTypes as IEnumerable<SelectListItem>, null, new { @class = "form-control", @style = "width:148px; margin-left:4px;" })
+                                            @Html.ValidationMessageFor(model => model.PaymentTypeId, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Nhân viên bán hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.DropDownListFor(model => model.EmployeeId, ViewBag.Employees as IEnumerable<SelectListItem>, "--Chọn nhân viên--", new { @class = "form-control", @style = "width:300px;" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Nhân viên giao / Ngày giao</label>
+                            <div class="col-sm-8 col-lg-9">
+                                <div style="display:table">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell">
+                                            @Html.TextBoxFor(model => model.DeliveryName, new { @class = "form-control", @placeholder = "Nhân viên giao hàng", @type = "text", @style = "width:300px;" })
+                                            @Html.ValidationMessageFor(model => model.DeliveryName, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell; width: 100%;">
+                                            @Html.TextBoxFor(model => model.ShippedDate, new { @class = "form-control text-center", @placeholder = "Ngày giao", @type = "text", @style = "margin-left: 4px; width:148px;" })
+                                            @Html.ValidationMessageFor(model => model.ShippedDate, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Địa chỉ giao hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.ShipAddress, new { @class = "form-control", @placeholder = "Địa chỉ giao hàng", @type = "text" })
+                                @Html.ValidationMessageFor(model => model.ShipAddress, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Người nhận</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.ShipName, new { @class = "form-control", @placeholder = "Người nhận", @type = "text", @style = "width: 300px;" })
+                                @Html.ValidationMessageFor(model => model.ShipName, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Ghi chú</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @placeholder = "Ghi chú", @type = "text" })
+                            </div>
+                        </div>
+                        <hr style="border: solid 1px dotted #808080; margin: 16px 0;" />
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <div id="tbl-so" style="display:table;">
+                                    <div style="display:table-row; padding:2px;">
+                                        <div style="display:table-cell; white-space:nowrap; padding:2px;">
+                                            <label class="control-label">Sản phẩm</label>
+                                        </div>
+                                        <div style="display:table-cell; white-space:nowrap; padding:2px;" class="text-center">
+                                            <label class="control-label">Kho</label>
+                                        </div>
+                                        <div style="display:table-cell; white-space:nowrap; padding:2px;" class="text-center">
+                                            <label class="control-label">Số lượng</label>
+                                        </div>
+                                        <div style="display:table-cell; white-space:nowrap; padding:2px;" class="text-center">
+                                            <label class="control-label">Giá trước thuế</label>
+                                        </div>
+                                        <div style="display:table-cell; white-space:nowrap; padding:2px;" class="text-center">
+                                            <label class="control-label">Giá sau thuế</label>
+                                        </div>
+                                        <div style="display:table-cell; white-space:nowrap; padding:2px;" class="text-center">
+                                            <label class="control-label">Thành tiền</label>
+                                        </div>
+                                        <div style="display:table-cell; padding:2px;" class="text-center">
+                                        </div>
+                                    </div>
+                                    @for (int i = 0; i < Model.OrderDetails.Count; i++)
+                                    {
+                                        var soLineTotal = Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
+
+                                        soAmountBT += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
+                                        soVAT += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
+                                        soGrandTotal += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
+                                        soGrandTotal += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
+
+                                        <div style="display:table-row;" class="tbl-so-line">
+                                            <div style="display:table-cell; padding:2px; width:100%;">
+                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class= "product-id" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name", @readonly="readonly" , @style = "min-width:140px;" })
+                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].ProductId, null, new { @class = "help-inline" })
+                                            </div>
+                                            <div style="display:table-cell; padding:2px;">
+                                                @Html.HiddenFor(model => model.OrderDetails[i].StockId, new { @class = "product-id" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].StockName, new { @class = "form-control stock-name", @readonly = "readonly", @style = "margin-left:4px; width:140px;" })
+                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].StockId, null, new { @class = "help-inline" })
+                                            </div>
+                                            <div style="display:table-cell; padding:2px;">
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].Quantity, new { @class = "form-control text-center quantity-input quantity", @placeholder = "Số lượng", @type = "text", @style = "margin-left:4px; width:75px;" })
+                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].Quantity, null, new { @class = "help-inline" })
+                                            </div>
+                                            <div style="display:table-cell; padding:2px;">
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].UnitPriceBT, new { Value = Model.OrderDetails[i].UnitPriceBT.ToString("#,##0.##"), @class = "form-control text-right price-input unit-price-bt", @placeholder = "Đơn giá", @type = "text", @style = "margin-left:4px; width:115px;" })
+                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].UnitPriceBT, null, new { @class = "help-inline" })
+                                            </div>
+                                            <div style="display:table-cell; padding:2px;">
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, "", new { Value = Model.OrderDetails[i].UnitPrice.ToString("#,##0.##"), @class = "form-control text-right price-input unit-price", @placeholder = "Giảm giá", @type = "text", @style = "margin-left:4px; width:115px;" })
+                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].UnitPrice, null, new { @class = "help-inline" })
+                                            </div>
+                                            <div style="display:table-cell; padding:2px;">
+                                                <input class="form-control valid text-right line-amount"
+                                                       id="@string.Format("OrderDetails_{0}__Amount", i)"
+                                                       name="@string.Format("OrderDetails[{0}].Amount", i)"
+                                                       readonly="readonly" style="margin-left:4px; width:115px;" type="text" value="@soLineTotal.ToString("#,##0.##")">
+                                            </div>
+                                            <div style="display:table-cell; padding:2px;" class="text-center">
+                                                <a href="#" class="btn btn-danger btn-sm btn-remove-line" style="margin-left:4px; width:40px;">-</a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <a id="btn-add-line" href="#" class="btn btn-success btn-sm" style="width:40px;">+</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12">
+                                <div style="display:table;">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                            Cộng tiền hàng:
+                                        </div>
+                                        <div style="display:table-cell; padding:2px;">
+                                            <input class="form-control valid text-right" id="TotalAmount" name="TotalAmount" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soAmountBT.ToString("#,##0.##")">
+                                        </div>
+                                    </div>
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                            Tiền thuế GTGT:
+                                        </div>
+                                        <div style="display:table-cell; padding:2px;">
+                                            <input class="form-control valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
+                                        </div>
+                                    </div>
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                            Tổng tiền thanh toán:
+                                        </div>
+                                        <div style="display:table-cell; padding:2px;">
+                                            <input class="form-control valid text-right" id="GrandTotal" name="GrandTotal" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soGrandTotal.ToString("#,##0.##")">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-12 text-right">
+                                <input type="submit" value="Lưu" class="btn btn-sm btn-success" style="width:100px;" />
+                                <input type="reset" value="Nhập lại" class="btn btn-sm btn-info" style="width:100px;" />
+                                @Html.ActionLink("Trở về", "Index", null, new { @style = "width:100px;", @class = "btn btn-primary btn-sm" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/jquery.number.min.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+
+    <script>
+
+        var g_products;
+        var g_stocks;
+
+        $("#menu-sale").attr("class", "active");
+
+        $(document).ready(function () {
+            getProducts();
+            getStocks();
+            // setup datetime picker
+            $("#OrderDate").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $("#OrderDate").datepicker("setDate", new Date());
+            $('#OrderDate').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#OrderDate').datepicker('update');
+            $("#ShippedDate").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $("#ShippedDate").datepicker("setDate", new Date());
+            $('#ShippedDate').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#ShippedDate').datepicker('update');
+
+            $("#tbl-so").on("focus", ".quantity-input", function () {
+                $(this).number(true, 0);
+            });
+            $("#tbl-so").on("focus", ".price-input", function () {
+                $(this).number(true, 0);
+            });
+            $("#tbl-so").on("focus", ".line-amount", function () {
+                $(this).number(true, 0);
+            });
+            $("#tbl-so").on("input", ".quantity", function () {
+                updateGrandTotal();
+            });
+            $("#tbl-so").on("input", ".unit-price-bt", function () {
+                updateGrandTotal();
+            });
+            $("#tbl-so").on("input", ".unit-price", function () {
+                updateGrandTotal();
+            });
+            $("#tbl-so").on("change", ".select-product", function () {
+                var productId = $(this).val();
+                var soline = $(this).parent().parent();
+                $.each(g_products, function (index, element) {
+                    if (element.ProductId == productId) {
+                        soline.find(".product-id").attr("value", element.ProductId)
+                        soline.find(".product-name").attr("value", element.ProductName)
+                        soline.find(".unit-price-bt").attr("value", element.PriceBT);
+                        soline.find(".unit-price-bt").number(true, 0);
+                        soline.find(".unit-price").attr("value", element.Price);
+                        soline.find(".unit-price").number(true, 0);
+                        updateGrandTotal();
+                    }
+                });
+            });
+            $("#tbl-so").on("change", ".select-stock", function () {
+                var stockId = $(this).val();
+                var soline = $(this).parent().parent();
+                $.each(g_stocks, function (index, element) {
+                    if (element.StockId == stockId) {
+                        soline.find(".stock-id").attr("value", element.StockId)
+                        soline.find(".stock-name").attr("value", element.StockName)
+                        updateGrandTotal();
+                    }
+                });
+            });
+
+            $("#btn-add-line").on('click', function () {
+                addLine();
+                updateGrandTotal();
+                return false;
+            });
+            $("#tbl-so").on("click", ".btn-remove-line", function () {
+                removeLine(this);
+                updateGrandTotal();
+                return false;
+            });
+        })
+
+        function getProducts() {
+            // get products
+            $.ajax({
+                url: '/Product/GetProducts',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0)
+                        g_products = data.Products;
+                    else
+                        showBootstrapDialog(1, 'Lỗi', data.Message);
+                },
+                error: function () {
+                    // ajax error
+                    showBootstrapDialog(1, 'Lỗi', 'Nạp danh sách sản phẩm thất bại');
+                }
+            });
+        }
+
+        function generateProductsSelect(products) {
+            var html = "";
+            html += "   <select class='form-control valid select-product' data-live-search='true' style='min-width:140px;'>";
+            html += "       <option>--Sản phẩm--</option>";
+            $.each(products, function (index, element) {
+                html += "       <option value='" + element.ProductId + "'>" + element.ProductName + "</option>";
+            });
+            html += "   </select>";
+            return html;
+        }
+
+        function getStocks() {
+            // get stocks
+            $.ajax({
+                url: '/Stock/GetStockList',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0)
+                        g_stocks = data.StockList;
+                    else
+                        showBootstrapDialog(1, 'Lỗi', data.Message);
+                },
+                error: function () {
+                    // ajax error
+                    showBootstrapDialog(1, 'Lỗi', 'Nạp danh sách kho thất bại');
+                }
+            });
+        }
+
+        function generateStocksSelect(stocks) {
+            var html = "";
+            html += "   <select class='form-control valid select-stock' data-live-search='true' style='margin-left:4px; width:140px;'>";
+            html += "       <option>--Kho--</option>";
+            $.each(stocks, function (index, element) {
+                html += "       <option value='" + element.StockId + "'>" + element.StockName + "</option>";
+            });
+            html += "   </select>";
+            return html;
+        }
+
+        function addLine() {
+            var row_count = $("#tbl-so > .tbl-so-line").size();
+            var row_html = "";
+            row_html += "<div style='display:table-row' class='tbl-so-line'>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;' width:100%;>";
+            row_html += "       <input data-val='true' class='product-id' data-val-required='?' id='OrderDetails_" + row_count + " __ProductId' name='OrderDetails[" + row_count + "].ProductId' type='hidden'>"
+            row_html += "       <input data-val='true' class='product-name' data-val-required='?' id='OrderDetails_" + row_count + " __ProductName' name='OrderDetails[" + row_count + "].ProductName' type='hidden'>"
+            row_html += generateProductsSelect(g_products);
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input data-val='true' class='stock-id' data-val-required='?' id='OrderDetails_" + row_count + " __StockId' name='OrderDetails[" + row_count + "].StockId' type='hidden'>"
+            row_html += "       <input data-val='true' class='stock-name' data-val-required='?' id='OrderDetails_" + row_count + " __StockName' name='OrderDetails[" + row_count + "].StockName' type='hidden'>"
+            row_html += generateStocksSelect(g_stocks);
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control text-center quantity-input quantity' data-val='true' data-val-number='The field Quantity must be a number.' data-val-required='The Quantity field is required.' id='OrderDetails_" + row_count + "__Quantity' name='OrderDetails[" + row_count + "].Quantity' placeholder='Số lượng' style='margin-left:4px; width:75px;' type='text' value='1'>";
+            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].Quantity' data-valmsg-replace='true'></span>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control text-right price-input unit-price-bt' data-val='true' data-val-number='The field UnitPriceBT must be a number.' data-val-required='The UnitPriceBT field is required.' id='OrderDetails_" + row_count + "__UnitPriceBT' name='OrderDetails[" + row_count + "].UnitPriceBT' placeholder='Giá trước thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].UnitPriceBT' data-valmsg-replace='true'></span>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control text-right price-input unit-price' data-val='true' data-val-number='The field UnitPrice must be a number.' data-val-required='The UnitPrice field is required.' id='OrderDetails_" + row_count + "__UnitPrice' name='OrderDetails[" + row_count + "].UnitPrice' placeholder='Giá sau thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].UnitPrice' data-valmsg-replace='true'></span>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control valid text-right line-amount' id='OrderDetails_" + row_count + "__Amount' name='OrderDetails[" + row_count + "].Amount' readonly='readonly' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;' class='text-center'>";
+            row_html += "       <a href='#' class='btn btn-danger btn-sm btn-remove-line' style='margin-left:4px; width:40px;'>-</a>";
+            row_html += "   </div>";
+            row_html += "</div>";
+            // append new so line
+            $("#tbl-so").append(row_html);
+        }
+
+        function removeLine(line) {
+            // remove line
+            $(line).closest('.tbl-so-line').remove();
+
+            // update element names
+            $(".tbl-so-line").each(function (index, line) {
+                $(line).find(".stock-id").attr("id", "OrderDetails_" + index + "__StockId");
+                $(line).find(".stock-id").attr("name", "OrderDetails[" + index + "].StockId");
+                $(line).find(".stock-name").attr("id", "OrderDetails_" + index + "__StockName");
+                $(line).find(".stock-name").attr("name", "OrderDetails[" + index + "].StockName");
+                $(line).find(".product-id").attr("id", "OrderDetails_" + index + "__ProductId");
+                $(line).find(".product-id").attr("name", "OrderDetails[" + index + "].ProductId");
+                $(line).find(".product-name").attr("id", "OrderDetails_" + index + "__ProductName");
+                $(line).find(".product-name").attr("name", "OrderDetails[" + index + "].ProductName");
+                $(line).find(".quantity").attr("id", "OrderDetails_" + index + "__Quantity");
+                $(line).find(".quantity").attr("name", "OrderDetails[" + index + "].Quantity");
+                $(line).find(".unit-price-bt").attr("id", "OrderDetails_" + index + "__UnitPriceBT");
+                $(line).find(".unit-price-bt").attr("name", "OrderDetails[" + index + "].UnitPriceBT");
+                $(line).find(".unit-price").attr("id", "OrderDetails_" + index + "__UnitPrice");
+                $(line).find(".unit-price").attr("name", "OrderDetails[" + index + "].UnitPrice");
+                $(line).find(".line-amount").attr("id", "OrderDetails_" + index + "__UnitPrice");
+                $(line).find(".line-amount").attr("name", "OrderDetails[" + index + "].UnitPrice");
+            });
+        }
+
+        function updateGrandTotal() {
+            var totalAmount = 0;
+            var totalVAT = 0;
+            var grandTotal = 0;
+            // scan so lines 
+            $(".tbl-so-line").each(function () {
+                var quantity = parseFloat($(this).find(".quantity").val().replace(',', ''));
+                var priceBT = parseFloat($(this).find(".unit-price-bt").val().replace(',', ''));
+                var price = parseFloat($(this).find(".unit-price").val().replace(',', ''));
+
+                totalAmount += quantity * priceBT;
+                totalVAT += quantity * (price - priceBT);
+
+                $(this).find(".line-amount").attr("value", (quantity * priceBT).toFixed(2));
+                $(this).find(".line-amount").number(true, 0);
+            });
+
+            grandTotal = totalAmount + totalVAT;
+
+            $("#TotalAmount").attr("value", totalAmount);
+            $("#TotalAmount").number(true, 0);
+            $("#TotalVAT").attr("value", totalVAT);
+            $("#TotalVAT").number(true, 0);
+            $("#GrandTotal").attr("value", grandTotal);
+            $("#GrandTotal").number(true, 0);
+        };
+
+    </script>
+}
+
+
+
+
+

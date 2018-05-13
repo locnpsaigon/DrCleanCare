@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @*<meta name="robots" content="noindex">*@
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="drcleancare.com" />
+    <meta name="description" content="Chuyên cung cấp, tư vấn các sản phẩm hoá chất tẩy rửa dùng trong công nghiệp và dân dụng.">
+    <meta name="keywords" content="drcleancare,dong nhan phat,dr cleancare,hoa chat,tay rua,lau kinh,cong nghiep,dan dung,tu van" />
+    <title>DR CLEANCARE - @ViewBag.Title</title>
+    <link rel="shortcut icon" href="~/favicon.png" />
+    @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/css")
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="logo"><a href="/Home/"><img src="~/Content/images/logo_home.png" height="72" alt="Dr CleanCare"></a> </div>
+            <div class="menu">
+                <a class="toggleMenu" href="#"><img src="~/Content/images/nav_icon.png" alt="" /> </a>
+                <ul class="nav" id="nav">
+                    <li id="menu-home"><a href="/Home/">Trang chủ</a></li>
+                    <li id="menu-about"><a href="~/Home/About">Giới thiệu</a></li>
+                    <li id="menu-product"><a href="~/Home/Products/">Sản phẩm</a></li>
+                    <li id="menu-events"><a href="~/Home/Events/">Sự kiện</a></li>
+                    <li id="menu-contact"><a href="~/Home/Contact">Liên hệ</a></li>
+                    <div class="clear"></div>
+                </ul>
+            </div>
+            <div class="clearfix"> </div>
+        </div>
+    </div>
+
+    <div class="main">
+        @RenderBody()
+        <div class="footer">
+            @*<div class="footer_midle">
+                <div class='container'>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <ul class="social_left">
+                                <li class="facebook"><a href="#"><i class="fa fa-facebook-square fa-3x"></i></a></li>
+                                <li class="fb_text">
+                                    <h4><a href="#">Follow us on Facebook</a></h4>
+                                </li>
+                                <div class="clearfix"> </div>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="social_left">
+                                <li class="facebook"><a href="#"><i class="fa fa-twitter-square fa-3x"></i></a></li>
+                                <li class="fb_text">
+                                    <h4><a href="#">Follow us on Twitter</a></h4>
+                                </li>
+                                <div class="clearfix"> </div>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="social_left">
+                                <li class="facebook"><a href="#"><i class="fa fa-google-plus-square fa-3x"></i></a></li>
+                                <li class="fb_text">
+                                    <h4><a href="#">Follow us on Google +</a></h4>
+                                </li>
+                                <div class="clearfix"> </div>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="social_left">
+                                <li class="facebook"><a href="#"><i class="fa fa-linkedin-square fa-3x"></i></a></li>
+                                <li class="fb_text">
+                                    <h4><a href="#">Follow us on LinkedIn</a></h4>
+                                </li>
+                                <div class="clearfix"> </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+            <div class="footer_bottom">
+                <div class="copy">
+                    <p>Copyright &copy; 2015, Công ty TNHH MTV TV SX & TM ĐỒNG NHÂN PHÁT</p>
+                    <p>Đường số 2, KCN Bình Đường, Dĩ An, Bình Dương.</p>
+                    <p>Phone: 84.28.35883168 - 84.28.39856368</p>
+                    <p>Fax: 84.28.38955156</p>
+                    <p>Hotline: 0903.62.40.60</p>
+                    @{ var onlineUsers = (int)HttpContext.Current.Application["OnlineVisitors"]; }
+                    <p>Online user(s): @onlineUsers.ToString("#,##0")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/scripts")
+    <script>
+        jQuery(document).ready(function ($) {
+            $(".scroll").click(function (event) {
+                event.preventDefault();
+                $('html,body').animate({ scrollTop: $(this.hash).offset().top }, 1200);
+            });
+        });
+    </script>
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

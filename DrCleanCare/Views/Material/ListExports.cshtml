@@ -1,0 +1,256 @@
+﻿@{
+    ViewBag.Title = "Lịch sử xuất nguyên liệu";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+
+    var dateFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("dd/MM/yyyy");
+    var dateTo = DateTime.Now.ToString("dd/MM/yyyy");
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title"><i class="fa fa-group"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;">
+                            @Html.DropDownList("material-select", ViewBag.Materials as IEnumerable<SelectListItem>, "--Chọn nguyên liệu--", new { @class = "form-control", @type = "text", @autofocus = "", @style = "min-width:200px;" })
+                        </div>
+                        <div style="display:table-cell;" class="form-inline">
+                            @Html.DropDownList("stock-select", ViewBag.Stocks as IEnumerable<SelectListItem>, "--Chọn kho--", new { @class = "form-control", @type = "text", @autofocus = "", @style = "min-width:200px; margin-left:4px;" })
+                            <input id="btn-search" type="button" class="btn btn-success" value="Search" style="width:100px; margin-left:4px;" />
+                        </div>
+                    </div>
+                    <div style="display:table-row; height:4px;"></div>
+                    <div style="display:table-row">
+                        <div style="display:table-cell;" class="form-inline">
+                            <input id="date-from" type="text" value="@dateFrom" class="form-control date-input" style="width:120px;" />
+                            <input id="date-to" type="text" value="@dateTo" class="form-control date-input" style="width:120px;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12 exports-list">
+            <table class="table table-hover table-bordered" style="width:auto;">
+                <tr class="alert-success">
+                    <th class="text-nowrap text-center">STT</th>
+                    <th class="text-nowrap">Ngày xuất</th>
+                    <th class="text-nowrap">Nguyên liệu</th>
+                    <th class="text-nowrap">Kho</th>
+                    <th class="text-nowrap">Ghi chú</th>
+                    <th class="text-nowrap">Số lượng</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td colspan="7" class="text-danger">Đang nạp dữ liệu....</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    @Styles.Render("~/Content/bootstrap-dialog")
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/bootstrap-dialog")
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script>
+
+        var g_exports;
+
+        $(document).ready(function () {
+            // setup datetime picker
+            $(".date-input").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('.date-input').datepicker('update');
+            $('.date-input').on('changeDate', function (ev) { $(this).datepicker('hide') });
+
+            ajaxSearchExports();
+
+            $('.date-input').on('change', function () {
+                ajaxSearchExports();
+            });
+
+            $('#material-select').on("change", function () {
+                ajaxSearchExports();
+            })
+
+            $('#stock-select').on("change", function () {
+                ajaxSearchExports();
+            })
+
+            $("#btn-search").click(function () {
+                ajaxSearchExports();
+            });
+        })
+
+
+        function ajaxSearchExports() {
+
+            var datefrom = $('#date-from').val();
+            var dateto = $('#date-to').val();
+            var materialId = $('#material-select').val();
+            var stockId = $('#stock-select').val();
+            // show loading status
+            // ...
+            $.ajax({
+                url: '/Material/SearchExports/?dateFrom=' + datefrom + '&dateTo=' + dateto + '&materialId=' + materialId + '&stockId=' + stockId,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        // show imports
+                        g_exports = data.Exports;
+                        showExportsList(g_exports);
+                    }
+                    else {
+                        $(".exports-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".exports-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function showExportsList(exports) {
+            var html = '';
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr  class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th class="text-nowrap">Ngày nhập</th>\r\n';
+            html += '                <th class="text-nowrap">Nguyên liệu</th>\r\n';
+            html += '                <th class="text-nowrap">Kho</th>\r\n';
+            html += '                <th class="text-nowrap">Ghi chú</th>\r\n';
+            html += '                <th class="text-nowrap">Số lượng</th>\r\n';
+            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            var sum_quantity = 0;
+            $.each(exports, function (index, element) {
+                var export_date = new Date(element.MaterialExportDate.match(/\d+/)[0] * 1);
+                sum_quantity += element.Quantity;
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + (index + 1) + '</td>\r\n';
+                html += '                <td class="text-nowrap">' + formatDateVN(export_date) + '</td>\r\n';
+                html += '                <td>' + element.MaterialName + '</td>\r\n';
+                html += '                <td>' + element.StockName + '</td>\r\n';
+                html += '                <td>' + element.Notes + '</td>\r\n';
+                html += '                <td class="text-nowrap text-right text-danger"><strong>' + element.Quantity.format(2, 3, ',', '.') + '</strong></td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="/Material/EditExport/' + element.MaterialExportId + '" class="btn btn-sm btn-primary" style="width:75px;">Edit</a>\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-danger" onclick="ajaxDeleteExport(' + element.MaterialExportId + ');" style="width:75px;">Delete</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+
+            // add total rows
+            html += '            <tr class="alert-success">\r\n';
+            html += '                <th colspan="5" class="text-right">Tổng cộng</th>\r\n';
+            html += '                <th class="text-nowrap text-right">' + sum_quantity.format(0, 3, ',', '.') + '</th>\r\n';
+            html += '                <th class="text-nowrap"></th>\r\n';
+            html += '            </tr>\r\n';
+
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+
+            // show exports list
+            $(".exports-list").html(html);
+        }
+
+        /* Delete export */
+        function ajaxDeleteExport(id) {
+            // find role to delete
+            $.each(g_exports, function (index, element) {
+                if (id == element.MaterialExportId) {
+                    var export_date = new Date(element.MaterialExportDate.match(/\d+/)[0] * 1);
+                    // show confirmed dialog
+                    BootstrapDialog.show({
+                        message: '<span class="text-danger">Bạn chắc chắn muốn xóa xuất sử dụng <b>' + element.MaterialName + '<b> ngày <b>' + formatDateVN(export_date) + '</b> không?</span>',
+                        buttons: [{
+                            label: 'Delete',
+                            cssClass: 'btn-danger btn-sm',
+                            action: function (dialog) {
+                                $.ajax({
+                                    url: '/Material/DeleteExport/?id=' + id,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    contentType: 'application/json; charset=utf-8',
+                                    success: function (data) {
+                                        if (data.Error == 0) {
+                                            BootstrapDialog.show({
+                                                title: "Success",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+
+                                            ajaxSearchExports();
+                                        }
+                                        else {
+                                            BootstrapDialog.show({
+                                                title: "Error",
+                                                message: data.Message,
+                                                buttons: [{
+                                                    label: "Close",
+                                                    cssClass: "btn-primary btn-sm",
+                                                    action: function (dialog) {
+                                                        dialog.close();
+                                                    }
+                                                }]
+                                            });
+                                        }
+                                    },
+                                    error: function (xhr) {
+                                        BootstrapDialog.show({
+                                            title: "Error",
+                                            message: xhr.responseText,
+                                            buttons: [{
+                                                label: "Close",
+                                                cssClass: "btn-primary btn-sm",
+                                                action: function (dialog) {
+                                                    dialog.close();
+                                                }
+                                            }]
+                                        });
+                                    }
+                                });
+                                dialog.close();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            cssClass: 'btn-primary btn-sm',
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+
+            return false;
+        }
+
+        // set current active menu
+        $("#menu-material").attr("class", "active");
+
+    </script>
+
+}

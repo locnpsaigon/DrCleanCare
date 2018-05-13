@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Welcome";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+
+    // check if current logon user is an administrator
+    var isAdmin = (User != null && User.Roles.Contains("Administrators"));
+}
+
+@section Styles {
+    <style>
+        .category-header {
+            margin: 16px 0 6px;
+            color: #0094ff;
+        }
+
+        .category-list {
+            vertical-align: top;
+        }
+
+            .category-list li {
+                margin: 6px 0;
+            }
+
+        .cat-icon {
+            width: 60%;
+            margin-top: 8px;
+        }
+    </style>
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-10">
+            <h4 class="page-header form-title"><i class="fa fa-smile-o"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-sm-5">
+            <h4 class="category-header">Sản Phẩm</h4>
+            <div style="display:table">
+                <div style="display:table-row">
+                    <div style="display:table-cell">
+                        <img src="~/Content/Images/product.png" class="cat-icon" />
+                    </div>
+                    <div style="display:table-cell" class="category-list">
+                        <ul>
+                            <li><a href="/Product/">Danh mục Sản phẩm</a></li>
+                            <li><a href="/Category/">Danh mục Nhóm sản phẩm</a></li>
+                            @if (isAdmin)
+                            {
+                                <li><a href="/Stock/">Lịch sử nhập kho</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <h4 class="category-header">Kinh doanh</h4>
+            <div style="display:table">
+                <div style="display:table-row">
+                    <div style="display:table-cell">
+                        <img src="~/Content/Images/sale.png" class="cat-icon" />
+                    </div>
+                    <div style="display:table-cell" class="category-list">
+                        <ul>
+                            @if (isAdmin)
+                            {
+                                <li><a href="/Order/Index">Danh sách đơn hàng</a></li>
+                            }
+                            else
+                            {
+                                <li><a href="/Order/IndexSimple/">Danh sách đơn hàng</a></li>
+                            }
+                            @if (isAdmin)
+                            {
+                                <li><a href="/Purchase/Index/">Danh mục chi phí</a></li>
+                                <li><a href="/Payment/Unpaid/">Nợ tồn đọng</a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (isAdmin)
+    {
+        <div class="row">
+            <div class="col-sm-5">
+                <h4 class="category-header">Nguyên liệu</h4>
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell">
+                            <img src="~/Content/Images/material.png" class="cat-icon" />
+                        </div>
+                        <div style="display:table-cell" class="category-list">
+                            <ul>
+                                <li><a href="/User/Add/">Lịch sử nhập kho</a></li>
+                                <li><a href="/User/">Lịch sử xuất sử dụng</a></li>
+                                <li><a href="/Role/">Danh mục nguyên liệu</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <h4 class="category-header">Thống kê</h4>
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell">
+                            <img src="~/Content/Images/dashboard.png" class="cat-icon" />
+                        </div>
+                        <div style="display:table-cell" class="category-list">
+                            <ul>
+                                <li><a href="/Dashboard/FinanceByDate/">Tài chính theo ngày</a></li>
+                                <li><a href="/Dashboard/FinanceByYear/">Tài chính theo năm</a></li>
+                                <li><a href="/Dashboard/ProductByDate/">Thống kê sản phẩm</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isAdmin)
+    {
+        <div class="row">
+            <div class="col-sm-5">
+                <h4 class="category-header">Nhân sự</h4>
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell;">
+                            <img src="~/Content/Images/Account.png" class="cat-icon" />
+                        </div>
+                        <div style="display:table-cell" class="category-list">
+                            <ul>
+                                <li><a href="/Task/AssignTask">Phân công công việc</a></li>
+                                <li><a href="/Task/">Danh sách đầu việc</a></li>
+                                <li><a href="/Employee/">Danh sách nhân viên</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <h4 class="category-header">Hệ thống</h4>
+                <div style="display:table">
+                    <div style="display:table-row">
+                        <div style="display:table-cell">
+                            <img src="~/Content/Images/System.png" class="cat-icon" />
+                        </div>
+                        <div style="display:table-cell" class="category-list">
+                            <ul>
+                                <li><a href="/User/Add/">Tạo tài khoản</a></li>
+                                <li><a href="/User/">Danh mục Tài khoản</a></li>
+                                <li><a href="/Role/">Danh mục Vai trò</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row">
+        <div class="col-sm-5">
+            <h4 class="category-header">Tổng quan</h4>
+            <div style="display:table">
+                <div style="display:table-row">
+                    <div style="display:table-cell">
+                        <img src="~/Content/Images/website.png" class="cat-icon" />
+                    </div>
+                    <div style="display:table-cell" class="category-list">
+                        <ul>
+                            <li><a href="/Home/" target="_blank">Trang chủ</a></li>
+                            <li><a href="/Admin/Credit/">Nhà phát triển</a></li>
+                            <li><a href="/User/ChangePass/">Đổi mật khẩu</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

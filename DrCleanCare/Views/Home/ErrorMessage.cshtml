@@ -1,0 +1,20 @@
+﻿@{
+    ViewBag.Title = "ErrorMessage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="about">
+    <div class="container">
+        <section class="title-section">
+            <h1 class="title-header">Lỗi truy cập</h1>
+        </section>
+    </div>
+</div>
+<div class="container">
+    <div class="row text-center">
+        <img src="~/Content/Images/icon-error-404.png" style="margin-top: 1em;" />
+        <h4 class="text-info" style="margin-top: 1em;">@ViewBag.ErrorMessage</h4>
+        <br />
+        <br />
+    </div>
+</div>

@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="robots" content="noindex">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>DR CLEANCARE ADMIN - @ViewBag.Title</title>
+    <link rel="shortcut icon" href="~/favicon.png" />
+    @Styles.Render("~/content/bootstrap")
+    @Styles.Render("~/content/admin")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+
+    @{
+        // check if current logon user is an administrator
+        var isAdmin = (User != null && User.Roles.Contains("Administrators"));
+    }
+</head>
+<body>
+    <div id="wrapper">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/Admin/">
+                    <img src="~/Content/Images/brand.png" height="24" alt="Brand" />
+                    <span style="margin-left:8px;">DR CLEANCARE - Quản trị nội dung Website</span>
+                </a>
+
+            </div>
+
+            <!-- /.admin-left-menus -->
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <!--
+                            <li class="sidebar-search">
+                                <div class="input-group custom-search-form">
+                                    <input type="text" class="form-control" placeholder="Search..">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </li>
+                        -->
+                        <li id="menu-admin">
+                            <a href="/Admin/"><i class="fa fa-home"></i><strong>&nbsp; Trang chủ</strong></a>
+                        </li>
+                        <li id="menu-sale">
+                            <a href="#"><i class="fa fa-leaf fa-fw"></i><strong> Kinh doanh</strong><span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                @if (isAdmin)
+                                {
+                                    <li><a href="/Order/Index">Danh sách đơn hàng</a></li>
+                                }
+                                else
+                                {
+                                    <li><a href="/Order/IndexSimple">Danh sách đơn hàng</a></li>
+                                }
+
+                                @if (isAdmin)
+                                {
+                                    <li><a href="/Purchase/Index">Danh sách chi phí</a></li>
+                                    <li><a href="/Payment/Unpaid">Danh sách công nợ</a></li>
+                                }
+                                <li><a href="/Feedback/">Khách hàng liên hệ</a></li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+
+                        <li id="menu-product">
+                            <a href="#"><i class="fa fa-cubes fa-fw"></i><strong> Sản phẩm</strong><span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li><a href="/Product/">Sản phẩm</a></li>
+                                <li><a href="/Category/">Nhóm sản phẩm</a></li>
+                                @if (isAdmin)
+                                {
+                                    <li><a href="/Product/StockInputHistory">Nhập kho</a></li>
+                                }
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        @if (isAdmin)
+                        {
+                            <li id="menu-material">
+                                <a href="#"><i class="fa fa-flask fa-fw"></i><strong> Nguyên liệu</strong><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="/Material/">Nguyên liệu</a></li>
+                                    <li><a href="/Material/ListImports">Nhập kho</a></li>
+                                    <li><a href="/Material/ListExports">Xuất kho</a></li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
+                            <li id="menu-stock">
+                                <a href="#"><i class="fa fa-truck fa-fw"></i><strong> Kho bãi</strong><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="/Stock/"> Danh sách kho</a></li>
+                                    <li><a href="/Product/ProductInStock"> Tồn kho Sản phẩm</a></li>
+                                    <li><a href="/Material/MaterialInStock"> Tồn kho Nguyên liệu</a></li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
+                            <li id="menu-dashboard">
+                                <a href="#"><i class="fa fa-bar-chart fa-fw"></i><strong> Thống kê</strong><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="/Dashboard/FinanceByDate">Tài chính theo ngày</a></li>
+                                    <li><a href="/Dashboard/FinanceByYear">Tài chính theo năm</a></li>
+                                    <li><a href="/Dashboard/ProductByDate">Sẩn phẩm theo ngày</a></li>
+                                </ul>
+                            </li>
+                            <li id="menu-employee">
+                                <a href="#"><i class="fa fa-users fa-fw"></i><strong> Nhân sự</strong><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="/Task/AssignTask"> Phân công</a></li>
+                                    <li><a href="/Task/"> Danh sách đầu việc</a></li>
+                                    <li><a href="/Employee/"> Danh sách nhân viên</a></li>
+                                    <li><a href="/Task/Report"> Báo cáo công việc</a></li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>
+                            <li id="menu-system">
+                                <a href="#"><i class="fa fa-gear fa-fw"></i><strong> Hệ thống</strong><span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li><a href="/Role/">Danh sách vai trò</a></li>
+                                    <li><a href="/User/">Danh sách tài khoản</a></li>
+                                </ul>
+                            </li>
+                        }
+
+                        @*
+                            <li>
+                                <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="#">Second Level Item</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Second Level Item</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">Third Level <span class="fa arrow"></span></a>
+                                        <ul class="nav nav-third-level">
+                                            <li>
+                                                <a href="#">Third Level Item</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Third Level Item</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Third Level Item</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Third Level Item</a>
+                                            </li>
+                                        </ul>
+                                        <!-- /.nav-third-level -->
+                                    </li>
+                                </ul>
+                                <!-- /.nav-second-level -->
+                            </li>*@
+
+                        <li id="menu-account">
+                            <a href="#"><i class="fa fa-smile-o fa-fw"></i><strong> Cá nhân</strong><span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+
+                                @if (User != null)
+                                {
+                                    <li><a href="/User/ChangePass"> Đổi mật khẩu</a></li>
+                                    <li><a href="/User/Logout"> Thoát (@User.Identity.Name) <i class="fa fa-sign-out fa-fw"></i></a></li>
+                                }
+                                else
+                                {
+                                    <li><a href="/User/Login">Đăng nhập</a></li>
+                                }
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+
+        </nav>
+
+        <!-- Page Content -->
+        @RenderBody()
+
+    </div>
+    <!-- /#wrapper -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/admin")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

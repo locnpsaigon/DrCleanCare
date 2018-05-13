@@ -1,0 +1,158 @@
+﻿@model DrCleanCare.Models.AddProductInStockViewModel
+
+@{
+    ViewBag.Title = "Thêm tồn kho sản phẩm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-cubes"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-plus-square"></i> Thông tin tồn kho sản phẩm
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("AddProductInStock", "Product", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    @Html.ValidationSummary(true)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Kho nhập</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownListFor(model => model.StockId, ViewBag.Stocks as IEnumerable<SelectListItem>, "-- Kho --", new { @class = "form-control", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.StockId)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Nhóm</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownList("CategoryId", ViewBag.Categories as IEnumerable<SelectListItem>, "-- Nhóm --", new { @class = "form-control", @type = "text", @autofocus = "" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Sản phẩm</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownListFor(model => model.ProductId, ViewBag.Products as IEnumerable<SelectListItem>, "-- Sản phẩm --", new { @class = "form-control", @type = "text", @autofocus = "" })
+                                        @Html.ValidationMessageFor(model => model.ProductId)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap">Số tồn</label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(model => model.Quantity, new { @class = "form-control text-right number-input", @placeholder = "0", @type = "text", @style = "width:120px;", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.Quantity)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <div class="col-sm-3 text-right">
+                                        <label class="control-label text-nowrap"></label>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <input type="submit" value="Lưu" class="btn btn-sm btn-success" style="width:120px;" />
+                                        <input type="reset" value="Nhập lại" class="btn btn-sm btn-primary" style="width:120px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/jquery.number.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // setup number input
+            $('.number-input').number(true, 0);
+
+            $('#CategoryId').on("change", function () {
+                getProductsByCategoryId(this.value);
+            })
+        })
+
+        function getProductsByCategoryId(categoryId) {
+            if (categoryId != '') {
+                // get product select element
+                var select_products = document.getElementById('ProductId');
+                // reset product select element
+                for (i = select_products.length - 1; i > 0; i--) {
+                    select_products.options[i] = null;
+                }
+                select_products.value = null;
+                // ajax get products by category
+                $.ajax({
+                    url: '/Product/GetProductsByCategory/?categoryId=' + categoryId,
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    async: false,
+                    success: function (data) {
+                        if (data.Error == 0) {
+                            // success
+                            $.each(data.Products, function (index, element) {
+                                select_products.options[select_products.options.length] = new Option(
+                                    element.ProductName, element.ProductId, false, false);
+                            });
+                        } else {
+                            showBootstrapDialog(1, 'Lỗi', data.Message);
+                        }
+                    },
+                    error: function (xhr) {
+                        showBootstrapDialog(1, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                    }
+                });
+            }
+        }
+
+        $("#menu-stock").attr("class", "active");
+    </script>
+}

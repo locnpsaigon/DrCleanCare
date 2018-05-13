@@ -1,0 +1,162 @@
+﻿@model DrCleanCare.Models.StockInputViewModel
+@{
+    ViewBag.Title = "Cập nhật nhập kho sản phẩm";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-cube"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-plus-square"></i> Nhập kho
+                </div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("EditStockInput", "Product", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id)
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    @Html.ValidationSummary(true)
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap">Ngày nhập</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(model => model.Date, new
+                                   {
+                                       @class = "form-control",
+                                       @type = "text",
+                                       @style = "width:100px;"
+                                   })
+                                        @Html.ValidationMessageFor(model => model.Date, null, new { @class = "help-inline" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap">Nhóm sản phẩm</label>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownList("CategoryId", ViewBag.Categories as List<SelectListItem>, "--Loại-- ", new { @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap">Tên sản phẩm</label>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownListFor(model => model.ProductId, ViewBag.Products as List<SelectListItem>, "--Sản phẩm--",  new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.ProductId, null, new { @class = "help-inline" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap">Kho nhập</label>
+                                    <div class="col-sm-9">
+                                        @Html.DropDownListFor(model => model.StockId, ViewBag.Stocks as List<SelectListItem>, "--Kho nhập--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.StockId, null, new { @class = "help-inline" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap">Số lượng</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextBoxFor(model => model.Quantity, new { @class = "form-control", @type = "text", @style = "width:100px;" })
+                                        @Html.ValidationMessageFor(model => model.Quantity, null, new { @class = "help-inline" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap">Ghi chú</label>
+                                    <div class="col-sm-9">
+                                        @Html.TextAreaFor(model => model.Note, new { @class = "form-control", @type = "text" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 control-label text-nowrap"></label>
+                                    <div class="col-sm-9">
+                                        <input type="submit" value="Lưu" class="btn btn-sm btn-success" style="width:100px;" />
+                                        <input type="reset" value="Nhập lại" class="btn btn-sm btn-primary" style="width:100px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Scripts/jquery.number.min.js"></script>
+    <script>
+
+        // set current active menu
+        $("#menu-product").attr("class", "active");
+
+        $(document).ready(function () {
+            // datetime picker
+            $("#Date").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#Date').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#Date').datepicker('update');
+
+            // number inputs
+            $("#Quantity").focus(function () { $(this).number(true, 0); });
+            $("#Quantity").focus();
+
+            // event handlers
+            $("#CategoryId").on("change", function () {
+                getProductsByCategory(this.value);
+            })
+        });
+
+        // LOAD PRODUCTS BY CATEGORY
+        function getProductsByCategory(cat_id) {
+
+            // clear products dropdown list
+            var select_products = document.getElementById('ProductId');
+            select_products.value = null;
+            for (i = select_products.length - 1; i > 0; i--) {
+                select_products.options[i] = null;
+            }
+
+            // validate category id
+            if (cat_id == '') return;
+
+            // get products list by specified category
+            $.ajax({
+                url: '/Product/GetProductsByCategory/?categoryId=' + cat_id,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                async: false,
+                success: function (data) {
+                    if (data.Error == 0) {
+                        // success
+                        $.each(data.Products, function (index, element) {
+                            select_products.options[select_products.options.length] = new Option(
+                                element.ProductName, element.ProductId, false, false);
+                        });
+                    } else {
+                        showBootstrapDialog(1, 'Lỗi', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    showBootstrapDialog(1, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                }
+            });
+
+
+        }
+    </script>
+}
+
+

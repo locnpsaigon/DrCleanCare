@@ -1,0 +1,95 @@
+﻿@model List<DrCleanCare.DAL.ReportProductByDateDetailsForCustomerResult>
+    @{
+        ViewBag.Title = "Chi tiết số lượng sản phẩm bán cho khách";
+        Layout = "~/Views/Shared/_Admin.cshtml";
+
+        var phone = ViewBag.Phone == null ? "" : ViewBag.Phone;
+        var d1 = ViewBag.DateFrom == null ? DateTime.Now.AddMonths(-1) : (DateTime)ViewBag.DateFrom;
+        var d2 = ViewBag.DateTo == null ? DateTime.Now : (DateTime)ViewBag.DateTo;
+        var productId = int.Parse(ViewBag.ProductId);
+    }
+
+    <div id="page-wrapper" class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h4 class="page-header form-title"><i class="fa fa-list"></i> @ViewBag.Title</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                Thời gian từ <strong>@d1.ToString("dd/MM/yyyy") - @d2.ToString("dd/MM/yyyy")</strong>
+            </div>
+        </div>
+        <div class="row" style="margin-top:12px;">
+            <div class="col-lg-12">
+                <a href="/Dashboard/ProductByDateDetailsToExcel?phone=@phone&dateFrom=@d1.ToString("dd/MM/yyyy")&dateTo=@d2.ToString("dd/MM/yyyy")&productId=@productId" class="btn btn-primary">Xuất Excel</a>
+            </div>
+        </div>
+        <div class="row" style="margin-top:12px;">
+            <div id="table-report" class="col-lg-12">
+                <table class="table table-hover table-bordered">
+                    <tr class="alert-success">
+                        <th class="text-nowrap text-center">STT</th>
+                        <th class="text-nowrap">Ngày</th>
+                        <th class="text-nowrap">Số HĐ</th>
+                        <th class="text-nowrap">Khách hàng</th>
+                        <th class="text-nowrap text-right">Địa chỉ</th>
+                        <th class="text-nowrap text-right">Điện Thoại</th>
+                        <th class="text-nowrap text-right">Sản Phẩm</th>
+                        <th class="text-nowrap text-right">SL bán</th>
+                        <th class="text-nowrap text-right">Tiền trước thuế</th>
+                        <th class="text-nowrap text-right">Tiền sau thuế</th>
+                    </tr>
+                    @{
+                        int itemCount = 0;
+                        int totalQuantity = 0;
+                        decimal totalAmountBT = 0;
+                        decimal totalAmount = 0;
+                        foreach (var item in Model)
+                        {
+                            itemCount++;
+                            totalQuantity += item.Quantity;
+                            totalAmountBT += item.AmountBT;
+                            totalAmount += item.Amount;
+                            <tr>
+                                <td class="text-center">@itemCount</td>
+                                <td class="text-center">@item.OrderDate.ToString("dd/MM/yyyy")</td>
+                                <td class="text-center"><a href="/Order/Details/@item.OrderId">@item.OrderNo</a></td>
+                                <td>@item.CustomerName</td>
+                                <td>@item.CustomerAddress</td>
+                                <td>@item.Phone</td>
+                                <td>@item.ProductName</td>
+                                <td class="text-right">@item.Quantity.ToString("#,##0.##")</td>
+                                <td class="text-right">@item.AmountBT.ToString("#,##0.##")</td>
+                                <td class="text-right">@item.Amount.ToString("#,##0.##")</td>
+                            </tr>
+                        }
+                        // row total
+                        <tr style="font-weight:bold;">
+                            <td class="text-right" colspan="7">Tổng cộng</td>
+                            <td class="text-right">@totalQuantity.ToString("#,##0.##")</td>
+                            <td class="text-right">@totalAmountBT.ToString("#,##0.##")</td>
+                            <td class="text-right">@totalAmount.ToString("#,##0.##")</td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div style="margin-top:240px;"></div>
+    </div>
+
+    @section Styles {
+    }
+
+    @section Scripts {
+        <script>
+            // set current active menu
+            $("#menu-dashboard").attr("class", "active");
+
+            $(document).ready(function () {
+
+            })
+        </script>
+    }
+
+

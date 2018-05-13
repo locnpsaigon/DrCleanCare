@@ -1,0 +1,314 @@
+﻿@{
+    ViewBag.Title = "Lịch sử nhập kho";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+<div id="page-wrapper" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="page-header form-title text-primary"><i class="fa fa-cube"></i> @ViewBag.Title</h4>
+        </div>
+    </div>
+    <!-- /.col-lg-12 -->
+    <div class="row">
+        <div style="display:table;" class="col-sm-8">
+            <div style="display:table-row;">
+                <div style="display:table-cell;" class="form-inline">
+                    @Html.DropDownList("CategoriesList", new List<SelectListItem>(), "-- Nhóm --", new { @class = "form-control", @style = "width:250px;" })
+                    @Html.DropDownList("ProductsList", new List<SelectListItem>(), "-- Sản phấm --", new { @class = "form-control", @style = "width:250px;" })
+                </div>
+            </div>
+            <div style="height:4px;"></div>
+            <div style="display:table-row;">
+                <div style="display:table-cell;" class="form-inline">
+                    @Html.DropDownList("StockList", ViewBag.Stocks as IEnumerable<SelectListItem>, "-- Kho --", new { @class = "form-control", @style = "width:250px;" })
+                    @Html.TextBox("DateFrom", DateTime.Now.AddDays(-29).ToString("dd/MM/yyyy"), new { @class = "form-control", @style = "width:100px;" })
+                    @Html.TextBox("DateTo", DateTime.Now.AddDays(1).ToString("dd/MM/yyyy"), new { @class = "form-control", @style = "width:100px;" })
+                </div>
+            </div>
+            <div style="height:4px;"></div>
+            <div style="display:table-row;">
+                <div style="display:table-cell;" class="form-inline">
+                    <input id="btn-report" type="button" value="Tra cứu" class="btn btn-success" style="width:100px;" />
+                    <a href="/Product/AddStockInput/" class="btn btn-primary" style="width:100px;">Nhập kho</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div id="report-cotainer" class="col-lg-12" style="margin-top:8px;"></div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="~/Content/datepicker.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Scripts/jquery.number.min.js"></script>
+    <script>
+        // set product active menu
+        $("#menu-product").attr("class", "active");
+
+        $(document).ready(function () {
+            // datetime picker
+            $("#DateFrom").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#DateFrom').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#DateFrom').datepicker('update');
+
+            $("#DateTo").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $('#DateTo').on('changeDate', function (ev) { $(this).datepicker('hide') });
+            $('#DateTo').datepicker('update');
+
+            // show categories and products
+            ajaxLoadCategories();
+            ajaxLoadStockInputsReport();
+
+            // event handlers
+            $("#DateFrom").on("change", function () {
+                ajaxLoadStockInputsReport();
+            })
+
+            $("#DateTo").on("change", function () {
+                ajaxLoadStockInputsReport();
+            })
+
+            $("#CategoriesList").on("change", function () {
+                ajaxLoadProducts(this.value);
+                ajaxLoadStockInputsReport();
+            })
+
+            $("#ProductsList").on("change", function () {
+                ajaxLoadStockInputsReport();
+            })
+
+            $("#StockList").on("change", function () {
+                ajaxLoadStockInputsReport();
+            })
+
+            $("#btn-report").click(function () {
+                ajaxLoadStockInputsReport();
+            })
+        });
+
+        /* Function to load & show categories list */
+        function ajaxLoadCategories() {
+            var categorySelect = document.getElementById('CategoriesList');
+            $.ajax({
+                url: '/Category/GetCategories/',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                async: false,
+                success: function (data) {
+                    if (data.Error == FLAG_SUCCESS) {
+                        // success
+                        // display categories
+                        $.each(data.Categories, function (index, element) {
+                            categorySelect.options[categorySelect.options.length] =
+                                new Option(element.CategoryName, element.CategoryId, false, false);
+                        });
+                    } else {
+                        // error
+                        showBootstrapDialog(FLAG_ERROR, 'Lỗi', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    // ajax error
+                    showBootstrapDialog(FLAG_ERROR, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                }
+            });
+        }
+
+        /*
+         * Function to load and show products list of a specified category
+         */
+        function ajaxLoadProducts(cat_id) {
+            var productSelect = document.getElementById('ProductsList');
+
+            productSelect.value = null;
+
+            for (i = productSelect.length - 1; i > 0; i--) {
+                productSelect.options[i] = null;
+            }
+
+            if (cat_id == null || cat_id == '')
+                return;
+
+            $.ajax({
+                url: '/Product/GetProductsByCategory/?categoryId=' + cat_id,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                async: false,
+                success: function (data) {
+
+                    if (data.Error == 0) {
+                        // success
+                        // display categories
+                        $.each(data.Products, function (index, element) {
+                            productSelect.options[productSelect.options.length] =
+                                new Option(element.ProductName, element.ProductId, false, false);
+                        });
+                    } else {
+                        // error
+                        showBootstrapDialog(FLAG_ERROR, 'Lỗi', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    // ajax error
+                    showBootstrapDialog(FLAG_ERROR, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                }
+            });
+        }
+
+        /*
+         * Function to show stock inputs report
+         */
+        function ajaxLoadStockInputsReport() {
+
+            var date_from = $("#DateFrom").val();
+            var date_to = $("#DateTo").val();
+            var cat_id = document.getElementById('CategoriesList').value;
+            var pro_id = document.getElementById('ProductsList').value;
+            var stock_id = document.getElementById('StockList').value;
+
+            var container = $("#report-cotainer");
+
+            // show ajax loading
+            container.html('<span class="text-warning text-danger" style="width:100%;">Đang nạp dữ liệu...</span>');
+
+            $.ajax({
+                url: '/Product/GetStockInputsHistory/?dateFrom=' + date_from + '&dateTo=' + date_to + '&categoryId=' + cat_id + '&productId=' + pro_id + '&stockId=' + stock_id,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+
+                    if (data.Error == 0) {
+                        // success
+                        // display categories
+                        showStockInputsReport(container, data.StockInputs);
+                    } else {
+                        // error
+                        showBootstrapDialog(FLAG_ERROR, 'Lỗi', data.Message);
+                    }
+                },
+                error: function (xhr) {
+                    // ajax error
+                    showBootstrapDialog(FLAG_ERROR, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                }
+            });
+        }
+
+        /*
+         * Function to show stock inputs report
+         */
+        function showStockInputsReport(container, stockInputs) {
+            var htmlReport = '';
+            htmlReport += '<table class="table table-hover table-bordered">\r\n';
+            htmlReport += '    <tr class="alert-success">\r\n';
+            htmlReport += '        <th class="text-nowrap text-center">Ngày</th>\r\n';
+            htmlReport += '        <th class="text-nowrap">Sản phẩm</th>\r\n';
+            htmlReport += '        <th class="text-nowrap">Kho</th>\r\n';
+            htmlReport += '        <th class="text-nowrap">Ghi chú</th>\r\n';
+            htmlReport += '        <th class="text-nowrap">Số lượng nhập</th>\r\n';
+            htmlReport += '        <th class="text-nowrap">Thao tác</th>\r\n';
+            htmlReport += '    </tr>\r\n';
+
+            var count = 0;
+            var total = 0;
+            $.each(stockInputs, function (index, element) {
+                var inputDate = new Date(parseInt(element.Date.substr(6)));
+                var warningMessage = 'Bạn có chắc chắn xóa nhập kho [' + element.ProductName + '] ngày ' + formatDateTime(inputDate) + ' không?';
+                htmlReport += '    <tr class="stock-input-row">\r\n';
+                htmlReport += '                    <td class="text-nowrap">' + formatDateVN(inputDate) + '</td>\r\n';
+                htmlReport += '                    <td class="text-nowrap">' + element.ProductName + '</td>\r\n';
+                htmlReport += '                    <td class="text-nowrap">' + element.StockName + '</td>\r\n';
+                htmlReport += '                    <td>' + element.Note + '</td>\r\n';
+                htmlReport += '                    <td class="text-right">' + element.Quantity + '</td>\r\n';
+                htmlReport += '                    <td class="text-center text-nowrap">';
+                htmlReport += '                        <a class="btn btn-primary btn-sm" href="/Product/EditStockInput/' + element.Id + '">Sửa</a>';
+                htmlReport += '                        <a href="#" onclick="return ajaxDeleteStockInput(' + element.Id + ', this, \'' + warningMessage + '\')" class="btn btn-danger btn-sm">Xóa</a>\r\n';
+                htmlReport += '                    </td>\r\n';
+                htmlReport += '    </tr>\r\n';
+                count++;
+                total += element.Quantity;
+            });
+
+            if (count == 0) {
+                htmlReport += '    <tr class="stock-input-row">\r\n';
+                htmlReport += '        <td colspan="6" class="text-center text-danger">Không có nhập kho nào</td>\r\n';
+                htmlReport += '    </tr>\r\n';
+            } else {
+                htmlReport += '    <tr class="stock-input-row">\r\n';
+                htmlReport += '        <td colspan="4" class="text-right"><strong>Tổng cộng:</strong></td>\r\n';
+                htmlReport += '        <td class="text-right"><strong>' + total + '</strong></td>\r\n';
+                htmlReport += '        <td></td>\r\n';
+                htmlReport += '    </tr>\r\n';
+            }
+
+            htmlReport += '</table>';
+
+            container.html(htmlReport);
+        }
+
+        /*
+         * Funtion to delete stock input
+         */
+        function ajaxDeleteStockInput(id, element, warningMessage) {
+            BootstrapDialog.show({
+                message: warningMessage,
+                buttons:
+                    [{
+                        label: 'Đồng ý xóa',
+                        cssClass: 'btn-danger btn-sm',
+                        action: function (dialog) {
+                            $.ajax({
+                                url: '/Product/DeleteStockInput/' + id,
+                                type: 'POST',
+                                dataType: 'json',
+                                contentType: 'application/json; charset=utf-8',
+                                success: function (data) {
+                                    if (data.Error == FLAG_SUCCESS) {
+                                        // success
+                                        $(element).closest('.stock-input-row').remove();
+                                    } else {
+                                        // error
+                                        showBootstrapDialog(FLAG_ERROR, "Lỗi", data.Message);
+                                    }
+                                },
+                                error: function (xhr) {
+                                    // ajax error
+                                    showBootstrapDialog(FLAG_ERROR, 'Lỗi', 'Lỗi xảy ra trong quá trình truy cập máy chủ!');
+                                }
+                            });
+                            dialog.close();
+                        }
+                    },
+                    {
+                        label: 'Không xóa',
+                        cssClass: 'btn-primary btn-sm',
+                        action: function (dialog) {
+                            dialog.close();
+                        }
+                    }]
+            });
+        }
+
+        /*
+         * Funtion to convert date to dd/MM/yyyy HH:mm string format
+         */
+        function formatDateTime(date) {
+            // formart date to dd/MM/yyyy HH:mm
+            return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' +
+                date.getHours() + ':' + date.getMinutes();
+        }
+
+    </script>
+}
+
+

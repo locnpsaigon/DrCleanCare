@@ -1,0 +1,350 @@
+﻿@{
+    ViewBag.Title = "Liên hệ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="about">
+    <div class="container">
+        <section class="title-section">
+            <h1 class="title-header">Liên hệ</h1>
+        </section>
+    </div>
+</div>
+<div class="contact">
+    <div class="container">
+        <div class="row contact_top">
+            <div class="col-md-4 contact_details" style="min-height:200px;">
+                <h5>Địa chỉ:</h5>
+                <div class="contact_address">Đường số 2, KCN Bình Đường, Dĩ An, Bình Dương<br />MST: 0307104143<br />&nbsp;</div>
+            </div>
+            <div class="col-md-4 contact_details" style="min-height:200px;">
+                <h5>Điện thoại:</h5>
+                <div class="contact_address">
+                    <div style="display:table">
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Phone</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;">84.28.35883168 - 84.28.39856368</div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Fax</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;">84.28.38955156</div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Hotline</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;">0903.62.40.60</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 contact_details" style="min-height:200px;">
+                <h5>Email:</h5>
+                <div class="contact_address">
+                    <div style="display:table">
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Email</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;"><a href="mailto:sales@drcleancare.com">sales@drcleancare.com</a></div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Email 2</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;"><a href="mailto:drcleancare@gmail.com ">drcleancare@gmail.com </a></div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Facebook</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;"><a href="https://www.facebook.com/DRCLEANCARE" target="_blank">Dr.CleanCare</a></div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Zalo</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;">0903624060</div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell">Viber</div>
+                            <div style="display:table-cell;padding-left:4px;">:</div>
+                            <div style="display:table-cell;padding-left:4px;">0903624060</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row contact_top">
+            <div id="map" style="width:100%; height:300px;"></div>
+        </div>
+        <div class="contact_bottom">
+            <h3>Nhập thông tin liên hệ</h3>
+            <p>Quý khách hàng vui lòng điền thông tin theo mẫu bên dưới để liên hệ chúng tôi. Chúng tôi sẽ phản hồi thông tin cho quý khách sớm nhất có thể.</p>
+            <div class="contact-to">
+                <input id="name" name="name" type="text" class="text" placeholder="Họ tên" style="margin-right:8px;">
+                <input id="phone" name="phone" type="text" class="text" placeholder="Điện thoại" style="margin-right:8px;">
+                <input id="email" name="email" type="text" class="text" placeholder="Email">
+            </div>
+            <div style="clear:both;"></div>
+            <textarea id="message" name="message" placeholder="Nội dung"></textarea>
+            <p>Mã bảo vệ:</p>
+            <div class="contact-to">
+                <div style="display:table-row">
+                    <div style="display:table-cell;vertical-align:top;"><img id="captcha-img" src="~/Captcha/CaptchaImage" style="border: 1px solid #dedede;margin:10px 0;" /></div>
+                    <div style="display:table-cell;vertical-align:top;"><input id="captcha" name="captcha" type="text" class="text" style="margin-left:16px; width:100px;" placeholder="Mã bảo vệ" /></div>
+                </div>
+                <div style="display:table-row">
+                    <input type="button" onclick="sendFeedback()" value="Gửi thông tin" class="btn btn-success" style="margin-top:32px;" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section Styles {
+    <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+}
+
+@section scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/bootstrap-dialog.min.js"></script>
+    <script src="~/Plugins/ckeditor/ckeditor.js"></script>
+    <script src="~/Plugins/ckeditor/adapters/jquery.js"></script>
+
+    <!--    Chuỗi khai báo lấy tham số của google maps   -->
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&language=vi"></script>
+    <script type="text/javascript">
+        var map;
+        function showMap() {
+            var myLatlng = new google.maps.LatLng(10.879486, 106.750133);
+            var myOptions = {
+                scrollwheel: false,
+                zoom: 17,
+                center: myLatlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            }
+            map = new google.maps.Map(document.getElementById("map"), myOptions);
+            // Biến text chứa nội dung sẽ được hiển thị
+            var text;
+            text = "<b class='text-info text-center'><img src='/Content/images/brand.png' width='32'/>&nbsp;&nbsp; DR CLEANCARE<br /><br />Đường số 2, KCN Bình Đường, Dĩ An, Bình Dương<br />ĐT: 84.28.35883168 - 84.28.39856368</b>";
+            var infowindow = new google.maps.InfoWindow(
+             {
+                 content: text,
+                 size: new google.maps.Size(100, 50),
+                 position: myLatlng
+             });
+            infowindow.open(map);
+            //var marker = new google.maps.Marker({
+            //    position: myLatlng,
+            //    map: map,
+            //    title: "<b class='text-danger text-center'>Dr CleanCare</b>"
+            //});
+        }
+
+        $(document).ready(function () {
+            showMap();
+
+            /* SETUP CKEditor */
+            CKEDITOR.replace('message');
+
+            // Copyright (c) 2003-2012, CKSource - Frederico Knabben. All rights reserved.
+            // For licensing, see LICENSE.html or http://ckeditor.com/license
+
+            //CKEDITOR.editorConfig = function (config) {
+            //    // Define changes to default configuration here. For example:
+            //    config.language = 'vi';
+            //    // config.uiColor = '#AADC6E';
+            //    config.toolbar = 'Custom';
+
+            //    config.toolbar_Custom = [
+            //    { name: 'styles', items: ['Styles', 'Format'] },
+            //    { name: 'basicstyles', items: ['Bold', 'Italic', 'Strike', '-', 'RemoveFormat'] },
+            //    { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
+            //        '/',
+            //    { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+            //        { name: 'insert', items: ['Image'] },
+            //        { name: 'tools', items: ['Maximize', '-', 'About'] }
+            //    ];
+            //};
+
+        });
+
+        /* FORM VALIDATION */
+        //$('#contactform').validate({
+        //    ignore: [],
+        //    debug: false,
+        //    rules: {
+        //        name: {
+        //            required: true
+        //        },
+        //        email: {
+        //            required: true,
+        //            email: true
+        //        },
+        //        subject: {
+        //            required: true
+        //        },
+        //        content: {
+        //            required: function () {
+        //                CKEDITOR.instances.content.updateElement();
+        //            }
+        //        },
+        //        captcha: {
+        //            required: true
+        //        }
+        //    },
+        //    messages: {
+        //        name: 'Vui lòng nhập họ tên',
+        //        email: {
+        //            required: 'Vui lòng nhập email',
+        //            email: 'Địa chỉ email chưa hợp lệ'
+        //        },
+        //        subject: 'Vui lòng tiêu đề',
+        //        content: 'Vui lòng nhập nội dung',
+        //        captcha: 'Vui lòng nhập mã bảo vệ'
+        //    },
+        //    showErrors: function (errorMap, errorList) {
+        //        $.each(this.successList, function (index, value) {
+        //            return $(value).popover("hide");
+        //        });
+
+        //        return $.each(errorList, function (index, value) {
+        //            var _popover;
+        //            var _element = $(value.element);
+
+        //            if (_element.attr("id") == "content") {
+        //                _element = $("#content-anchor");
+        //            }
+
+        //            _popover = _element.popover({
+        //                animation: false,
+        //                trigger: "manual",
+        //                placement: 'top',
+        //                content: value.message,
+        //                template: '<div class=\'popover\'><div class=\'arrow\'></div><div class=\'popover-inner\'><div class=\'popover-content text-danger\'><p></p></div></div></div>'
+        //            });
+        //            // Bootstrap 3.x :
+        //            //_popover.data("bs.popover").options.content = value.message;
+        //            // Bootstrap 2.x :
+        //            _popover.data("popover").options.content = value.message;
+        //            return _element.popover("show");
+        //        });
+        //    }
+        //});
+
+        // hide bootstrap popover when user click outside the message
+        $('body').on('click', function (e) {
+            $("div .popover").attr("style", "display:none");
+        });
+
+        function sendFeedback() {
+
+            // update ckeditor content to textarea
+            $("#message").val(CKEDITOR.instances['message'].getData());
+
+            // get feedback info
+            var name = $('#name').val().trim();
+            var phone = $('#phone').val().trim();
+            var email = $('#email').val().trim();
+            var message = $('#message').val().trim();
+            var captcha = $('#captcha').val().trim();
+
+            // convert feedback info to base64
+            //$.base64.utf8encode = true;
+            //name = $.base64.encode(name);
+            //phone = $.base64.encode(phone);
+            //email = $.base64.encode(email);
+            //message = $.base64.encode(message);
+            //captcha = $.base64.encode(captcha);
+
+            if (!name || !phone || !message || !captcha) {
+                BootstrapDialog.show({
+                    type: BootstrapDialog.TYPE_DANGER,
+                    title: 'Thông báo',
+                    message: 'Bạn vui lòng nhập đầy đủ thông tin Họ tên, Số điện thoại, Mã bảo vệ và Nội dụng phản hồi!',
+                    buttons: [{
+                        label: 'Đóng',
+                        action: function (dialog) {
+                            dialog.close();
+                        }
+                    }]
+                });
+            } else {
+                ajaxFeedback(name, phone, email, message, captcha);
+            }
+        }
+
+        function ajaxFeedback(name, phone, email, message, captcha) {
+            var params = {
+                'name' : name,
+                'phone' : phone,
+                'email' : email,
+                'message' : message,
+                'captcha' : captcha
+            };
+
+            $.ajax({
+                url: '/Feedback/Add/',
+                type: 'POST',
+                dataType: 'json',
+                data: JSON.stringify(params),
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_SUCCESS,
+                            title: "Gửi phản hồi",
+                            message: "Gửi phản hồi thành công!",
+                            buttons: [{
+                                label: "Đóng",
+                                cssClass: "btn-primary btn-sm",
+                                action: function (dialog) {
+                                    // reset feedback form
+                                    $('#name').val('');
+                                    $('#phone').val('');
+                                    $('#email').val('');
+                                    $('#message').val('');
+                                    $('#captcha').val('');
+                                    var d = new Date();
+                                    $('#captcha-img').attr('src', '/Captcha/CaptchaImage?' + d.getTime());
+                                    $("#message").val(CKEDITOR.instances['message'].setData(''));
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    }
+                    else {
+                        BootstrapDialog.show({
+                            type: BootstrapDialog.TYPE_DANGER,
+                            title: "Lỗi gửi phản hồi",
+                            message: data.Message,
+                            buttons: [{
+                                label: "Đóng",
+                                cssClass: "btn-primary btn-sm",
+                                action: function (dialog) {
+                                    dialog.close();
+                                }
+                            }]
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    BootstrapDialog.show({
+                        type: BootstrapDialog.TYPE_DANGER,
+                        title: "Lỗi",
+                        message: xhr.responseText,
+                        buttons: [{
+                            label: "Đóng",
+                            cssClass: "btn-primary btn-sm",
+                            action: function (dialog) {
+                                dialog.close();
+                            }
+                        }]
+                    });
+                }
+            });
+        }
+
+        // set current menu
+        $("#menu-about").attr("class", "current");
+
+    </script>
+}
