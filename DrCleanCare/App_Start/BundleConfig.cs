@@ -10,6 +10,7 @@ namespace DrCleanCare
         {
 
             bundles.IgnoreList.Clear();
+            BundleTable.EnableOptimizations = false;
 
             // JQuery
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
