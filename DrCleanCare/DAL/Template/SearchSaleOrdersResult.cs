@@ -13,7 +13,7 @@ namespace DrCleanCare.DAL
         
         public string OrderNo { get; set; }
         
-        public int OrderType { get; set; }
+        public int? OrderType { get; set; }
         
         public string CustomerName { get; set; }
         
@@ -35,7 +35,7 @@ namespace DrCleanCare.DAL
         
         public DateTime CreationDate { get; set; }
 
-        public int PaymentTypeId { get; set; }
+        public int? PaymentTypeId { get; set; }
 
         public String PaymentTypeName { get; set; }
         
