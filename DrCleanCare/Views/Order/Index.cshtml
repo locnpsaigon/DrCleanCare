@@ -137,12 +137,12 @@
 
         $(document).ready(function () {
             // setup datetime picker
-            $("#date-from").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $("#date-from").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true, todayBtn:true });
             $('#date-from').on('changeDate', function (ev) { $(this).datepicker('hide') });
             $('#date-from').datepicker('update');
             $('#date-from').blur(); // remove focus
 
-            $("#date-to").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
+            $("#date-to").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true, todayBtn:true });
             $('#date-to').on('changeDate', function (ev) { $(this).datepicker('hide') });
             $('#date-to').datepicker('update');
         })
