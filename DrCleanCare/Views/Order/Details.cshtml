@@ -90,13 +90,21 @@
                         </tr>
                         @for (int i = 0; i < Model.OrderDetails.Count; i++)
                         {
-                            var soLineTotal = Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
 
-                            soAmountBT += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
-                            soVAT += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
-                            soGrandTotal += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
-                            soGrandTotal += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
+                            var quantity = (decimal)0;
+                            var unitPrice = (decimal)0;
+                            var unitPriceBT = (decimal)0;
 
+                            decimal.TryParse(Model.OrderDetails[i].Quantity, out quantity);
+                            decimal.TryParse(Model.OrderDetails[i].UnitPriceBT, out unitPriceBT);
+                            decimal.TryParse(Model.OrderDetails[i].UnitPrice, out unitPrice);
+
+                            var soLineTotal = quantity * unitPrice;
+                            soAmountBT += quantity * unitPriceBT;
+                            soVAT += quantity * (unitPrice - unitPriceBT);
+                            soGrandTotal += quantity * unitPriceBT;
+                            soGrandTotal += quantity * (unitPrice - unitPriceBT);
+                            
                             <tr>
                                 <td class="text-center">@string.Format("{0}", (i + 1))</td>
                                 <td>
