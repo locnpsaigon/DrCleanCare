@@ -167,12 +167,20 @@
                                     </div>
                                     @for (int i = 0; i < Model.OrderDetails.Count; i++)
                                     {
-                                        var soLineTotal = Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPrice;
-                                        soAmountBT += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
-                                        soVAT += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
-                                        soGrandTotal += Model.OrderDetails[i].Quantity * Model.OrderDetails[i].UnitPriceBT;
-                                        soGrandTotal += Model.OrderDetails[i].Quantity * (Model.OrderDetails[i].UnitPrice - Model.OrderDetails[i].UnitPriceBT);
-                                        
+                                        var quantity = (decimal)0;
+                                        var unitPrice = (decimal)0;
+                                        var unitPriceBT = (decimal)0;
+
+                                        decimal.TryParse(Model.OrderDetails[i].Quantity, out quantity);
+                                        decimal.TryParse(Model.OrderDetails[i].UnitPriceBT, out unitPriceBT);
+                                        decimal.TryParse(Model.OrderDetails[i].UnitPrice, out unitPrice);
+
+                                        var soLineTotal = quantity * unitPrice;
+                                        soAmountBT += quantity * unitPriceBT;
+                                        soVAT += quantity * (unitPrice - unitPriceBT);
+                                        soGrandTotal += quantity * unitPriceBT;
+                                        soGrandTotal += quantity * (unitPrice - unitPriceBT);
+
                                         <div style="display:table-row;" class="tbl-so-line">
                                             <div style="display:table-cell; padding:2px; vertical-align:top; width:100%;">
                                                 @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class = "product-id" })
@@ -416,7 +424,7 @@
         }
 
         function addLine() {
-            var row_count = $("#tbl-so > .tbl-so-line").size();
+            var row_count = $("#tbl-so > .tbl-so-line").length;
             var row_html = "";
             row_html += "<div style='display:table-row' class='tbl-so-line'>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top; width:100%;'>";
