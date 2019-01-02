@@ -180,9 +180,9 @@ namespace DrCleanCare.Models
         /// </summary>
         public AddSOLineViewModel()
         {
-            Quantity = 1;
-            UnitPriceBT = 0;
-            UnitPrice = 0;
+            Quantity = "1";
+            UnitPriceBT = "0";
+            UnitPrice = "0";
         }
 
         public int ProductId { get; set; }
@@ -196,15 +196,15 @@ namespace DrCleanCare.Models
 
         public string StockName { get; set; }
 
-        public decimal Quantity { get; set; }
+        public string Quantity { get; set; }
 
 
-        [DataType(DataType.Currency)]
-        public decimal UnitPriceBT { get; set; }
+        [RegularExpression(@"^\d+(,\d{3}){0,}(.\d+){0,1}$", ErrorMessage = "Giá trước thuế không hợp lệ!")]
+        public string UnitPriceBT { get; set; }
 
 
-        [DataType(DataType.Currency)]
-        public decimal UnitPrice { get; set; }
+        [RegularExpression(@"^\d+(,\d{3}){0,}(.\d+){0,1}$", ErrorMessage = "Giá sau thuế không hợp lệ!")]
+        public string UnitPrice { get; set; }
         
     }
 }

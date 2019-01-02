@@ -21,7 +21,7 @@ namespace DrCleanCare.Models
         public string Description { get; set; }
 
         [Required(ErrorMessage="Vui lòng nhập chi phí")]
-        [DataType(DataType.Currency)]
-        public decimal Amount { get; set; }
+        [RegularExpression(@"^\d+(,\d{3}){0,}(.\d+){0,1}$", ErrorMessage = "Chi phí không hợp lệ!")]
+        public string Amount { get; set; }
     }
 }

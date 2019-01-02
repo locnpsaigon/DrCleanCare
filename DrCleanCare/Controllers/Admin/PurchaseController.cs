@@ -89,13 +89,21 @@ namespace DrCleanCare.Controllers.Admin
                     return View(model);
                 }
 
+                // get amount
+                var amount = (decimal)0;
+                if (!decimal.TryParse(model.Amount, out amount))
+                {
+                    ModelState.AddModelError("", "Chi phí '" + model.Amount + "' không hợp lệ!");
+                    return View(model);
+                }
+
                 // create new purchase info
                 Purchase purchaseInfo = new Purchase();
                 purchaseInfo.PurchaseDate = DateTime.ParseExact(model.PurchaseDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 purchaseInfo.PurchaseDate += new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                 purchaseInfo.PurchaseName = model.PurchaseName;
                 purchaseInfo.Description = model.Description;
-                purchaseInfo.Amount = model.Amount;
+                purchaseInfo.Amount = amount;
 
                 // save new purchase info
                 db.Purchases.Add(purchaseInfo);
@@ -135,7 +143,7 @@ namespace DrCleanCare.Controllers.Admin
                 model.PurchaseDate = purchaseInfo.PurchaseDate.ToString("dd/MM/yyyy");
                 model.PurchaseName = purchaseInfo.PurchaseName;
                 model.Description = purchaseInfo.Description;
-                model.Amount = purchaseInfo.Amount;
+                model.Amount = purchaseInfo.Amount.ToString("#,##0");
 
                 return View(model);
             }
@@ -166,6 +174,14 @@ namespace DrCleanCare.Controllers.Admin
                     return View(model);
                 }
 
+                // get amount
+                var amount = (decimal)0;
+                if (!decimal.TryParse(model.Amount, out amount))
+                {
+                    ModelState.AddModelError("", "Chi phí '" + model.Amount + "' không hợp lệ!");
+                    return View(model);
+                }
+
                 // get current purchase info
                 Purchase purchaseInfo = db.Purchases.Where(p => p.PurchaseId == model.PurchaseId).FirstOrDefault();
                 if (purchaseInfo == null)
@@ -179,7 +195,7 @@ namespace DrCleanCare.Controllers.Admin
                 purchaseInfo.PurchaseDate = DateTime.ParseExact(model.PurchaseDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 purchaseInfo.PurchaseDate += new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                 purchaseInfo.Description = model.Description;
-                purchaseInfo.Amount = model.Amount;
+                purchaseInfo.Amount = amount;
 
                 db.SaveChanges();
 
@@ -235,7 +251,7 @@ namespace DrCleanCare.Controllers.Admin
             }
         }
 
-       
-        
+
+
     }
 }

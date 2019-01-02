@@ -289,13 +289,21 @@ namespace DrCleanCare.Controllers.Admin
                         foreach (var details in model.OrderDetails)
                         {
                             var line = new OrderDetails();
+                            var quantity = (decimal)0;
+                            var unitPriceBT = (decimal)0;
+                            var unitPrice = (decimal)0;
+                            // parse SO lines
+                            decimal.TryParse(details.Quantity, out quantity);
+                            decimal.TryParse(details.UnitPriceBT, out unitPriceBT);
+                            decimal.TryParse(details.UnitPrice, out unitPrice);
+
                             line.OrderId = 0;
                             line.ProductId = details.ProductId;
                             line.ProductName = details.ProductName;
                             line.StockId = details.StockId;
-                            line.Quantity = (int)details.Quantity;
-                            line.UnitPriceBT = details.UnitPriceBT;
-                            line.UnitPrice = details.UnitPrice;
+                            line.Quantity = (int)quantity;
+                            line.UnitPriceBT = unitPriceBT;
+                            line.UnitPrice = unitPrice;
                             soLines.Add(line);
                         }
 
@@ -430,9 +438,9 @@ namespace DrCleanCare.Controllers.Admin
                         line.ProductName = item.ProductName;
                         line.StockId = item.StockId;
                         line.StockName = item.StockName;
-                        line.Quantity = item.Quantity;
-                        line.UnitPriceBT = item.UnitPriceBT;
-                        line.UnitPrice = item.UnitPrice;
+                        line.Quantity = item.Quantity.ToString();
+                        line.UnitPriceBT = item.UnitPriceBT.ToString();
+                        line.UnitPrice = item.UnitPrice.ToString();
                         model.OrderDetails.Add(line);
                     }
                 }
@@ -527,13 +535,21 @@ namespace DrCleanCare.Controllers.Admin
                             foreach (var item in model.OrderDetails)
                             {
                                 var details = new OrderDetails();
+                                var quantity = (decimal)0;
+                                var unitPriceBT = (decimal)0;
+                                var unitPrice = (decimal)0;
+                                // parse SO lines
+                                decimal.TryParse(item.Quantity, out quantity);
+                                decimal.TryParse(item.UnitPriceBT, out unitPriceBT);
+                                decimal.TryParse(item.UnitPrice, out unitPrice);
+
                                 details.OrderId = header.OrderId;
                                 details.ProductId = item.ProductId;
                                 details.ProductName = item.ProductName;
                                 details.StockId = item.StockId;
-                                details.Quantity = (int)item.Quantity;
-                                details.UnitPriceBT = item.UnitPriceBT;
-                                details.UnitPrice = item.UnitPrice;
+                                details.Quantity = (int)quantity;
+                                details.UnitPriceBT = unitPriceBT;
+                                details.UnitPrice = unitPrice;
                                 newLines.Add(details);
                             }
 
@@ -788,9 +804,9 @@ namespace DrCleanCare.Controllers.Admin
                         line.ProductName = item.ProductName;
                         line.StockId = item.StockId;
                         line.StockName = item.StockName;
-                        line.Quantity = item.Quantity;
-                        line.UnitPrice = item.UnitPrice;
-                        line.UnitPriceBT = item.UnitPriceBT;
+                        line.Quantity = item.Quantity.ToString("#,##0");
+                        line.UnitPrice = item.UnitPrice.ToString("#,##0");
+                        line.UnitPriceBT = item.UnitPriceBT.ToString("#,##0");
                         model.OrderDetails.Add(line);
                     }
 
