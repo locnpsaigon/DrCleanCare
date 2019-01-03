@@ -176,7 +176,7 @@
                                         decimal.TryParse(Model.OrderDetails[i].UnitPriceBT, out unitPriceBT);
                                         decimal.TryParse(Model.OrderDetails[i].UnitPrice, out unitPrice);
 
-                                        var soLineTotal = quantity * unitPrice;
+                                        var soLineTotal = quantity * unitPriceBT;
                                         soAmountBT += quantity * unitPriceBT;
                                         soVAT += quantity * (unitPrice - unitPriceBT);
                                         soGrandTotal += quantity * unitPriceBT;
@@ -184,13 +184,13 @@
 
                                         <div style="display:table-row;" class="tbl-so-line">
                                             <div style="display:table-cell; padding:2px; width:100%;">
-                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class= "product-id" })
-                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name", @readonly="readonly" , @style = "min-width:140px;" })
+                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class= "product-id-input" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name-input", @readonly="readonly" , @style = "min-width:140px;" })
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].ProductId, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px;">
-                                                @Html.HiddenFor(model => model.OrderDetails[i].StockId, new { @class = "product-id" })
-                                                @Html.TextBoxFor(model => model.OrderDetails[i].StockName, new { @class = "form-control stock-name", @readonly = "readonly", @style = "margin-left:4px; width:140px;" })
+                                                @Html.HiddenFor(model => model.OrderDetails[i].StockId, new { @class = "stock-id-input" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].StockName, new { @class = "form-control stock-name-input", @readonly = "readonly", @style = "margin-left:4px; width:140px;" })
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].StockId, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px;">
@@ -198,15 +198,15 @@
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].Quantity, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px;">
-                                                @Html.TextBoxFor(model => model.OrderDetails[i].UnitPriceBT, new { Value = Model.OrderDetails[i].UnitPriceBT.ToString("#,##0.##"), @class = "form-control text-right price-input unit-price-bt", @placeholder = "Đơn giá", @type = "text", @style = "margin-left:4px; width:115px;" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].UnitPriceBT, new { Value = unitPriceBT.ToString("#,##0.##"), @class = "form-control text-right unit-price-bt-input unit-price-bt", @placeholder = "Đơn giá", @type = "text", @style = "margin-left:4px; width:115px;" })
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].UnitPriceBT, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px;">
-                                                @Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, "", new { Value = Model.OrderDetails[i].UnitPrice.ToString("#,##0.##"), @class = "form-control text-right price-input unit-price", @placeholder = "Giảm giá", @type = "text", @style = "margin-left:4px; width:115px;" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].UnitPrice, "", new { Value = unitPrice.ToString("#,##0.##"), @class = "form-control text-right unit-price-input unit-price", @placeholder = "Giảm giá", @type = "text", @style = "margin-left:4px; width:115px;" })
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].UnitPrice, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px;">
-                                                <input class="form-control valid text-right line-amount"
+                                                <input class="form-control valid text-right line-amount-input"
                                                        id="@string.Format("OrderDetails_{0}__Amount", i)"
                                                        name="@string.Format("OrderDetails[{0}].Amount", i)"
                                                        readonly="readonly" style="margin-left:4px; width:115px;" type="text" value="@soLineTotal.ToString("#,##0.##")">
@@ -232,7 +232,7 @@
                                             Cộng tiền hàng:
                                         </div>
                                         <div style="display:table-cell; padding:2px;">
-                                            <input class="form-control valid text-right" id="TotalAmount" name="TotalAmount" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soAmountBT.ToString("#,##0.##")">
+                                            <input class="form-control total-amount-bt-input valid text-right" id="TotalAmount" name="TotalAmount" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soAmountBT.ToString("#,##0.##")">
                                         </div>
                                     </div>
                                     <div style="display:table-row">
@@ -240,7 +240,7 @@
                                             Tiền thuế GTGT:
                                         </div>
                                         <div style="display:table-cell; padding:2px;">
-                                            <input class="form-control valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
+                                            <input class="form-control total-amount-vat-input valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
                                         </div>
                                     </div>
                                     <div style="display:table-row">
@@ -248,7 +248,7 @@
                                             Tổng tiền thanh toán:
                                         </div>
                                         <div style="display:table-cell; padding:2px;">
-                                            <input class="form-control valid text-right" id="GrandTotal" name="GrandTotal" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soGrandTotal.ToString("#,##0.##")">
+                                            <input class="form-control total-amount-input valid text-right" id="GrandTotal" name="GrandTotal" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soGrandTotal.ToString("#,##0.##")">
                                         </div>
                                     </div>
                                 </div>
@@ -308,44 +308,62 @@
             $("#tbl-so").on("focus", ".quantity-input", function () {
                 $(this).number(true, 0);
             });
-            $("#tbl-so").on("focus", ".price-input", function () {
+            $("#tbl-so").on("focus", ".unit-price-input", function () {
                 $(this).number(true, 0);
             });
-            $("#tbl-so").on("focus", ".line-amount", function () {
+            $("#tbl-so").on("focus", ".unit-price-bt-input", function () {
                 $(this).number(true, 0);
             });
-            $("#tbl-so").on("input", ".quantity", function () {
-                updateGrandTotal();
+            $("#tbl-so").on("focus", ".line-amount-input", function () {
+                $(this).number(true, 0);
             });
-            $("#tbl-so").on("input", ".unit-price-bt", function () {
-                updateGrandTotal();
+            $("#tbl-so").on("change paste keyup", ".quantity-input", function () {
+                var soline = $(this).parent().parent();
+                updateLineTotal(soline);
             });
-            $("#tbl-so").on("input", ".unit-price", function () {
-                updateGrandTotal();
+            $("#tbl-so").on("change paste keyup", ".unit-price-bt-input", function () {
+                var soline = $(this).parent().parent();
+                updateLineTotal(soline);
             });
-            $("#tbl-so").on("change", ".select-product", function () {
+            $("#tbl-so").on("change paste keyup", ".unit-price-input", function () {
+                var soline = $(this).parent().parent();
+                updateLineTotal(soline);
+            });
+            $("#tbl-so").on("change", ".select-product-input", function () {
                 var productId = $(this).val();
                 var soline = $(this).parent().parent();
                 $.each(g_products, function (index, element) {
                     if (element.ProductId == productId) {
-                        soline.find(".product-id").attr("value", element.ProductId)
-                        soline.find(".product-name").attr("value", element.ProductName)
-                        soline.find(".unit-price-bt").attr("value", element.PriceBT);
-                        soline.find(".unit-price-bt").number(true, 0);
-                        soline.find(".unit-price").attr("value", element.Price);
-                        soline.find(".unit-price").number(true, 0);
-                        updateGrandTotal();
+                        var product_id_input = soline.find(".product-id-input");
+                        var product_name_input = soline.find(".product-name-input");
+                        var quantity_input = soline.find(".quantity-input");
+                        var price_bt_input = soline.find(".unit-price-bt-input");
+                        var price_input = soline.find(".unit-price-input");
+
+                        // register events
+                        quantity_input.number(true, 0);
+                        price_bt_input.number(true, 0);
+                        price_input.number(true, 0);
+
+                        // assign value
+                        product_id_input.val(element.ProductId);
+                        product_name_input.val(element.ProductName);
+                        quantity_input.val("1");
+                        price_bt_input.val(element.PriceBT);
+                        price_input.val(element.Price);
+
+                        // update SO amount total
+                        updateLineTotal(soline);
                     }
                 });
             });
-            $("#tbl-so").on("change", ".select-stock", function () {
+            $("#tbl-so").on("change", ".select-stock-input", function () {
                 var stockId = $(this).val();
                 var soline = $(this).parent().parent();
                 $.each(g_stocks, function (index, element) {
                     if (element.StockId == stockId) {
-                        soline.find(".stock-id").attr("value", element.StockId)
-                        soline.find(".stock-name").attr("value", element.StockName)
-                        updateGrandTotal();
+                        soline.find(".stock-id-input").attr("value", element.StockId)
+                        soline.find(".stock-name-input").attr("value", element.StockName)
                     }
                 });
             });
@@ -382,17 +400,6 @@
             });
         }
 
-        function generateProductsSelect(products) {
-            var html = "";
-            html += "   <select class='form-control valid select-product' data-live-search='true' style='min-width:140px;'>";
-            html += "       <option>--Sản phẩm--</option>";
-            $.each(products, function (index, element) {
-                html += "       <option value='" + element.ProductId + "'>" + element.ProductName + "</option>";
-            });
-            html += "   </select>";
-            return html;
-        }
-
         function getStocks() {
             // get stocks
             $.ajax({
@@ -413,9 +420,20 @@
             });
         }
 
+        function generateProductsSelect(products) {
+            var html = "";
+            html += "   <select class='form-control valid select-product-input' data-live-search='true' style='min-width:140px;'>";
+            html += "       <option>--Sản phẩm--</option>";
+            $.each(products, function (index, element) {
+                html += "       <option value='" + element.ProductId + "'>" + element.ProductName + "</option>";
+            });
+            html += "   </select>";
+            return html;
+        }
+
         function generateStocksSelect(stocks) {
             var html = "";
-            html += "   <select class='form-control valid select-stock' data-live-search='true' style='margin-left:4px; width:140px;'>";
+            html += "   <select class='form-control valid select-stock-input' data-live-search='true' style='margin-left:4px; width:140px;'>";
             html += "       <option>--Kho--</option>";
             $.each(stocks, function (index, element) {
                 html += "       <option value='" + element.StockId + "'>" + element.StockName + "</option>";
@@ -428,30 +446,30 @@
             var row_count = $("#tbl-so > .tbl-so-line").length;
             var row_html = "";
             row_html += "<div style='display:table-row' class='tbl-so-line'>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;' width:100%;>";
-            row_html += "       <input data-val='true' class='product-id' data-val-required='?' id='OrderDetails_" + row_count + " __ProductId' name='OrderDetails[" + row_count + "].ProductId' type='hidden'>"
-            row_html += "       <input data-val='true' class='product-name' data-val-required='?' id='OrderDetails_" + row_count + " __ProductName' name='OrderDetails[" + row_count + "].ProductName' type='hidden'>"
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top; width:100%;'>";
+            row_html += "       <input data-val='true' class='product-id-input' data-val-required='?' id='OrderDetails_" + row_count + " __ProductId' name='OrderDetails[" + row_count + "].ProductId' type='hidden'>"
+            row_html += "       <input data-val='true' class='product-name-input' data-val-required='?' id='OrderDetails_" + row_count + " __ProductName' name='OrderDetails[" + row_count + "].ProductName' type='hidden'>"
             row_html += generateProductsSelect(g_products);
             row_html += "   </div>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input data-val='true' class='stock-id' data-val-required='?' id='OrderDetails_" + row_count + " __StockId' name='OrderDetails[" + row_count + "].StockId' type='hidden'>"
-            row_html += "       <input data-val='true' class='stock-name' data-val-required='?' id='OrderDetails_" + row_count + " __StockName' name='OrderDetails[" + row_count + "].StockName' type='hidden'>"
+            row_html += "       <input data-val='true' class='stock-id-input' data-val-required='?' id='OrderDetails_" + row_count + " __StockId' name='OrderDetails[" + row_count + "].StockId' type='hidden'>"
+            row_html += "       <input data-val='true' class='stock-name-input' data-val-required='?' id='OrderDetails_" + row_count + " __StockName' name='OrderDetails[" + row_count + "].StockName' type='hidden'>"
             row_html += generateStocksSelect(g_stocks);
             row_html += "   </div>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control text-center quantity-input quantity' data-val='true' data-val-number='The field Quantity must be a number.' data-val-required='The Quantity field is required.' id='OrderDetails_" + row_count + "__Quantity' name='OrderDetails[" + row_count + "].Quantity' placeholder='Số lượng' style='margin-left:4px; width:75px;' type='text' value='1'>";
+            row_html += "       <input class='form-control text-center quantity-input' data-val='true' data-val-number='The field Quantity must be a number.' data-val-required='The Quantity field is required.' id='OrderDetails_" + row_count + "__Quantity' name='OrderDetails[" + row_count + "].Quantity' placeholder='Số lượng' style='margin-left:4px; width:75px;' type='text' value='1'>";
             row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].Quantity' data-valmsg-replace='true'></span>";
             row_html += "   </div>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control text-right price-input unit-price-bt' data-val='true' data-val-number='The field UnitPriceBT must be a number.' data-val-required='The UnitPriceBT field is required.' id='OrderDetails_" + row_count + "__UnitPriceBT' name='OrderDetails[" + row_count + "].UnitPriceBT' placeholder='Giá trước thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <input class='form-control text-right unit-price-bt-input' data-val='true' data-val-number='The field UnitPriceBT must be a number.' data-val-required='The UnitPriceBT field is required.' id='OrderDetails_" + row_count + "__UnitPriceBT' name='OrderDetails[" + row_count + "].UnitPriceBT' placeholder='Giá trước thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
             row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].UnitPriceBT' data-valmsg-replace='true'></span>";
             row_html += "   </div>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control text-right price-input unit-price' data-val='true' data-val-number='The field UnitPrice must be a number.' data-val-required='The UnitPrice field is required.' id='OrderDetails_" + row_count + "__UnitPrice' name='OrderDetails[" + row_count + "].UnitPrice' placeholder='Giá sau thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <input class='form-control text-right unit-price-input' data-val='true' data-val-number='The field UnitPrice must be a number.' data-val-required='The UnitPrice field is required.' id='OrderDetails_" + row_count + "__UnitPrice' name='OrderDetails[" + row_count + "].UnitPrice' placeholder='Giá sau thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
             row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].UnitPrice' data-valmsg-replace='true'></span>";
             row_html += "   </div>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control valid text-right line-amount' id='OrderDetails_" + row_count + "__Amount' name='OrderDetails[" + row_count + "].Amount' readonly='readonly' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <input class='form-control valid text-right line-amount-input' id='OrderDetails_" + row_count + "__Amount' name='OrderDetails[" + row_count + "].Amount' readonly='readonly' style='margin-left:2px; width:115px;' type='text' value='0'>";
             row_html += "   </div>";
             row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;' class='text-center'>";
             row_html += "       <a href='#' class='btn btn-danger btn-sm btn-remove-line' style='margin-left:4px; width:40px;'>-</a>";
@@ -486,31 +504,94 @@
             });
         }
 
+        function updateLineTotal(soline) {
+
+            // update line total
+            var product_select = soline.find(".select-product-input");
+            var product_id_input = soline.find(".product-id-input");
+            var product_name_input = soline.find(".product-name-input");
+            var quantity_input = soline.find(".quantity-input");
+            var unit_price_bt_input = soline.find(".unit-price-bt-input");
+            var unit_price_input = soline.find(".unit-price-input");
+            var line_amount_input = soline.find(".line-amount-input");
+
+            // register events
+            quantity_input.number(true, 0);
+            unit_price_bt_input.number(true, 0);
+            unit_price_input.number(true, 0);
+            line_amount_input.number(true, 0);
+
+            var quantity = parseFloat(quantity_input.val().replace(/,/g, ''));
+            var unitPriceBT = parseFloat(unit_price_bt_input.val().replace(/,/g, ''));
+            var unitPrice = parseFloat(unit_price_input.val().replace(/,/g, ''));
+            var lineAmountBT = quantity * unitPriceBT;
+            var lineAmount = quantity * unitPrice;
+
+            // validate values
+            if (quantity == 'NaN') {
+                quantity = 1;
+            }
+            if (unitPriceBT == 'NaN') {
+                unitPriceBT = 0;
+            }
+            if (unitPrice == 'NaN') {
+                unitPrice = 0;
+            }
+
+            // logs
+            //console.log(
+            //    "  product = " + product_name_input.val() +
+            //    ", quantity = " + quantity +
+            //    ", Price = " + unitPriceBT +
+            //    ", total = " + lineAmountBT)
+
+            // set line total 
+            quantity_input.val(quantity);
+            unit_price_bt_input.val(unitPriceBT);
+            unit_price_input.val(unitPrice);
+            line_amount_input.val(lineAmountBT);
+
+            // update grand total
+            updateGrandTotal();
+        }
+
         function updateGrandTotal() {
+            var totalAmountBT = 0;
+            var totalAmountVAT = 0;
             var totalAmount = 0;
-            var totalVAT = 0;
-            var grandTotal = 0;
+
+            var total_amount_bt_input = $(".total-amount-bt-input");
+            var total_amount_vat_input = $(".total-amount-vat-input");
+            var total_amount_input = $(".total-amount-input");
+
+            total_amount_bt_input.number(true, 0);
+            total_amount_vat_input.number(true, 0);
+            total_amount_input.number(true, 0);
+
             // scan so lines 
             $(".tbl-so-line").each(function () {
-                var quantity = parseFloat($(this).find(".quantity").val().replace(',', ''));
-                var priceBT = parseFloat($(this).find(".unit-price-bt").val().replace(',', ''));
-                var price = parseFloat($(this).find(".unit-price").val().replace(',', ''));
+                var soline = $(this);
+                var quantity_input = soline.find(".quantity-input");
+                var unit_price_bt_input = soline.find(".unit-price-bt-input");
+                var unit_price_input = soline.find(".unit-price-input");
+                var line_amount_input = soline.find(".line-amount-input");
 
-                totalAmount += quantity * priceBT;
-                totalVAT += quantity * (price - priceBT);
+                var quantity = parseFloat(quantity_input.val().replace(/,/g, ''));
+                var unitPriceBT = parseFloat(unit_price_bt_input.val().replace(/,/g, ''));
+                var unitPrice = parseFloat(unit_price_input.val().replace(/,/g, ''));
+                var lineAmountBT = quantity * unitPriceBT;
+                var lineAmount = quantity * unitPrice;
 
-                $(this).find(".line-amount").attr("value", (quantity * priceBT).toFixed(2));
-                $(this).find(".line-amount").number(true, 0);
+                console.log("quantity:" + quantity + " ,price:" + unitPriceBT + " ,line total:" + lineAmountBT);
+
+                totalAmountBT += lineAmountBT;
+                totalAmountVAT += quantity * (unitPrice - unitPriceBT);
+                totalAmount += lineAmount;
             });
 
-            grandTotal = totalAmount + totalVAT;
-
-            $("#TotalAmount").attr("value", totalAmount);
-            $("#TotalAmount").number(true, 0);
-            $("#TotalVAT").attr("value", totalVAT);
-            $("#TotalVAT").number(true, 0);
-            $("#GrandTotal").attr("value", grandTotal);
-            $("#GrandTotal").number(true, 0);
+            total_amount_bt_input.val(totalAmountBT);
+            total_amount_vat_input.val(totalAmountVAT);
+            total_amount_input.val(totalAmount);
         };
 
     </script>
