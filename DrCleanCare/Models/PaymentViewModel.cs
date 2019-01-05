@@ -22,15 +22,15 @@ namespace DrCleanCare.Models
 
         public string Email { get; set; }
 
-        public decimal AmountBT { get; set; }
+        public string AmountBT { get; set; }
         
-        public decimal VAT { get; set; }
+        public string VAT { get; set; }
 
-        public decimal PaidAmount { get; set; }
+        public string PaidAmount { get; set; }
 
-        public decimal DebtAmount { get; set; }
+        public string DebtAmount { get; set; }
         
-        public decimal GrandTotal { get; set; }
+        public string GrandTotal { get; set; }
 
         [Required(ErrorMessage="Nhập ngày thanh toán")]
         public string PaymentDate { get; set; }
@@ -41,10 +41,16 @@ namespace DrCleanCare.Models
         public SelectList PaymentTypeOptions { get; set; }
 
         [Required(ErrorMessage="Nhập số tiền thanh toán")]
-        public decimal PaymentAmount { get; set; }
+        [RegularExpression(@"^\d+(,\d{3}){0,}(.\d+){0,1}$", ErrorMessage = "Số tiền thanh toán không hợp lệ!")]
+        public string PaymentAmount { get; set; }
         
         public string Description { get; set; }
 
         public List<PaymentHistoryResult> PaymentHistory { get; set; }
+
+        public AddPaymentViewModel()
+        {
+            PaymentHistory = new List<PaymentHistoryResult>();
+        }
     }
 }

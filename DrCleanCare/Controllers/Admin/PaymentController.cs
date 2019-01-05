@@ -49,15 +49,21 @@ namespace DrCleanCare.Controllers.Admin
 
                 // get order details to calculate order amount
                 var orderDetails = db.OrderDetails.Where(p => p.OrderId == soInfo.OrderId).ToList();
-                model.AmountBT = 0;
-                model.VAT = 0;
-                model.GrandTotal = 0;
+                model.AmountBT = "0";
+                model.VAT = "0";
+                model.GrandTotal = "0";
+                var totalAmountBT = (decimal)0;
+                var totalVAT = (decimal)0;
+                var grandTotal = (decimal)0;
                 foreach (var item in orderDetails)
                 {
-                    model.AmountBT += item.Quantity * item.UnitPriceBT;
-                    model.VAT += item.Quantity * (item.UnitPrice - item.UnitPriceBT);
-                    model.GrandTotal += item.Quantity * item.UnitPrice;
+                    totalAmountBT += item.Quantity * item.UnitPriceBT;
+                    totalVAT += item.Quantity * (item.UnitPrice - item.UnitPriceBT);
+                    grandTotal += item.Quantity * item.UnitPrice;
                 }
+                model.AmountBT = totalAmountBT.ToString("#,##0");
+                model.VAT = totalVAT.ToString("#,##0");
+                model.GrandTotal = grandTotal.ToString("#,##0");
                 
                 // get payment history
                 var payments = db.Payments.Where(p => p.OrderID == soInfo.OrderId);
@@ -77,15 +83,15 @@ namespace DrCleanCare.Controllers.Admin
                     .OrderByDescending(h => h.PaymentDate)
                     .ToList();
                 model.PaymentHistory = paymentHistory;
-                
-                model.PaidAmount = 0;
+                var paidAmount = (decimal)0;
                 foreach (var item in model.PaymentHistory)
                 {
-                    model.PaidAmount += item.PaymentAmount;
+                    paidAmount += item.PaymentAmount;
                 }
 
-                // calculate debt amount
-                model.DebtAmount = model.GrandTotal - model.PaidAmount;
+                // calculate debt 
+                var debtAmount = grandTotal - paidAmount;
+                model.DebtAmount = debtAmount.ToString("#,##0");
 
                 // set default payment amount equals to debt amount
                 model.PaymentAmount = model.DebtAmount; 
@@ -120,14 +126,18 @@ namespace DrCleanCare.Controllers.Admin
                     ModelState.AddModelError(string.Empty, "Thông tin thanh toán không hợp lệ!");
                     return View(model);
                 }
-
                 Payment paymentInfo = new Payment();
                 paymentInfo.OrderID = model.OrderID;
-
                 paymentInfo.PaymentDate = DateTime.ParseExact(model.PaymentDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 paymentInfo.PaymentDate += new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                 paymentInfo.PaymentTypeId = model.PaymentType;
-                paymentInfo.PaymentAmount = model.PaymentAmount;
+                var paymentAmount = (decimal)0;
+                if (!decimal.TryParse(model.PaymentAmount, out paymentAmount))
+                {
+                    ModelState.AddModelError(string.Empty, "Số tiền thanh toán không hợp lệ!");
+                    return View(model);
+                }
+                paymentInfo.PaymentAmount = paymentAmount;
                 paymentInfo.Description = model.Description;
 
                 db.Payments.Add(paymentInfo);
