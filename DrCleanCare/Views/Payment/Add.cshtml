@@ -61,19 +61,19 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label text-nowrap">Tổng tiền</label>
                                     <div class="col-sm-9">
-                                        @Html.TextBox("GrandTotal", Model.GrandTotal.ToString("#,##0.##"), new { @class = "form-control text-right", @readonly = "readonly", @type = "text", @style = "font-weight:bold;" })
+                                        @Html.TextBox("GrandTotal", Model.GrandTotal, new { @class = "form-control text-right", @readonly = "readonly", @type = "text", @style = "font-weight:bold;" })
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label text-nowrap">Đã thanh toán</label>
                                     <div class="col-sm-9">
-                                        @Html.TextBox("PaidAmount", Model.PaidAmount.ToString("#,##0.##"), new { @class = "form-control text-right", @readonly = "readonly", @type = "text", @style = "color:#428bca; font-weight:bold;" })
+                                        @Html.TextBox("PaidAmount", Model.PaidAmount, new { @class = "form-control text-right", @readonly = "readonly", @type = "text", @style = "color:#428bca; font-weight:bold;" })
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label text-nowrap">Còn lại</label>
                                     <div class="col-sm-9">
-                                        @Html.TextBox("DebtAmount", Model.DebtAmount.ToString("#,##0.##"), new { @class = "form-control text-right", @readonly = "readonly", @type = "text", @style = "color:#d9534f; font-weight:bold;" })
+                                        @Html.TextBox("DebtAmount", Model.DebtAmount, new { @class = "form-control text-right", @readonly = "readonly", @type = "text", @style = "color:#d9534f; font-weight:bold;" })
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -202,7 +202,7 @@
             $('#PaymentDate').datepicker('update');
 
             // setup money input
-            $("#PaymentAmount").focus(function () { $(this).number(true, 2); });
+            $("#PaymentAmount").focus(function () { $(this).number(true, 0); });
             $("#PaymentAmount").focus();
         });
 

@@ -27,6 +27,7 @@ namespace DrCleanCare.Models
         /// </summary>
         public AddSOViewModel()
         {
+            this.ShippingCost = "0";
             this.OrderDetails = new List<AddSOLineViewModel>();
         }
 
@@ -83,6 +84,8 @@ namespace DrCleanCare.Models
 
         public string ShipAddress { get; set; }
 
+        [Required(ErrorMessage = "Vui lòng nhập chi phí vận chuyển")]
+        public string ShippingCost { get; set; }
 
         public string DeliveryName { get; set; }
 
@@ -159,7 +162,8 @@ namespace DrCleanCare.Models
 
         public string ShipAddress { get; set; }
 
-
+        public string ShippingCost { get; set; }
+        
         public string DeliveryName { get; set; }
 
 

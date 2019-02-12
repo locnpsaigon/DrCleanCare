@@ -135,6 +135,13 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Phí giao hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.ShippingCost, new { @class = "form-control shipping-cost-input", @placeholder = "Phí giao hàng", @type = "text", @style = "margin-left: 4px; width:148px;" })
+                                @Html.ValidationMessageFor(model => model.ShippingCost, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="control-label col-md-4 col-lg-3">Ghi chú</label>
                             <div class="col-sm-8 col-lg-9">
                                 @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @placeholder = "Ghi chú", @type = "text" })
@@ -304,7 +311,10 @@
             $("#ShippedDate").datepicker("setDate", new Date());
             $('#ShippedDate').on('changeDate', function (ev) { $(this).datepicker('hide') });
             $('#ShippedDate').datepicker('update');
-
+            $('#ShippingCost').number(true, 0);
+            $('#ShippingCost').on("input", function () {
+                //updateGrandTotal();
+            })
             $("#tbl-so").on("focus", ".quantity-input", function () {
                 $(this).number(true, 0);
             });
@@ -367,7 +377,6 @@
                     }
                 });
             });
-
             $("#btn-add-line").on('click', function () {
                 addLine();
                 updateGrandTotal();
@@ -563,10 +572,13 @@
             var total_amount_bt_input = $(".total-amount-bt-input");
             var total_amount_vat_input = $(".total-amount-vat-input");
             var total_amount_input = $(".total-amount-input");
+            var shipping_cost_input = $(".shipping-cost-input");
 
             total_amount_bt_input.number(true, 0);
             total_amount_vat_input.number(true, 0);
             total_amount_input.number(true, 0);
+
+            var shipping_cost = parseFloat(shipping_cost_input.val().replace(/,/g, ''));
 
             // scan so lines 
             $(".tbl-so-line").each(function () {
@@ -582,12 +594,13 @@
                 var lineAmountBT = quantity * unitPriceBT;
                 var lineAmount = quantity * unitPrice;
 
-                console.log("quantity:" + quantity + " ,price:" + unitPriceBT + " ,line total:" + lineAmountBT);
+                //console.log("quantity:" + quantity + " ,price:" + unitPriceBT + " ,line total:" + lineAmountBT);
 
                 totalAmountBT += lineAmountBT;
                 totalAmountVAT += quantity * (unitPrice - unitPriceBT);
                 totalAmount += lineAmount;
             });
+            // totalAmount += shipping_cost;
 
             total_amount_bt_input.val(totalAmountBT);
             total_amount_vat_input.val(totalAmountVAT);

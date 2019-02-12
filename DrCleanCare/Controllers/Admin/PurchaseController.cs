@@ -91,7 +91,7 @@ namespace DrCleanCare.Controllers.Admin
 
                 // get amount
                 var amount = (decimal)0;
-                if (!decimal.TryParse(model.Amount, out amount))
+                if (!decimal.TryParse(model.Amount.Replace(",", ""), out amount))
                 {
                     ModelState.AddModelError("", "Chi phí '" + model.Amount + "' không hợp lệ!");
                     return View(model);
@@ -176,7 +176,7 @@ namespace DrCleanCare.Controllers.Admin
 
                 // get amount
                 var amount = (decimal)0;
-                if (!decimal.TryParse(model.Amount, out amount))
+                if (!decimal.TryParse(model.Amount.Replace(",", ""), out amount))
                 {
                     ModelState.AddModelError("", "Chi phí '" + model.Amount + "' không hợp lệ!");
                     return View(model);

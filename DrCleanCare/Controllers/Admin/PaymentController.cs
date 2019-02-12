@@ -132,7 +132,7 @@ namespace DrCleanCare.Controllers.Admin
                 paymentInfo.PaymentDate += new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                 paymentInfo.PaymentTypeId = model.PaymentType;
                 var paymentAmount = (decimal)0;
-                if (!decimal.TryParse(model.PaymentAmount, out paymentAmount))
+                if (!decimal.TryParse(model.PaymentAmount.Replace(",", ""), out paymentAmount))
                 {
                     ModelState.AddModelError(string.Empty, "Số tiền thanh toán không hợp lệ!");
                     return View(model);
