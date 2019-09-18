@@ -7,6 +7,7 @@
     decimal amountBTTotal = 0;
     decimal vatTotal = 0;
     decimal grandTotal = 0;
+    decimal shippingCostTotal = 0;
     decimal paidTotal = 0;
     decimal debtTotal = 0;
 }
@@ -24,32 +25,18 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <div style="display:table;">
-                <div style="display: table-row;">
-                    <div style="display:table-cell;">
-                        Thời gian
-                    </div>
-                    <div style="display:table-cell;" class="form-inline">
-                        @Html.TextBox("date-from", ViewBag.DateFrom as string, new { @class = "form-control text-center", @placeholder = "Từ ngày", @type = "text", @style = "width:120px; margin-left:12px;" })
-                        @Html.TextBox("date-to", ViewBag.DateTo as string, new { @class = "form-control text-center", @placeholder = "Đến ngày", @type = "text", @style = "width:120px;" })
-                        <a href="/Order/Add" class="btn btn-warning" style="width:120px;">Tạo đơn hàng</a>
-                    </div>
-                </div>
-                <div style="display: table-row;">
-                    <div style="display:table-cell; padding-top:8px;">
-                        Từ khóa
-                    </div>
-                    <div style="display:table-cell; padding-top:8px;" class="form-inline">
-                        @Html.TextBox("keyword", ViewBag.Keyword as string, new { @class = "form-control", @placeholder = "Từ khóa tìm kiếm",  @type = "text", @style = "min-width: 245px; margin-left:12px;" })
-                        <input id="button-search" type="button" class="btn btn-success" onclick="doSearch()" value="Tra cứu" style="width:120px;" />
-                        <input id="button-search" type="button" class="btn btn-primary" onclick="exportExcel()" value="Xuất Excel" style="width:120px;" />
-                    </div>
-                </div>
+            <div class="top-nav">
+                @Html.TextBox("date-from", ViewBag.DateFrom as string, new { @class = "form-control text-center", @placeholder = "Từ ngày", @type = "text", @style = "width:100px; float:left;" })
+                @Html.TextBox("date-to", ViewBag.DateTo as string, new { @class = "form-control text-center", @placeholder = "Đến ngày", @type = "text", @style = "width:100px; margin-left:4px; float:left;" })
+                @Html.TextBox("keyword", ViewBag.Keyword as string, new { @class = "form-control", @placeholder = "Từ khóa tìm kiếm", @type = "text", @style = "width: 250px; margin-left:4px; float:left;" })
+                <input id="button-search" type="button" class="btn btn-default" onclick="doSearch()" value="Tra cứu" style="width:120px; margin-left:4px; float:left;" />
+                <div class="clearfix"></div>
             </div>
-        </div>
-    </div>
-    <div class="row" style="margin-top:24px;">
-        <div class="col-lg-12">
+            <div class="top-nav" style="margin-top: 16px;">
+                <a href="/Order/Add" class="btn btn-primary" style="width:36px; float:left;">+</a>
+                <input id="button-search" type="button" class="btn btn-default" onclick="exportExcel()" value="Xuất Excel" style="width:120px; margin-left:6px; float:left;" />
+                <div class="clearfix"></div>
+            </div>
             <table class="table table-hover table-bordered">
                 <tr class="alert-success">
                     <th class="text-nowrap text-center">STT</th>
@@ -57,9 +44,10 @@
                     <th class="text-nowrap">Số ĐH</th>
                     <th class="text-nowrap">Tên KH</th>
                     <th class="text-nowrap">HTTT</th>
-                    <th class="text-nowrap text-right">Tổng tiền</th>
-                    <th class="text-nowrap text-right">Thanh toán</th>
-                    <th class="text-nowrap text-right">Còn nợ</th>
+                    <th class="text-nowrap">Tổng tiền</th>
+                    <th class="text-nowrap">Phí VC</th>
+                    <th class="text-nowrap">Thanh toán</th>
+                    <th class="text-nowrap">Còn nợ</th>
                     <th></th>
                 </tr>
                 @{
@@ -70,6 +58,7 @@
                         amountBTTotal += so.AmountBT;
                         vatTotal += so.VAT;
                         grandTotal += so.GrandTotal;
+                        shippingCostTotal += so.ShippingCost;
                         paidTotal += so.PaidAmount;
                         debtTotal += so.DebtAmount;
 
@@ -80,6 +69,7 @@
                             <td>@so.CustomerName</td>
                             <td class="text-center text-nowrap">@so.PaymentTypeName</td>
                             <td class="text-right text-danger">@so.GrandTotal.ToString("#,##0.##")</td>
+                            <td class="text-right text-danger">@so.ShippingCost.ToString("#,##0.##")</td>
                             <td class="text-right text-success">@so.PaidAmount.ToString("#,##0.##")</td>
                             <td class="text-right text-warning">@so.DebtAmount.ToString("#,##0.##")</td>
                             <td class="text-nowrap">
@@ -107,6 +97,9 @@
                     <td class="text-danger text-right">
                         <strong>@grandTotal.ToString("#,##0.##")</strong>
                     </td>
+                    <td class="text-danger text-right">
+                        <strong>@shippingCostTotal.ToString("#,##0.##")</strong>
+                    </td>
                     <td class="text-success text-right">
                         <strong>@paidTotal.ToString("#,##0.##")</strong>
                     </td>
@@ -123,6 +116,11 @@
 @section Styles {
     <link href="~/Content/datepicker.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+    <style>
+        .top-nav {
+            margin: 6px 0px;
+        }
+    </style>
 }
 
 @section Scripts {

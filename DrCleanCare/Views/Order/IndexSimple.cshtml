@@ -11,34 +11,20 @@
             <h4 class="page-header form-title"><i class="fa fa-database"></i> @ViewBag.Title</h4>
         </div>
     </div>
-    <div class="row">
-        <div class="col-lg-12">
-            <div style="display:table;">
-                <div style="display: table-row;">
-                    <div style="display:table-cell;">
-                        Thời gian
-                    </div>
-                    <div style="display:table-cell;" class="form-inline">
-                        @Html.TextBox("date-from", ViewBag.DateFrom as string, new { @class = "form-control text-center", @placeholder = "Từ ngày", @type = "text", @style = "width:120px; margin-left:12px;" })
-                        @Html.TextBox("date-to", ViewBag.DateTo as string, new { @class = "form-control text-center", @placeholder = "Đến ngày", @type = "text", @style = "width:120px;" })
-                        <a href="/Order/Add" class="btn btn-warning" style="width:120px;">Tạo đơn hàng</a>
-                    </div>
-                </div>
-                <div style="display: table-row;">
-                    <div style="display:table-cell; padding-top:8px;">
-                        Từ khóa
-                    </div>
-                    <div style="display:table-cell; padding-top:8px;" class="form-inline">
-                        @Html.TextBox("keyword", ViewBag.Keyword as string, new { @class = "form-control", @placeholder = "Từ khóa tìm kiếm", @type = "text", @style = "min-width: 245px; margin-left:12px;" })
-                        <input id="button-search" type="button" class="btn btn-success" onclick="doSearch()" value="Tra cứu" style="width:120px;" />
-                        <input id="button-search" type="button" class="btn btn-primary" onclick="exportExcel()" value="Xuất Excel" style="width:120px;" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="row" style="margin-top:24px;">
         <div class="col-lg-12">
+            <div class="top-nav">
+                @Html.TextBox("date-from", ViewBag.DateFrom as string, new { @class = "form-control text-center", @placeholder = "Từ ngày", @type = "text", @style = "width:100px; float:left;" })
+                @Html.TextBox("date-to", ViewBag.DateTo as string, new { @class = "form-control text-center", @placeholder = "Đến ngày", @type = "text", @style = "width:100px; margin-left:4px; float:left;" })
+                @Html.TextBox("keyword", ViewBag.Keyword as string, new { @class = "form-control", @placeholder = "Từ khóa tìm kiếm", @type = "text", @style = "width: 250px; margin-left:4px; float:left;" })
+                <input id="button-search" type="button" class="btn btn-default" onclick="doSearch()" value="Tra cứu" style="width:120px; margin-left:4px; float:left;" />
+                <div class="clearfix"></div>
+            </div>
+            <div class="top-nav" style="margin-top: 16px;">
+                <a href="/Order/Add" class="btn btn-primary" style="width:36px; float:left;">+</a>
+                <input id="button-search" type="button" class="btn btn-default" onclick="exportExcel()" value="Xuất Excel" style="width:120px; margin-left:6px; float:left;" />
+                <div class="clearfix"></div>
+            </div>
             <table class="table table-hover table-bordered">
                 <tr class="alert-success">
                     <th class="text-center">STT</th>
@@ -62,7 +48,7 @@
                             <td>@so.CustomerName</td>
                             <td>@so.CustomerAddress</td>
                             <td>@so.Phone</td>
-                            <td class="text-center">@so.ShippedDate.ToString("dd-MM-yyyy")</td>
+                            <td class="text-center text-nowrap">@so.ShippedDate.ToString("dd-MM-yyyy")</td>
                         </tr>
                     }
                 }
@@ -74,6 +60,11 @@
 @section Styles {
     <link href="~/Content/datepicker.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
+    <style>
+        .top-nav {
+            margin: 6px 0px;
+        }
+    </style>
 }
 
 @section Scripts {

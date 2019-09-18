@@ -43,6 +43,8 @@ namespace DrCleanCare.DAL
 
         public decimal VAT { get; set; }
 
+        public decimal ShippingCost { get; set; }
+
         public decimal GrandTotal { get; set; }
 
         public decimal PaidAmount { get; set; }
