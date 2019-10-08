@@ -4,14 +4,14 @@
 
     // create years selected list
     List<SelectListItem> yearItems = new List<SelectListItem>();
-    for (int i = 0; i < 3; i++)
+    for (int year = DateTime.Now.Year; year >= 2015; year--)
     {
-        var text = (DateTime.Now.Year - i).ToString();
+        var text = year.ToString();
         yearItems.Add(new SelectListItem()
         {
-            Value = (DateTime.Now.Year - i).ToString(),
-            Text = (DateTime.Now.Year - i).ToString(),
-            Selected = (i == 0)
+            Value = year.ToString(),
+            Text = year.ToString(),
+            Selected = (year == DateTime.Now.Year)
         });
     }
 }
@@ -31,10 +31,10 @@
                     </div>
                     <div style="display:table-cell;">
                         @Html.DropDownList("ReportYear", yearItems, new
-                            {
-                                @class = "form-control text-center",
-                                @style = "width:115px; margin-left:8px;"
-                            })
+                   {
+                       @class = "form-control text-center",
+                       @style = "width:115px; margin-left:8px;"
+                   })
                     </div>
                 </div>
             </div>
