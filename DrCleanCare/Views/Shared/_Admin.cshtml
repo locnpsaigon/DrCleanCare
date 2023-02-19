@@ -40,17 +40,17 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         <!--
-                            <li class="sidebar-search">
-                                <div class="input-group custom-search-form">
-                                    <input type="text" class="form-control" placeholder="Search..">
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button">
-                                            <i class="fa fa-search"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </li>
-                        -->
+        <li class="sidebar-search">
+            <div class="input-group custom-search-form">
+                <input type="text" class="form-control" placeholder="Search..">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </li>
+    -->
                         <li id="menu-admin">
                             <a href="/Admin/"><i class="fa fa-home"></i><strong>&nbsp; Trang chủ</strong></a>
                         </li>
@@ -60,22 +60,20 @@
                                 @if (isAdmin)
                                 {
                                     <li><a href="/Order/Index">Danh sách đơn hàng</a></li>
+                                    <li><a href="/Customer/Index">Danh sách khách hàng</a></li>
+                                    <li><a href="/Purchase/Index">Danh sách chi phí</a></li>
+                                    <li><a href="/Payment/Unpaid">Danh sách công nợ</a></li>
                                 }
                                 else
                                 {
                                     <li><a href="/Order/IndexSimple">Danh sách đơn hàng</a></li>
-                                }
-
-                                @if (isAdmin)
-                                {
+                                    <li><a href="/Customer/IndexSimple">Danh sách khách hàng</a></li>
                                     <li><a href="/Purchase/Index">Danh sách chi phí</a></li>
                                     <li><a href="/Payment/Unpaid">Danh sách công nợ</a></li>
                                 }
-                                <li><a href="/Feedback/">Khách hàng liên hệ</a></li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-
                         <li id="menu-product">
                             <a href="#"><i class="fa fa-cubes fa-fw"></i><strong> Sản phẩm</strong><span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
@@ -123,6 +121,7 @@
                                     <li><a href="/Task/"> Danh sách đầu việc</a></li>
                                     <li><a href="/Employee/"> Danh sách nhân viên</a></li>
                                     <li><a href="/Task/Report"> Báo cáo công việc</a></li>
+                                    <li><a href="/Feedback/">Thông tin feedback</a></li>
                                 </ul>
                                 <!-- /.nav-second-level -->
                             </li>
@@ -136,36 +135,36 @@
                         }
 
                         @*
-                            <li>
-                                <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level">
-                                    <li>
-                                        <a href="#">Second Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Second Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level <span class="fa arrow"></span></a>
-                                        <ul class="nav nav-third-level">
-                                            <li>
-                                                <a href="#">Third Level Item</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Third Level Item</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Third Level Item</a>
-                                            </li>
-                                            <li>
-                                                <a href="#">Third Level Item</a>
-                                            </li>
-                                        </ul>
-                                        <!-- /.nav-third-level -->
-                                    </li>
-                                </ul>
-                                <!-- /.nav-second-level -->
-                            </li>*@
+        <li>
+            <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
+            <ul class="nav nav-second-level">
+                <li>
+                    <a href="#">Second Level Item</a>
+                </li>
+                <li>
+                    <a href="#">Second Level Item</a>
+                </li>
+                <li>
+                    <a href="#">Third Level <span class="fa arrow"></span></a>
+                    <ul class="nav nav-third-level">
+                        <li>
+                            <a href="#">Third Level Item</a>
+                        </li>
+                        <li>
+                            <a href="#">Third Level Item</a>
+                        </li>
+                        <li>
+                            <a href="#">Third Level Item</a>
+                        </li>
+                        <li>
+                            <a href="#">Third Level Item</a>
+                        </li>
+                    </ul>
+                    <!-- /.nav-third-level -->
+                </li>
+            </ul>
+            <!-- /.nav-second-level -->
+        </li>*@
 
                         <li id="menu-account">
                             <a href="#"><i class="fa fa-smile-o fa-fw"></i><strong> Cá nhân</strong><span class="fa arrow"></span></a>
