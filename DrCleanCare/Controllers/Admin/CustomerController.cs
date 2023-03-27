@@ -32,18 +32,18 @@ namespace DrCleanCare.Controllers.Admin
             /*
              * User access add customer form
              */
-
-            var model = new AddCustomerViewModel
-            {
-                FullName = "Nguyễn Lộc",
-                Address = "113 Trương Định, Quận 3",
-                Email = "abc@gmail.com",
-                Phone = "090927373",
-                Note = "Nhà có chó dữ",
-                ShippingAddress = "12 Tân Định",
-                ShippingContact = "A Cón",
-                TaxCode = "HCM45678654"
-            };
+            var model = new AddCustomerViewModel();
+            //var model = new AddCustomerViewModel
+            //{
+            //    FullName = "Nguyễn Lộc",
+            //    Address = "113 Trương Định, Quận 3",
+            //    Email = "abc@gmail.com",
+            //    Phone = "090927373",
+            //    Note = "Nhà có chó dữ",
+            //    ShippingAddress = "12 Tân Định",
+            //    ShippingContact = "A Cón",
+            //    TaxCode = "HCM45678654"
+            //};
 
             return View(model);
         }
@@ -218,9 +218,11 @@ namespace DrCleanCare.Controllers.Admin
             {
                 var customers = db.Customers
                     .AsEnumerable()
-                    .Where(x => x.FullName.Contains(searchText) || string.IsNullOrWhiteSpace(searchText))
-                    .OrderBy(x => x.FullName)
+                    .Where(x => 
+                        x.FullName.ConvertToUnSign().Contains(searchText.ConvertToUnSign()) || 
+                        string.IsNullOrWhiteSpace(searchText))
                     .ToList();
+
                 var pageHelper = new PagingHelper(customers, pageIndex, AppSettings.DEFAULT_PAGE_SIZE);
                 return Json(new
                 {

@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace DrCleanCare.Helpers
 {
@@ -69,6 +71,13 @@ namespace DrCleanCare.Helpers
             image.Save(filePath);
 
             return Path.GetFileName(filePath);
+        }
+
+        public static string ConvertToUnSign(string s)
+        {
+            Regex regex = new Regex("\\p{IsCombiningDiacriticalMarks}+");
+            string temp = s.Normalize(NormalizationForm.FormD);
+            return regex.Replace(temp, String.Empty).Replace('\u0111', 'd').Replace('\u0110', 'D');
         }
     }
 }

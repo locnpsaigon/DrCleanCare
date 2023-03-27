@@ -229,6 +229,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Common.cs" />
+    <Compile Include="Helpers\Extension.cs" />
     <Compile Include="Helpers\PagingHelper.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CustomerViewModel.cs" />

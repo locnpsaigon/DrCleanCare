@@ -36,26 +36,6 @@
     <!-- /.col-lg-12 -->
     <div class="row">
         <div class="col-sm-5">
-            <h4 class="category-header">Sản Phẩm</h4>
-            <div style="display:table">
-                <div style="display:table-row">
-                    <div style="display:table-cell">
-                        <img src="~/Content/Images/product.png" class="cat-icon" />
-                    </div>
-                    <div style="display:table-cell" class="category-list">
-                        <ul>
-                            <li><a href="/Product/">Danh mục Sản phẩm</a></li>
-                            <li><a href="/Category/">Danh mục Nhóm sản phẩm</a></li>
-                            @if (isAdmin)
-                            {
-                                <li><a href="/Stock/">Lịch sử nhập kho</a></li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-5">
             <h4 class="category-header">Kinh doanh</h4>
             <div style="display:table">
                 <div style="display:table-row">
@@ -67,15 +47,35 @@
                             @if (isAdmin)
                             {
                                 <li><a href="/Order/Index">Danh sách đơn hàng</a></li>
+                                <li><a href="/Product/">Danh mục Khách hàng</a></li>
+                                <li><a href="/Purchase/Index/">Danh mục Phiếu chi</a></li>
+                                <li><a href="/Payment/Unpaid/">Danh sách Công nợ</a></li>
                             }
                             else
                             {
                                 <li><a href="/Order/IndexSimple/">Danh sách đơn hàng</a></li>
+                                <li><a href="/Product/">Danh mục Khách hàng</a></li>
                             }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <h4 class="category-header">Sản Phẩm</h4>
+            <div style="display:table">
+                <div style="display:table-row">
+                    <div style="display:table-cell">
+                        <img src="~/Content/Images/product.png" class="cat-icon" />
+                    </div>
+                    <div style="display:table-cell" class="category-list">
+                        <ul>
+                            <li><a href="/Product/">Danh mục Sản phẩm</a></li>
+                            
+                            <li><a href="/Category/">Danh mục Nhóm sản phẩm</a></li>
                             @if (isAdmin)
                             {
-                                <li><a href="/Purchase/Index/">Danh mục chi phí</a></li>
-                                <li><a href="/Payment/Unpaid/">Nợ tồn đọng</a></li>
+                                <li><a href="/Stock/">Lịch sử nhập kho</a></li>
                             }
                         </ul>
                     </div>

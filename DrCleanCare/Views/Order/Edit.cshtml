@@ -561,10 +561,10 @@
             html += '        <tbody>\r\n';
             html += '            <tr class="alert-success">\r\n';
             html += '               <th class="text-nowrap text-center">STT</th>\r\n';
-            html += '                <th class="text-nowrap">Tên khách hàng</th>\r\n';
-            html += '                <th class="text-nowrap">Địa chỉ</th>\r\n';
-            html += '                <th class="text-nowrap">Điện thoại</th>\r\n';
-            html += '                <th class="text-nowrap">Thao tác</th>\r\n';
+            html += '                <th>Tên khách hàng</th>\r\n';
+            html += '                <th>Địa chỉ</th>\r\n';
+            html += '                <th>Điện thoại</th>\r\n';
+            html += '                <th>Thao tác</th>\r\n';
             html += '            </tr>\r\n';
             // create rows
             $.each(customers, function (index, element) {
@@ -577,7 +577,7 @@
                 if (!element.Displayed) statusText = '<span class="text-warning">Ẩn</span>';
                 html += '            <tr>\r\n';
                 html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
-                html += '                <td class="text-nowrap">' + element.FullName + '</td>\r\n';
+                html += '                <td>' + element.FullName + '</td>\r\n';
                 html += '                <td>' + element.Address + '</td>\r\n';
                 html += '                <td class="text-center">' + element.Phone + '</td>\r\n';
                 html += '                <td class="text-nowrap">\r\n';
