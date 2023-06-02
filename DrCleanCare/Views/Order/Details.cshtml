@@ -73,10 +73,6 @@
                             <td colspan="3">@Model.ShipName</td>
                         </tr>
                         <tr>
-                            <th>Phí giao hàng</th>
-                            <td colspan="3">@Model.ShippingCost</td>
-                        </tr>
-                        <tr>
                             <th>Ghi chú</th>
                             <td colspan="3">@Model.Notes</td>
                         </tr>
@@ -148,6 +144,22 @@
                             </div>
                             <div style="display:table-cell; padding:2px;">
                                 <input class="form-control valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
+                            </div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                Phí vận giao hàng:
+                            </div>
+                            <div style="display:table-cell; padding:2px;">
+                                <input class="form-control valid text-right" id="TotalVAT" name="ShippingCost" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@Model.ShippingCost">
+                            </div>
+                        </div>
+                        <div style="display:table-row">
+                            <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                Chiết khấu:
+                            </div>
+                            <div style="display:table-cell; padding:2px;">
+                                <input class="form-control valid text-right" id="TotalVAT" name="Discount" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@Model.Discount">
                             </div>
                         </div>
                         <div style="display:table-row">

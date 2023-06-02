@@ -38,12 +38,16 @@ namespace DrCleanCare.DAL
         public int? PaymentTypeId { get; set; }
 
         public String PaymentTypeName { get; set; }
-        
+
         public decimal AmountBT { get; set; }
+
+        public decimal Amount { get; set; }
 
         public decimal VAT { get; set; }
 
         public decimal ShippingCost { get; set; }
+
+        public decimal Discount { get; set; }
 
         public decimal GrandTotal { get; set; }
 

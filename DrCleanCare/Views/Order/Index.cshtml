@@ -8,6 +8,7 @@
     decimal vatTotal = 0;
     decimal grandTotal = 0;
     decimal shippingCostTotal = 0;
+    decimal discountTotal = 0;
     decimal paidTotal = 0;
     decimal debtTotal = 0;
 }
@@ -44,8 +45,11 @@
                     <th class="text-nowrap">Số ĐH</th>
                     <th class="text-nowrap">Tên KH</th>
                     <th class="text-nowrap">HTTT</th>
-                    <th class="text-nowrap">Tổng tiền</th>
+                    <th class="text-nowrap">Tiền hàng</th>
+                    <th class="text-nowrap">VAT</th>
                     <th class="text-nowrap">Phí VC</th>
+                    <th class="text-nowrap">Chiết khấu</th>
+                    <th class="text-nowrap">Tổng tiền</th>
                     <th class="text-nowrap">Thanh toán</th>
                     <th class="text-nowrap">Còn nợ</th>
                     <th></th>
@@ -59,35 +63,39 @@
                         vatTotal += so.VAT;
                         grandTotal += so.GrandTotal;
                         shippingCostTotal += so.ShippingCost;
+                        discountTotal += so.Discount;
                         paidTotal += so.PaidAmount;
                         debtTotal += so.DebtAmount;
 
-                        <tr>
-                            <td class="text-center text-nowrap">@count</td>
-                            <td class="text-center text-nowrap">@so.OrderDate.ToString("dd-MM-yyyy")</td>
-                            <td>@Html.ActionLink(@so.OrderNo, "Details", new { id = @so.OrderId })</td>
-                            <td>@so.CustomerName</td>
-                            <td class="text-center text-nowrap">@so.PaymentTypeName</td>
-                            <td class="text-right text-danger">@so.GrandTotal.ToString("#,##0.##")</td>
-                            <td class="text-right text-danger">@so.ShippingCost.ToString("#,##0.##")</td>
-                            <td class="text-right text-success">@so.PaidAmount.ToString("#,##0.##")</td>
-                            <td class="text-right text-warning">@so.DebtAmount.ToString("#,##0.##")</td>
-                            <td class="text-nowrap">
-                                @Html.ActionLink(
-                                    "Sửa",
-                                    "Edit",
-                                    new { id = so.OrderId },
-                                    new { @class = "btn btn-sm btn-primary" })
-                                <a href="#" class="btn btn-danger btn-sm"
-                                   onclick="return deleteSO(@so.OrderId, '@so.OrderNo')">Xóa</a>
-                                @Html.ActionLink(
-                                    "T.Toán",
-                                    "Add",
-                                    "Payment",
-                                    new { id = so.OrderId },
-                                    new { @class = "btn btn-success btn-sm" })
-                            </td>
-                        </tr>
+                                <tr>
+                                    <td class="text-center text-nowrap">@count</td>
+                                    <td class="text-center text-nowrap">@so.OrderDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@Html.ActionLink(@so.OrderNo, "Details", new { id = @so.OrderId })</td>
+                                    <td>@so.CustomerName</td>
+                                    <td class="text-center text-nowrap">@so.PaymentTypeName</td>
+                                    <td class="text-right text-danger">@so.AmountBT.ToString("#,##0.##")</td>
+                                    <td class="text-right text-danger">@so.VAT.ToString("#,##0.##")</td>
+                                    <td class="text-right text-danger">@so.ShippingCost.ToString("#,##0.##")</td>
+                                    <td class="text-right text-danger">@so.Discount.ToString("#,##0.##")</td>
+                                    <td class="text-right text-danger">@so.GrandTotal.ToString("#,##0.##")</td>
+                                    <td class="text-right text-success">@so.PaidAmount.ToString("#,##0.##")</td>
+                                    <td class="text-right text-warning">@so.DebtAmount.ToString("#,##0.##")</td>
+                                    <td class="text-nowrap">
+                                        @Html.ActionLink(
+                                            "Sửa",
+                                            "Edit",
+                                            new { id = so.OrderId },
+                                            new { @class = "btn btn-sm btn-primary" })
+                                        <a href="#" class="btn btn-danger btn-sm"
+                                           onclick="return deleteSO(@so.OrderId, '@so.OrderNo')">Xóa</a>
+                                        @Html.ActionLink(
+                                            "T.Toán",
+                                            "Add",
+                                            "Payment",
+                                            new { id = so.OrderId },
+                                            new { @class = "btn btn-success btn-sm" })
+                                    </td>
+                                </tr>
                     }
                 }
                 <tr>
