@@ -98,24 +98,33 @@
                                 </tr>
                     }
                 }
-                <tr>
-                    <td colspan="5" class="text-right">
-                        <span class="text-primary"><strong>Tổng cộng:</strong></span>
-                    </td>
-                    <td class="text-danger text-right">
-                        <strong>@grandTotal.ToString("#,##0.##")</strong>
-                    </td>
-                    <td class="text-danger text-right">
-                        <strong>@shippingCostTotal.ToString("#,##0.##")</strong>
-                    </td>
-                    <td class="text-success text-right">
-                        <strong>@paidTotal.ToString("#,##0.##")</strong>
-                    </td>
-                    <td class="text-warning text-right">
-                        <strong>@debtTotal.ToString("#,##0.##")</strong>
-                    </td>
-                    <td></td>
-                </tr>
+            <tr>
+                <td colspan="5" class="text-right">
+                    <span class="text-primary"><strong>Tổng cộng:</strong></span>
+                </td>
+                <td class="text-danger text-right">
+                    <strong>@amountBTTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td class="text-danger text-right">
+                    <strong>@vatTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td class="text-danger text-right">
+                    <strong>@shippingCostTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td class="text-danger text-right">
+                    <strong>@discountTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td class="text-danger text-right">
+                    <strong>@grandTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td class="text-success text-right">
+                    <strong>@paidTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td class="text-warning text-right">
+                    <strong>@debtTotal.ToString("#,##0.##")</strong>
+                </td>
+                <td></td>
+            </tr>
             </table>
         </div>
     </div>

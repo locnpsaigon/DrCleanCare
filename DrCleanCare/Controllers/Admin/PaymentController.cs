@@ -166,6 +166,8 @@ namespace DrCleanCare.Controllers.Admin
                 var model = db.Database.SqlQuery<ReportOrdersInDebtResult>(
                     "EXEC [dbo].[usp_getOrdersInDebt]");
 
+                var abc = model.ToList();
+
                 return View(model);
             }
             catch (ArgumentException ex)
