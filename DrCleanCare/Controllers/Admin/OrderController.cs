@@ -10,6 +10,7 @@ using DrCleanCare.Models;
 using DrCleanCare.DAL;
 using DrCleanCare.DAL.Security;
 using OfficeOpenXml;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -202,17 +203,17 @@ namespace DrCleanCare.Controllers.Admin
             var model = new AddSOViewModel();
 
             // fake data
-            model.OrderDate = DateTime.Now.ToString("dd/MM/yyyy");
-            model.OrderNo = "HD000000013";
-            model.OrderType = 2;
-            model.Phone = "0909841682";
-            model.CustomerName = "Nguyễn Phước Lộc";
-            model.CustomerAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
-            model.Email = "locnp.saigon@gmail.com";
-            model.TaxCode = "MST0000000012";
-            model.ShippedDate = DateTime.Now.ToString("dd/MM/yyyy");
-            model.ShipName = "A Lộc";
-            model.ShipAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
+            //model.OrderDate = DateTime.Now.ToString("dd/MM/yyyy");
+            //model.OrderNo = "HD000000013";
+            //model.OrderType = 2;
+            //model.Phone = "0909841682";
+            //model.CustomerName = "Nguyễn Phước Lộc";
+            //model.CustomerAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
+            //model.Email = "locnp.saigon@gmail.com";
+            //model.TaxCode = "MST0000000012";
+            //model.ShippedDate = DateTime.Now.ToString("dd/MM/yyyy");
+            //model.ShipName = "A Lộc";
+            //model.ShipAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
 
             // generate order types select list items
             var orderTypes = db.OrderTypes.OrderBy(ot => ot.OrderTypeName)
@@ -284,16 +285,13 @@ namespace DrCleanCare.Controllers.Admin
                         soHeader.PaymentTypeId = model.PaymentTypeId;
                         soHeader.DeliveryName = String.IsNullOrWhiteSpace(model.DeliveryName) ? null : model.DeliveryName.Trim();
                         soHeader.Notes = String.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-                        var shippingCost = (decimal)0;
-                        if (decimal.TryParse(model.ShippingCost.Replace(",", ""), out shippingCost))
+                        if (decimal.TryParse(model.ShippingCost.Replace(",", ""), out decimal shippingCost))
                         {
                             soHeader.ShippingCost = shippingCost;
                         }
-                        else
+                        if (decimal.TryParse(model.Discount.Replace(",", ""), out decimal discount))
                         {
-                            // Invalid shipping cost
-                            ModelState.AddModelError("", "Chi phí vận chuyển không hợp lệ!");
-                            return View(model);
+                            soHeader.Discount = discount;
                         }
 
                         // create so lines
@@ -425,6 +423,7 @@ namespace DrCleanCare.Controllers.Admin
                     model.DeliveryName = header.DeliveryName;
                     model.Notes = header.Notes;
                     model.ShippingCost = header.ShippingCost.ToString("#,##0");
+                    model.Discount = header.Discount.ToString("#,##0");
 
                     // get lines
                     var lines = (from t1 in db.OrderDetails
@@ -622,15 +621,13 @@ namespace DrCleanCare.Controllers.Admin
                                 header.PaymentTypeId = model.PaymentTypeId;
                                 header.DeliveryName = String.IsNullOrWhiteSpace(model.DeliveryName) ? null : model.DeliveryName.Trim();
                                 header.Notes = String.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim();
-                                var shippingCost = (decimal)0;
-                                if (decimal.TryParse(model.ShippingCost.Replace(",", ""), out shippingCost))
+                                if (decimal.TryParse(model.ShippingCost.Replace(",", ""), out decimal shippingCost))
                                 {
                                     header.ShippingCost = shippingCost;
                                 }
-                                else
+                                if (decimal.TryParse(model.Discount.Replace(",", ""), out decimal discount))
                                 {
-                                    ModelState.AddModelError("", "Chi phí vận chuyển không hợp lệ");
-                                    return View(model);
+                                    header.Discount = discount;
                                 }
 
                                 // remove current lines
@@ -769,6 +766,7 @@ namespace DrCleanCare.Controllers.Admin
                                     ShipAddress = t1.ShipAddress,
                                     ShippedDate = t1.ShippedDate,
                                     ShippingCost = t1.ShippingCost,
+                                    Discount = t1.Discount,
                                     Owner = t1.Owner,
                                     CreationDate = t1.CreationDate,
                                     EmployeeId = t1.EmployeeId,
@@ -795,6 +793,7 @@ namespace DrCleanCare.Controllers.Admin
                     model.ShipName = soHeader.ShipName;
                     model.ShippedDate = soHeader.ShippedDate.ToString("dd/MM/yyyy");
                     model.ShippingCost = soHeader.ShippingCost.ToString("#,##0");
+                    model.Discount = soHeader.Discount.ToString("#,##0");
                     model.TaxCode = soHeader.TaxCode;
                     model.PaymentTypeId = soHeader.PaymentTypeId;
                     model.PaymentTypeName = soHeader.PaymentTypeName;

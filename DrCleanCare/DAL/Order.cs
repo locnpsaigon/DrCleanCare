@@ -22,6 +22,7 @@ namespace DrCleanCare.DAL
         public string ShipAddress { get; set; }
         public DateTime ShippedDate { get; set; }
         public decimal ShippingCost { get; set; }
+        public decimal Discount { get; set; }
         public string Owner { get; set; }
         public DateTime CreationDate { get; set; }
         public int? PaymentTypeId { get; set; }

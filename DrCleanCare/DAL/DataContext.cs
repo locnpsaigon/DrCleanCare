@@ -49,5 +49,6 @@ namespace DrCleanCare.DAL
         public DbSet<MaterialExport> MaterialExports { get; set; }
         public DbSet<MaterialInStock> MaterialInStocks { get; set; }
         public DbSet<ProductInStock> ProductInStocks { get; set; }
+        public DbSet<Customer> Customers { get; set; }
     }
 }

@@ -166,6 +166,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Admin\AdminController.cs" />
     <Compile Include="Controllers\Admin\BaseController.cs" />
+    <Compile Include="Controllers\Admin\CustomerController.cs" />
     <Compile Include="Controllers\Admin\MaterialController.cs" />
     <Compile Include="Controllers\Admin\FeedbackController.cs" />
     <Compile Include="Controllers\Admin\OrderController.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Controllers\Admin\UserController.cs" />
     <Compile Include="Controllers\CaptchaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DAL\Customer.cs" />
     <Compile Include="DAL\MaterialExport.cs" />
     <Compile Include="DAL\MaterialImport.cs" />
     <Compile Include="DAL\ProductInStock.cs" />
@@ -227,8 +229,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Common.cs" />
+    <Compile Include="Helpers\Extension.cs" />
     <Compile Include="Helpers\PagingHelper.cs" />
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\CustomerViewModel.cs" />
     <Compile Include="Models\RoleViewModel.cs" />
     <Compile Include="Models\FeedbackViewModel.cs" />
     <Compile Include="Models\MaterialViewModel.cs" />
@@ -968,6 +972,9 @@
     <Content Include="Views\Home\Maintenance.cshtml" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
+    <Content Include="Views\Customer\Index.cshtml" />
+    <Content Include="Views\Customer\Add.cshtml" />
+    <Content Include="Views\Customer\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>

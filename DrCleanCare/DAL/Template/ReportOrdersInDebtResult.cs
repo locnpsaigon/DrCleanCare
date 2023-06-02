@@ -16,6 +16,8 @@ namespace DrCleanCare.DAL
         public string Email { get; set; }
         public decimal AmountBT { get; set; }
         public decimal VAT { get; set; }
+        public decimal ShippingCost { get; set; }
+        public decimal Discount { get; set; }
         public decimal Amount { get; set; }
         public decimal PaidAmount { get; set; }
         public decimal DebtAmount { get; set; }

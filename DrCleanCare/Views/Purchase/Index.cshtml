@@ -1,7 +1,7 @@
 ﻿@using DrCleanCare.DAL
 @model IList<Purchase>
 @{
-    ViewBag.Title = "Danh mục chi phí";
+    ViewBag.Title = "Danh mục Phiếu chi";
     Layout = "~/Views/Shared/_Admin.cshtml";
 }
 <div id="page-wrapper" class="container-fluid">
@@ -65,7 +65,7 @@
                         <input id="button-search" type="button" class="btn btn-success" value="Tra cứu" style="width:110px;" />
                         @if (User != null && User.IsInRole("Administrators"))
                         {
-                            <a href="/Purchase/Add" class="btn btn-primary" style="width:110px;">Thêm chi phí</a>
+                            <a href="/Purchase/Add" class="btn btn-primary" style="width:110px;">Thêm Phiếu chi</a>
                         }
                     </div>
                 </div>

@@ -29,6 +29,12 @@
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Nhân viên bán hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.DropDownListFor(model => model.EmployeeId, ViewBag.Employees as IEnumerable<SelectListItem>, "--Chọn nhân viên--", new { @class = "form-control", @style = "width:300px;" })
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="control-label col-md-4 col-lg-3">Số đơn hàng / ngày lập</label>
                             <div class="col-sm-8 col-lg-9">
                                 <div style="display:table; width:100%;">
@@ -40,37 +46,6 @@
                                         <div style="display:table-cell; width:100%;">
                                             @Html.TextBoxFor(model => model.OrderDate, new { @class = "form-control text-center", @placeholder = "Ngày bán", @type = "text", @style = "width: 148px; margin-left:4px;" })
                                             @Html.ValidationMessageFor(model => model.OrderDate, null, new { @class = "help-inline" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-lg-3">Tên khách hàng</label>
-                            <div class="col-sm-8 col-lg-9">
-                                @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @placeholder = "Tên khách hàng", @type = "text", @style = "width: 300px;" })
-                                @Html.ValidationMessageFor(model => model.CustomerName, null, new { @class = "help-inline" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-lg-3">Địa chỉ khách hàng</label>
-                            <div class="col-sm-8 col-lg-9">
-                                @Html.TextBoxFor(model => model.CustomerAddress, new { @class = "form-control", @placeholder = "Địa chỉ khách hàng", @type = "text" })
-                                @Html.ValidationMessageFor(model => model.CustomerAddress, null, new { @class = "help-inline" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-lg-3">Điện thoại / Email</label>
-                            <div class="col-sm-8 col-lg-9">
-                                <div style="display:table; width:100%;">
-                                    <div style="display:table-row">
-                                        <div style="display:table-cell">
-                                            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", @placeholder = "Điện thoại", @type = "text", @style = "width:148px;" })
-                                            @Html.ValidationMessageFor(model => model.Phone, null, new { @class = "help-inline" })
-                                        </div>
-                                        <div style="display:table-cell; width:100%;">
-                                            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @placeholder = "Email khách hàng", @type = "text", @style = "margin-left:4px;" })
-                                            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "help-inline" })
                                         </div>
                                     </div>
                                 </div>
@@ -98,9 +73,43 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label col-md-4 col-lg-3">Nhân viên bán hàng</label>
+                            <label class="control-label col-md-4 col-lg-3">Tên khách hàng</label>
                             <div class="col-sm-8 col-lg-9">
-                                @Html.DropDownListFor(model => model.EmployeeId, ViewBag.Employees as IEnumerable<SelectListItem>, "--Chọn nhân viên--", new { @class = "form-control", @style = "width:300px;" })
+                                <div style="display:table; width:100%;">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell;">
+                                            @Html.TextBoxFor(model => model.CustomerName, new { @class = "form-control", @placeholder = "Tên khách hàng", @type = "text" })
+                                            @Html.ValidationMessageFor(model => model.CustomerName, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell;">
+                                            <a id="btn-sel-customer" href="#" class="btn btn-primary" style="height:34px; margin-left:8px;" data-toggle="modal" data-target="#exampleModal">...</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Địa chỉ khách hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.CustomerAddress, new { @class = "form-control", @placeholder = "Địa chỉ khách hàng", @type = "text" })
+                                @Html.ValidationMessageFor(model => model.CustomerAddress, null, new { @class = "help-inline" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Điện thoại / Email</label>
+                            <div class="col-sm-8 col-lg-9">
+                                <div style="display:table; width:100%;">
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell">
+                                            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", @placeholder = "Điện thoại", @type = "text", @style = "width:148px;" })
+                                            @Html.ValidationMessageFor(model => model.Phone, null, new { @class = "help-inline" })
+                                        </div>
+                                        <div style="display:table-cell; width:100%;">
+                                            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @placeholder = "Email khách hàng", @type = "text", @style = "margin-left:4px;" })
+                                            @Html.ValidationMessageFor(model => model.Email, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -130,15 +139,8 @@
                         <div class="form-group">
                             <label class="control-label col-md-4 col-lg-3">Người nhận</label>
                             <div class="col-sm-8 col-lg-9">
-                                @Html.TextBoxFor(model => model.ShipName, new { @class = "form-control", @placeholder = "Người nhận", @type = "text", @style = "width: 300px;" })
+                                @Html.TextBoxFor(model => model.ShipName, new { @class = "form-control", @placeholder = "Người nhận", @type = "text" })
                                 @Html.ValidationMessageFor(model => model.ShipName, null, new { @class = "help-inline" })
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label col-md-4 col-lg-3">Phí giao hàng</label>
-                            <div class="col-sm-8 col-lg-9">
-                                @Html.TextBoxFor(model => model.ShippingCost, new { @class = "form-control shipping-cost-input", @placeholder = "Phí giao hàng", @type = "text", @style = "margin-left: 4px; width:148px;" })
-                                @Html.ValidationMessageFor(model => model.ShippingCost, null, new { @class = "help-inline" })
                             </div>
                         </div>
                         <div class="form-group">
@@ -191,8 +193,8 @@
 
                                         <div style="display:table-row;" class="tbl-so-line">
                                             <div style="display:table-cell; padding:2px; width:100%;">
-                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class= "product-id-input" })
-                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name-input", @readonly="readonly" , @style = "min-width:140px;" })
+                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class = "product-id-input" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name-input", @readonly = "readonly", @style = "min-width:140px;" })
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].ProductId, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px;">
@@ -252,6 +254,24 @@
                                     </div>
                                     <div style="display:table-row">
                                         <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                            Phí giao hàng:
+                                        </div>
+                                        <div style="display:table-cell; padding:2px;">
+                                            @Html.TextBoxFor(model => model.ShippingCost, new { @class = "form-control shipping-cost-input text-right", @placeholder = "Phí giao hàng", @type = "text", @style = "margin-left: 4px; width:140px;" })
+                                            @Html.ValidationMessageFor(model => model.ShippingCost, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
+                                            Chiết khấu:
+                                        </div>
+                                        <div style="display:table-cell; padding:2px;">
+                                            @Html.TextBoxFor(model => model.Discount, new { @class = "form-control discount-input text-right", @placeholder = "Chiết khấu", @type = "text", @style = "margin-left: 4px; width:140px;" })
+                                            @Html.ValidationMessageFor(model => model.Discount, null, new { @class = "help-inline" })
+                                        </div>
+                                    </div>
+                                    <div style="display:table-row">
+                                        <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
                                             Tổng tiền thanh toán:
                                         </div>
                                         <div style="display:table-cell; padding:2px;">
@@ -274,6 +294,54 @@
         </div>
     }
 </div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Chọn khách hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <div style="display:table">
+                                <div style="display:table-row">
+                                    <div style="display:table-cell;" class="form-inline">
+                                        <input id="searchText" type="text" class="form-control" placeholder="Từ khóa tìm kiếm" style="width:300px;" />
+                                        <input id="btn-search" type="button" class="btn btn-success" value="Tra cứu" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 customer-list">
+                        <table class="table table-hover table-bordered" style="width:auto;">
+                            <tr class="alert-success">
+                                <th class="text-nowrap text-center">STT</th>
+                                <th class="text-nowrap">Tên khách hàng</th>
+                                <th class="text-nowrap">Điện thoại</th>
+                                <th class="text-nowrap">Địa chỉ</th>
+                                <th class="text-nowrap">Thao tác</th>
+                            </tr>
+                            <tr>
+                                <td colspan="7" class="text-danger">Đang nạp dữ liệu....</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <br />
 <br />
 <br />
@@ -293,15 +361,23 @@
     <script src="~/Scripts/bootstrap-dialog.min.js"></script>
 
     <script>
-
         var g_products;
         var g_stocks;
+
+        var g_customers;
+        var g_page_index = 1;
+        var g_page_total = 1;
 
         $("#menu-sale").attr("class", "active");
 
         $(document).ready(function () {
             getProducts();
             getStocks();
+            ajaxSearchCustomers(g_page_index);
+            $("#btn-search").click(function () {
+                g_page_index = 1;
+                ajaxSearchCustomers(g_page_index);
+            });
             // setup datetime picker
             $("#OrderDate").datepicker({ format: 'dd/mm/yyyy', todayHighlight: true });
             $("#OrderDate").datepicker("setDate", new Date());
@@ -313,8 +389,13 @@
             $('#ShippedDate').datepicker('update');
             $('#ShippingCost').number(true, 0);
             $('#ShippingCost').on("input", function () {
-                //updateGrandTotal();
+                updateGrandTotal();
             })
+            $('#Discount').number(true, 0);
+            $('#Discount').on("input", function () {
+                updateGrandTotal();
+            })
+
             $("#tbl-so").on("focus", ".quantity-input", function () {
                 $(this).number(true, 0);
             });
@@ -429,6 +510,119 @@
             });
         }
 
+        function ajaxSearchCustomers(pageIndex) {
+            var searchText = $('#searchText').val();
+            $(".customer-list").html('<span class="text-danger">Đang nạp dữ liệu...</span>');
+            $.ajax({
+                url: '/Customer/Search/?searchText=' + searchText + '&pageIndex=' + pageIndex,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    if (data.Error == 0) {
+                        console.debug('dbg', JSON.stringify(data));
+                        // update global page index value
+                        g_page_index = data.PageIndex;
+                        g_page_total = data.PageTotal;
+                        g_customers = data.Customers;
+                        // show user list
+                        showCustomersList(
+                            data.Customers,
+                            data.RowCount,
+                            data.PageIndex,
+                            data.PageSize,
+                            data.PageTotal);
+                        //alert(data.Customers.length);
+                    }
+                    else {
+                        $(".customer-list").html('<span class="text-danger">' + data.Message + '</span>');
+                    }
+                },
+                error: function (xhr) {
+                    $(".customer-list").html('<span class="text-danger">' + xhr.responseText + '</span>');
+                }
+            });
+        }
+
+        function ajaxSelectCustomer(id) {
+            $.each(g_customers, function (index, element) {
+                if (element.CustomerID == id) {
+                    //alert(element.FullName);
+                    $('#CustomerName').val(element.FullName);
+                    $('#CustomerAddress').val(element.Address);
+                    $('#Phone').val(element.Phone);
+                    $('#TaxCode').val(element.TaxCode);
+                    $('#Email').val(element.Email);
+                    $('#ShipAddress').val(element.ShippingAddress);
+                    $('#ShipName').val(element.ShippingContact);
+                    $('#Notes').val(element.Note);
+                }
+            });
+        }
+
+        function prevPage() {
+            if (g_page_index > 1) g_page_index--;
+            ajaxSearchCustomers(g_page_index);
+        }
+
+        function prevPage() {
+            if (g_page_index < g_page_total) g_page_index++;
+            ajaxSearchCustomers(g_page_index);
+        }
+
+        function showCustomersList(customers, rowCount, pageIndex, pageSize, pageTotal) {
+            var html = '';
+            var row_index = (pageIndex - 1) * pageSize;
+            // create table headers
+            html += '    <table class="table table-bordered table-nonfluid" style="width: auto;">\r\n';
+            html += '        <tbody>\r\n';
+            html += '            <tr class="alert-success">\r\n';
+            html += '               <th class="text-nowrap text-center">STT</th>\r\n';
+            html += '                <th>Tên khách hàng</th>\r\n';
+            html += '                <th>Địa chỉ</th>\r\n';
+            html += '                <th>Điện thoại</th>\r\n';
+            html += '                <th>Thao tác</th>\r\n';
+            html += '            </tr>\r\n';
+            // create rows
+            $.each(customers, function (index, element) {
+                row_index++;
+                var iconUrl = '/Content/Images/no_image.gif';
+                var statusText = '<span class="text-success">Hiện</span>';
+                if (element.IconURL != null) {
+                    iconUrl = element.IconURL.replace('~', '');
+                }
+                if (!element.Displayed) statusText = '<span class="text-warning">Ẩn</span>';
+                html += '            <tr>\r\n';
+                html += '                <td class="text-nowrap text-center">' + row_index + '</td>\r\n';
+                html += '                <td>' + element.FullName + '</td>\r\n';
+                html += '                <td>' + element.Address + '</td>\r\n';
+                html += '                <td class="text-center">' + element.Phone + '</td>\r\n';
+                html += '                <td class="text-nowrap">\r\n';
+                html += '                    <a href="javascript:void(0)" class="btn btn-sm btn-primary" onclick="ajaxSelectCustomer(' + element.CustomerID + ');" style="width:48px;" data-dismiss="modal">Chọn</a>\r\n';
+                html += '                </td>\r\n';
+                html += '            </tr>\r\n';
+            });
+            html += '       </tbody>\r\n';
+            html += '    </table>\r\n';
+            // paging
+            if (pageTotal > 1) {
+                html += '                    <ul class="pagination pagination-sm no-margin inline" style="margin-top:0px;">\r\n';
+                html += '                        <li><a href="#" onclick="return prevPage()">«</a></li>\r\n';
+                for (var i = 1; i <= pageTotal; i++) {
+                    if (i == g_page_index) {
+                        html += '                       <li><span class="text-blue">' + i + '</span></li>\r\n';
+                    } else {
+                        html += '                       <li><a href="#" onclick="return ajaxSearchCustomers(' + i + ')">' + i + '</a></li>\r\n';
+                    }
+                }
+                html += '                        <li><a href="#" onclick="return nextPage()">»</a></li>\r\n';
+                html += '                    </ul>\r\n';
+            }
+
+            // show customer list
+            $(".customer-list").html(html);
+        }
+
         function generateProductsSelect(products) {
             var html = "";
             html += "   <select class='form-control valid select-product-input' data-live-search='true' style='min-width:140px;'>";
@@ -494,22 +688,22 @@
 
             // update element names
             $(".tbl-so-line").each(function (index, line) {
-                $(line).find(".stock-id").attr("id", "OrderDetails_" + index + "__StockId");
-                $(line).find(".stock-id").attr("name", "OrderDetails[" + index + "].StockId");
-                $(line).find(".stock-name").attr("id", "OrderDetails_" + index + "__StockName");
-                $(line).find(".stock-name").attr("name", "OrderDetails[" + index + "].StockName");
-                $(line).find(".product-id").attr("id", "OrderDetails_" + index + "__ProductId");
-                $(line).find(".product-id").attr("name", "OrderDetails[" + index + "].ProductId");
-                $(line).find(".product-name").attr("id", "OrderDetails_" + index + "__ProductName");
-                $(line).find(".product-name").attr("name", "OrderDetails[" + index + "].ProductName");
-                $(line).find(".quantity").attr("id", "OrderDetails_" + index + "__Quantity");
-                $(line).find(".quantity").attr("name", "OrderDetails[" + index + "].Quantity");
-                $(line).find(".unit-price-bt").attr("id", "OrderDetails_" + index + "__UnitPriceBT");
-                $(line).find(".unit-price-bt").attr("name", "OrderDetails[" + index + "].UnitPriceBT");
-                $(line).find(".unit-price").attr("id", "OrderDetails_" + index + "__UnitPrice");
-                $(line).find(".unit-price").attr("name", "OrderDetails[" + index + "].UnitPrice");
-                $(line).find(".line-amount").attr("id", "OrderDetails_" + index + "__UnitPrice");
-                $(line).find(".line-amount").attr("name", "OrderDetails[" + index + "].UnitPrice");
+                $(line).find(".stock-id-input").attr("id", "OrderDetails_" + index + "__StockId");
+                $(line).find(".stock-id-input").attr("name", "OrderDetails[" + index + "].StockId");
+                $(line).find(".stock-name-input").attr("id", "OrderDetails_" + index + "__StockName");
+                $(line).find(".stock-name-input").attr("name", "OrderDetails[" + index + "].StockName");
+                $(line).find(".product-id-input").attr("id", "OrderDetails_" + index + "__ProductId");
+                $(line).find(".product-id-input").attr("name", "OrderDetails[" + index + "].ProductId");
+                $(line).find(".product-name-input").attr("id", "OrderDetails_" + index + "__ProductName");
+                $(line).find(".product-name-input").attr("name", "OrderDetails[" + index + "].ProductName");
+                $(line).find(".quantity-input").attr("id", "OrderDetails_" + index + "__Quantity");
+                $(line).find(".quantity-input").attr("name", "OrderDetails[" + index + "].Quantity");
+                $(line).find(".unit-price-bt-input").attr("id", "OrderDetails_" + index + "__UnitPriceBT");
+                $(line).find(".unit-price-bt-input").attr("name", "OrderDetails[" + index + "].UnitPriceBT");
+                $(line).find(".unit-price-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
+                $(line).find(".unit-price-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
+                $(line).find(".line-amount-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
+                $(line).find(".line-amount-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
             });
         }
 
@@ -554,7 +748,7 @@
             //    ", Price = " + unitPriceBT +
             //    ", total = " + lineAmountBT)
 
-            // set line total 
+            // set line total
             quantity_input.val(quantity);
             unit_price_bt_input.val(unitPriceBT);
             unit_price_input.val(unitPrice);
@@ -573,14 +767,14 @@
             var total_amount_vat_input = $(".total-amount-vat-input");
             var total_amount_input = $(".total-amount-input");
             var shipping_cost_input = $(".shipping-cost-input");
+            var discount_input = $(".discount-input");
 
             total_amount_bt_input.number(true, 0);
             total_amount_vat_input.number(true, 0);
             total_amount_input.number(true, 0);
+            discount_input.number(true, 0);
 
-            var shipping_cost = parseFloat(shipping_cost_input.val().replace(/,/g, ''));
-
-            // scan so lines 
+            // scan so lines
             $(".tbl-so-line").each(function () {
                 var soline = $(this);
                 var quantity_input = soline.find(".quantity-input");
@@ -600,7 +794,11 @@
                 totalAmountVAT += quantity * (unitPrice - unitPriceBT);
                 totalAmount += lineAmount;
             });
-            // totalAmount += shipping_cost;
+            var shipping_cost = parseFloat(shipping_cost_input.val().replace(/,/g, ''));
+            var discount = parseFloat(discount_input.val().replace(/,/g, ''));
+
+            totalAmount += shipping_cost;
+            totalAmount -= discount;
 
             total_amount_bt_input.val(totalAmountBT);
             total_amount_vat_input.val(totalAmountVAT);
