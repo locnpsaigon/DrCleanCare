@@ -169,9 +169,9 @@
             var debtDataPoints = [];
             // generate chart data points
             $.each(data, function (index, element) {
-                purchaseDataPoints.push({ x: element.Month, y: element.Purchase, label: "Tháng " + element.Month });
-                revenueDataPoints.push({ x: element.Month, y: element.Revenue, label: "Tháng " + element.Month });
-                debtDataPoints.push({ x: element.Month, y: element.Debt, label: "Tháng " + element.Month });
+                purchaseDataPoints.push({  y: element.Purchase, label: "Tháng " + element.Month });
+                revenueDataPoints.push({  y: element.Revenue, label: "Tháng " + element.Month });
+                debtDataPoints.push({  y: element.Debt, label: "Tháng " + element.Month });
             });
             // create line chart
             var chart = new CanvasJS.Chart("financeChart",
