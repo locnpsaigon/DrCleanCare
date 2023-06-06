@@ -113,8 +113,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                         <div class="form-group">
                             <label class="control-label col-md-4 col-lg-3">Nhân viên giao / Ngày giao</label>
                             <div class="col-sm-8 col-lg-9">
@@ -150,6 +148,13 @@
                             <label class="control-label col-md-4 col-lg-3">Ghi chú</label>
                             <div class="col-sm-8 col-lg-9">
                                 @Html.TextAreaFor(model => model.Notes, new { @class = "form-control", @placeholder = "Ghi chú", @type = "text" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-4 col-lg-3">Phí giao hàng</label>
+                            <div class="col-sm-8 col-lg-9">
+                                @Html.TextBoxFor(model => model.ShippingCost, new { @class = "form-control shipping-cost-input text-right", @placeholder = "Phí giao hàng", @type = "text", @style = "width:140px;" })
+                                @Html.ValidationMessageFor(model => model.ShippingCost, null, new { @class = "help-inline" })
                             </div>
                         </div>
                         <hr style="border: solid 1px dotted #808080; margin: 16px 0;" />
@@ -253,15 +258,6 @@
                                         </div>
                                         <div style="display:table-cell; padding:2px;">
                                             <input class="form-control total-amount-vat-input valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
-                                        </div>
-                                    </div>
-                                    <div style="display:table-row">
-                                        <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
-                                            Phí giao hàng:
-                                        </div>
-                                        <div style="display:table-cell; padding:2px;">
-                                            @Html.TextBoxFor(model => model.ShippingCost, new { @class = "form-control shipping-cost-input text-right", @placeholder = "Phí giao hàng", @type = "text", @style = "margin-left: 4px; width:140px;" })
-                                            @Html.ValidationMessageFor(model => model.ShippingCost, null, new { @class = "help-inline" })
                                         </div>
                                     </div>
                                     <div style="display:table-row">
@@ -392,76 +388,10 @@
             $('#ShippedDate').on('changeDate', function (ev) { $(this).datepicker('hide') });
             $('#ShippedDate').datepicker('update');
             $('#ShippingCost').number(true, 0);
-            $('#ShippingCost').on("input", function () {
-                updateGrandTotal();
-            })
             $('#Discount').number(true, 0);
             $('#Discount').on("input", function () {
                 updateGrandTotal();
             })
-
-            $("#tbl-so").on("focus", ".quantity-input", function () {
-                $(this).number(true, 0);
-            });
-            $("#tbl-so").on("focus", ".unit-price-input", function () {
-                $(this).number(true, 0);
-            });
-            $("#tbl-so").on("focus", ".unit-price-bt-input", function () {
-                $(this).number(true, 0);
-            });
-            $("#tbl-so").on("focus", ".line-amount-input", function () {
-                $(this).number(true, 0);
-            });
-            $("#tbl-so").on("change paste keyup", ".quantity-input", function () {
-                var soline = $(this).parent().parent();
-                updateLineTotal(soline);
-            });
-            $("#tbl-so").on("change paste keyup", ".unit-price-bt-input", function () {
-                var soline = $(this).parent().parent();
-                updateLineTotal(soline);
-            });
-            $("#tbl-so").on("change paste keyup", ".unit-price-input", function () {
-                var soline = $(this).parent().parent();
-                updateLineTotal(soline);
-            });
-            $("#tbl-so").on("change", ".select-product-input", function () {
-                var productId = $(this).val();
-                var soline = $(this).parent().parent();
-                $.each(g_products, function (index, element) {
-                    if (element.ProductId == productId) {
-                        var product_id_input = soline.find(".product-id-input");
-                        var product_name_input = soline.find(".product-name-input");
-                        var quantity_input = soline.find(".quantity-input");
-                        var price_bt_input = soline.find(".unit-price-bt-input");
-                        var price_input = soline.find(".unit-price-input");
-
-                        // register events
-                        quantity_input.number(true, 0);
-                        price_bt_input.number(true, 0);
-                        price_input.number(true, 0);
-
-                        // assign value
-                        product_id_input.val(element.ProductId);
-                        product_name_input.val(element.ProductName);
-                        quantity_input.val("1");
-                        price_bt_input.val(element.PriceBT);
-                        price_input.val(element.Price);
-
-                        // update SO amount total
-                        updateLineTotal(soline);
-                    }
-                });
-            });
-            $("#tbl-so").on("change", ".select-stock-input", function () {
-                var stockId = $(this).val();
-                var soline = $(this).parent().parent();
-                $.each(g_stocks, function (index, element) {
-                    if (element.StockId == stockId) {
-                        soline.find(".stock-id-input").attr("value", element.StockId)
-                        soline.find(".stock-name-input").attr("value", element.StockName)
-                    }
-                });
-            });
             $("#btn-add-line").on('click', function () {
                 addLine();
                 updateGrandTotal();
@@ -682,8 +612,75 @@
             row_html += "       <a href='#' class='btn btn-danger btn-sm btn-remove-line' style='margin-left:4px; width:40px;'>-</a>";
             row_html += "   </div>";
             row_html += "</div>";
-            // append new so line
+
             $("#tbl-so").append(row_html);
+
+            // get the line and register events
+            var lines = $("#tbl-so > .tbl-so-line");
+            if (lines != undefined) {
+
+                // get current line
+                var last_line_index = lines.length - 1;
+                var current_line = $(lines[last_line_index]);
+
+                var select_product_input = current_line.find(".select-product-input");
+                var select_stock_input = current_line.find(".select-stock-input");
+                var product_id_input = current_line.find(".product-id-input");
+                var product_name_input = current_line.find(".product-name-input");
+                var stock_id_input = current_line.find(".stock-id-input");
+                var stock_name_input = current_line.find(".stock-name-input");
+                var quantity_input = current_line.find(".quantity-input");
+                var unit_price_bt_input = current_line.find(".unit-price-bt-input");
+                var unit_price_input = current_line.find(".unit-price-input");
+                var line_amount_input = current_line.find(".line-amount-input");
+
+                select_product_input.on("change", function () {
+                    var product_id = $(this).val();
+                    $.each(g_products, function (index, element) {
+                        if (element.ProductId == product_id) {
+                            product_id_input.val(element.ProductId);
+                            product_name_input.val(element.ProductName);
+                            quantity_input.val(1);
+                            unit_price_bt_input.val(element.PriceBT);
+                            unit_price_input.val(element.Price);
+                            updateLineTotal(current_line);
+                        }
+                    });
+
+                });
+
+                select_stock_input.on("change", function () {
+                    var stock_id = $(this).val();
+                    console.log(stock_id);
+                    $.each(g_stocks, function (index, element) {
+                        if (element.StockId == stock_id) {
+                            
+                            stock_id_input.val(element.StockId);
+                            stock_name_input.val(element.StockName);
+                            updateLineTotal(current_line);
+                        }
+                    });
+
+                });
+
+                quantity_input.number(true, 0);
+                unit_price_bt_input.number(true, 0);
+                unit_price_input.number(true, 0);
+                line_amount_input.number(true, 0);
+
+                quantity_input.on("change paste keyup", function () {
+                    updateLineTotal(current_line)
+                });
+
+                unit_price_bt_input.on("change paste keyup", function () {
+                    updateLineTotal(current_line)
+                });
+                unit_price_input.on("change paste keyup", function () {
+                    updateLineTotal(current_line)
+                });
+
+                updateGrandTotal();
+            }
         }
 
         function removeLine(line) {
@@ -709,29 +706,21 @@
                 $(line).find(".line-amount-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
                 $(line).find(".line-amount-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
             });
+
+            updateGrandTotal();
         }
 
         function updateLineTotal(soline) {
 
             // update line total
-            var product_select = soline.find(".select-product-input");
-            var product_id_input = soline.find(".product-id-input");
-            var product_name_input = soline.find(".product-name-input");
             var quantity_input = soline.find(".quantity-input");
             var unit_price_bt_input = soline.find(".unit-price-bt-input");
             var unit_price_input = soline.find(".unit-price-input");
             var line_amount_input = soline.find(".line-amount-input");
 
-            // register events
-            quantity_input.number(true, 0);
-            unit_price_bt_input.number(true, 0);
-            unit_price_input.number(true, 0);
-            line_amount_input.number(true, 0);
-
             var quantity = parseFloat(quantity_input.val().replace(/,/g, ''));
             var unitPriceBT = parseFloat(unit_price_bt_input.val().replace(/,/g, ''));
             var unitPrice = parseFloat(unit_price_input.val().replace(/,/g, ''));
-            var lineAmountBT = quantity * unitPriceBT;
             var lineAmount = quantity * unitPrice;
 
             // validate values
@@ -744,21 +733,13 @@
             if (typeof unitPrice == 'NaN') {
                 unitPrice = 0;
             }
-
-            // logs
-            //console.log(
-            //    "  product = " + product_name_input.val() +
-            //    ", quantity = " + quantity +
-            //    ", Price = " + unitPriceBT +
-            //    ", total = " + lineAmountBT)
-
+           
             // set line total
             quantity_input.val(quantity);
             unit_price_bt_input.val(unitPriceBT);
             unit_price_input.val(unitPrice);
-            line_amount_input.val(lineAmountBT);
+            line_amount_input.val(lineAmount);
 
-            // update grand total
             updateGrandTotal();
         }
 
@@ -800,11 +781,11 @@
             var shipping_cost = parseFloat(shipping_cost_input.val().replace(/,/g, ''));
             var discount = parseFloat(discount_input.val().replace(/,/g, ''));
 
-            totalAmount += shipping_cost;
+            //totalAmount += shipping_cost;
             totalAmount -= discount;
 
             total_amount_bt_input.val(totalAmountBT);
-            total_amount_vat_input.val(totalAmountVAT);
+            total_amount_vat_input.val(totalAmount);
             total_amount_input.val(totalAmount);
         };
 
