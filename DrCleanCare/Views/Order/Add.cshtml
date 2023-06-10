@@ -341,12 +341,6 @@
         </div>
     </div>
 </div>
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
 @section Styles {
     <link href="~/Content/datepicker.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
@@ -617,7 +611,7 @@
 
             // get the line and register events
             var lines = $("#tbl-so > .tbl-so-line");
-            if (lines != undefined) {
+            if (lines != undefined && length.length > 0) {
 
                 // get current line
                 var last_line_index = lines.length - 1;

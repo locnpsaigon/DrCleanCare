@@ -31,6 +31,7 @@ namespace DrCleanCare.Controllers.Admin
                 {
                     return RedirectToAction("ErrorMessage", "Admin", new { message = "Không tìm thấy đơn hàng!" });
                 }
+                var discount = soInfo.Discount; 
 
                 // create view model
                 AddPaymentViewModel model = new AddPaymentViewModel();
@@ -61,6 +62,7 @@ namespace DrCleanCare.Controllers.Admin
                     totalVAT += item.Quantity * (item.UnitPrice - item.UnitPriceBT);
                     grandTotal += item.Quantity * item.UnitPrice;
                 }
+                grandTotal -= discount;
                 model.AmountBT = totalAmountBT.ToString("#,##0");
                 model.VAT = totalVAT.ToString("#,##0");
                 model.GrandTotal = grandTotal.ToString("#,##0");
@@ -88,6 +90,7 @@ namespace DrCleanCare.Controllers.Admin
                 {
                     paidAmount += item.PaymentAmount;
                 }
+                model.PaidAmount = paidAmount.ToString("#,##0");
 
                 // calculate debt 
                 var debtAmount = grandTotal - paidAmount;

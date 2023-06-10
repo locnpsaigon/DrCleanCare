@@ -20,9 +20,9 @@
                     <th class="text-nowrap">Số HĐ</th>
                     <th>Tên KH</th>
                     <th class="text-nowrap text-right">Điện thoại</th>
+                    <th class="text-nowrap text-right">Phí vận chuyển</th>
                     <th class="text-nowrap text-right">Tiền hàng</th>
                     <th class="text-nowrap text-right">VAT</th>
-                    <th class="text-nowrap text-right">Phí vận chuyển</th>
                     <th class="text-nowrap text-right">Chiết khấu</th>
                     <th class="text-nowrap text-right">Tổng tiền</th>
                     <th class="text-nowrap text-right">Thanh toán</th>
@@ -30,30 +30,41 @@
                 </tr>
                 @{
                     var count = 0;
-                    var sum_debt_amount = 0;
+                    var sum_amount = (decimal)0;
+                    var sum_paid_amount = (decimal)0;
+                    var sum_debt_amount = (decimal)0;
                     foreach (var so in Model)
                     {
                         count++;
-                        sum_debt_amount += (int)(so.DebtAmount);
-                                <tr>
-                                    <td class="text-center text-nowrap">@count</td>
-                                    <td class="text-right">@so.OrderDate.ToString("dd/MM/yyyy")</td>
-                                    <td class="text-center text-nowrap">@so.OrderNo</td>
-                                    <td>@Html.ActionLink(@so.CustomerName, "Details", "Order", new { id = @so.OrderId }, null)</td>
-                                    <td class="text-right">@so.Phone</td>
-                                    <td class="text-right">@so.AmountBT.ToString("#,##0.##")</td>
-                                    <td class="text-right">@so.VAT.ToString("#,##0.##")</td>
-                                    <td class="text-right">@so.ShippingCost.ToString("#,##0.##")</td>
-                                    <td class="text-right">@so.Discount.ToString("#,##0.##")</td>
-                                    <td class="text-right text-danger"><strong>@so.Amount.ToString("#,##0.##")</strong></td>
-                                    <td class="text-right text-success">@so.PaidAmount.ToString("#,##0.##")</td>
-                                    <td class="text-right text-warning"><strong>@so.DebtAmount.ToString("#,##0.##")</strong></td>
-                                </tr>
+                        sum_amount += so.Amount;
+                        sum_paid_amount += so.PaidAmount;
+                        sum_debt_amount += so.DebtAmount;
+
+                        <tr>
+                            <td class="text-center text-nowrap">@count</td>
+                            <td class="text-right">@so.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center text-nowrap">@so.OrderNo</td>
+                            <td>@Html.ActionLink(@so.CustomerName, "Details", "Order", new { id = @so.OrderId }, null)</td>
+                            <td class="text-right">@so.Phone</td>
+                            <td class="text-right">@so.ShippingCost.ToString("#,##0.##")</td>
+                            <td class="text-right">@so.AmountBT.ToString("#,##0.##")</td>
+                            <td class="text-right">@so.VAT.ToString("#,##0.##")</td>
+                            <td class="text-right">@so.Discount.ToString("#,##0.##")</td>
+                            <td class="text-right text-danger"><strong>@so.Amount.ToString("#,##0.##")</strong></td>
+                            <td class="text-right text-success">@so.PaidAmount.ToString("#,##0.##")</td>
+                            <td class="text-right text-warning"><strong>@so.DebtAmount.ToString("#,##0.##")</strong></td>
+                        </tr>
                     }
                 }
                 <tr>
                     <td colspan="9" class="text-right">
                         <span class="text-info"><strong>Tổng cộng:</strong></span>
+                    </td>
+                    <td class="text-warning text-right">
+                        <strong>@sum_amount.ToString("#,##0.##")</strong>
+                    </td>
+                    <td class="text-warning text-right">
+                        <strong>@sum_paid_amount.ToString("#,##0.##")</strong>
                     </td>
                     <td class="text-warning text-right">
                         <strong>@sum_debt_amount.ToString("#,##0.##")</strong>
