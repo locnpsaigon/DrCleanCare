@@ -88,7 +88,6 @@
                             <th class="text-nowrap text-center">STT</th>
                             <th class="text-nowrap text-center">Sản phẩm</th>
                             <th class="text-nowrap text-center">Kho xuất</th>
-
                             <th class="text-nowrap">Giá trước thuế</th>
                             <th class="text-nowrap">Giá sau thuế</th>
                             <th class="text-nowrap">Số lượng</th>
@@ -119,13 +118,13 @@
                                     @Model.OrderDetails[i].StockName
                                 </td>
                                 <td class="text-right">
-                                    @Model.OrderDetails[i].Quantity
-                                </td>
-                                <td class="text-right">
                                     @unitPriceBT.ToString("#,##0.##")
                                 </td>
                                 <td class="text-right">
                                     @unitPrice.ToString("#,##0.##")
+                                </td>
+                                <td class="text-right">
+                                    @Model.OrderDetails[i].Quantity
                                 </td>
                                 <td class="text-right">
                                     @soLineTotal.ToString("#,##0.##")
