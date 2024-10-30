@@ -1,13 +1,11 @@
-﻿using System;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using DrCleanCare.Models;
+using System;
 using System.Globalization;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using DrCleanCare.Models;
-using DrCleanCare.DAL;
-using DrCleanCare.DAL.Security;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -31,7 +29,7 @@ namespace DrCleanCare.Controllers.Admin
                 {
                     return RedirectToAction("ErrorMessage", "Admin", new { message = "Không tìm thấy đơn hàng!" });
                 }
-                var discount = soInfo.Discount; 
+                var discount = soInfo.Discount;
 
                 // create view model
                 AddPaymentViewModel model = new AddPaymentViewModel();
@@ -66,7 +64,7 @@ namespace DrCleanCare.Controllers.Admin
                 model.AmountBT = totalAmountBT.ToString("#,##0");
                 model.VAT = totalVAT.ToString("#,##0");
                 model.GrandTotal = grandTotal.ToString("#,##0");
-                
+
                 // get payment history
                 var payments = db.Payments.Where(p => p.OrderID == soInfo.OrderId);
                 var paymentTypes = db.PaymentTypes;
@@ -97,7 +95,7 @@ namespace DrCleanCare.Controllers.Admin
                 model.DebtAmount = debtAmount.ToString("#,##0");
 
                 // set default payment amount equals to debt amount
-                model.PaymentAmount = model.DebtAmount; 
+                model.PaymentAmount = model.DebtAmount;
 
                 // get payments history
                 model.PaymentHistory = paymentHistory;

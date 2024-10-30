@@ -1,12 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.SqlClient;
-using System.Web;
-using System.Web.Mvc;
-using DrCleanCare.DAL;
+﻿using DrCleanCare.DAL;
 using DrCleanCare.DAL.Security;
+using System;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -15,7 +13,7 @@ namespace DrCleanCare.Controllers.Admin
         DataContext db = new DataContext();
 
         [Authorize]
-        [DrCleanCareAuthorize(Roles="Administrators")]
+        [DrCleanCareAuthorize(Roles = "Administrators")]
         public JsonResult GetFinanceReportByDate(string dateFrom, string dateTo)
         {
             try
@@ -33,7 +31,7 @@ namespace DrCleanCare.Controllers.Admin
                     d2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
                 }
                 d2 = d2.Add(new TimeSpan(23, 59, 59));
-                
+
                 // get finance report
                 var reportData = db.Database.SqlQuery<ReportFinanceByDateResult>(
                     "EXEC [dbo].[usp_getFinanceReportByDate] @DateFrom, @DateTo",

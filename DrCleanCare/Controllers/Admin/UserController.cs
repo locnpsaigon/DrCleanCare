@@ -1,16 +1,15 @@
-﻿using System;
-using System.Configuration;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using Newtonsoft.Json;
 using System.Web.Security;
-using DrCleanCare.DAL;
-using DrCleanCare.DAL.Security;
-using DrCleanCare.Models;
-using DrCleanCare.Helpers;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -56,7 +55,7 @@ namespace DrCleanCare.Controllers.Admin
 
                 // verify user name and password
                 bool loginSuccess = SaltedHash.Verify(userInfo.Salt, userInfo.Password, model.Password);
-                
+
                 if (loginSuccess)
                 {
                     // save authentication info
@@ -97,7 +96,7 @@ namespace DrCleanCare.Controllers.Admin
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
-            
+
         }
 
         [AllowAnonymous]
@@ -121,7 +120,7 @@ namespace DrCleanCare.Controllers.Admin
 
 
         [Authorize]
-        [DrCleanCareAuthorize(Roles="Administrators")]
+        [DrCleanCareAuthorize(Roles = "Administrators")]
         public ActionResult Add()
         {
             /*
@@ -216,7 +215,7 @@ namespace DrCleanCare.Controllers.Admin
                 return RedirectToAction("ErrorMessage", "Admin",
                     new RouteValueDictionary(
                         new { message = ex.Message }));
-            } 
+            }
         }
 
         [Authorize]
@@ -382,7 +381,7 @@ namespace DrCleanCare.Controllers.Admin
         {
             /*
              * User submitted data to change password
-             */ 
+             */
             try
             {
                 // is model valid?
@@ -454,7 +453,7 @@ namespace DrCleanCare.Controllers.Admin
             try
             {
                 db.Configuration.ProxyCreationEnabled = false;
-                var users  = db.Users.OrderBy(r => r.Username).AsEnumerable();
+                var users = db.Users.OrderBy(r => r.Username).AsEnumerable();
                 if (searchText.Trim() != "")
                 {
                     users = users.Where(r => r.Username.ToLower().Contains(searchText.ToLower()));

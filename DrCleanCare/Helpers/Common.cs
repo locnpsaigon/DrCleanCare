@@ -1,11 +1,10 @@
 ﻿using System;
-using System.IO;
 using System.Drawing;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Web;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace DrCleanCare.Helpers
 {
@@ -56,7 +55,7 @@ namespace DrCleanCare.Helpers
         public static string SaveImage(Image image, string uploadPath, String filename)
         {
             var filePath = Path.Combine(HttpContext.Current.Server.MapPath(uploadPath) + filename);
-            
+
             var duplicateCount = 0;
             while (System.IO.File.Exists(filePath))
             {

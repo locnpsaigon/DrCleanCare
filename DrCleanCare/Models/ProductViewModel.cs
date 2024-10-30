@@ -1,10 +1,8 @@
-﻿using System;
+﻿using DrCleanCare.DAL;
 using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 using System.Web;
 using System.Web.Mvc;
-using System.ComponentModel.DataAnnotations;
-using DrCleanCare.DAL;
 
 namespace DrCleanCare.Models
 {
@@ -30,26 +28,26 @@ namespace DrCleanCare.Models
 
         public int ProductId { get; set; }
 
-        [Required(ErrorMessage="Vui lòng chọn nhóm sản phẩm")]
+        [Required(ErrorMessage = "Vui lòng chọn nhóm sản phẩm")]
         public int CategoryId { get; set; }
 
-        [Required(ErrorMessage="Tên sản phẩm không được rỗng")]
+        [Required(ErrorMessage = "Tên sản phẩm không được rỗng")]
         public string ProductName { get; set; }
 
-        [Required(ErrorMessage="Giới thiệu sản phẩm không được rỗng")]
+        [Required(ErrorMessage = "Giới thiệu sản phẩm không được rỗng")]
         [MaxLength(500)]
         public string ProductIntro { get; set; }
 
         [AllowHtml]
-        [Required(ErrorMessage="Mô tả sản phẩm không được rỗng")]
+        [Required(ErrorMessage = "Mô tả sản phẩm không được rỗng")]
         public string ProductDescription { get; set; }
 
         [Required(ErrorMessage = "Đơn vị tính")]
         [MaxLength(100)]
         public string QuantityPerUnit { get; set; }
 
-        [Required(ErrorMessage="Giá trước thứ")]
-        [DataType(DataType.Currency, ErrorMessage="Giá trước thuế phải là số")]
+        [Required(ErrorMessage = "Giá trước thứ")]
+        [DataType(DataType.Currency, ErrorMessage = "Giá trước thuế phải là số")]
         public decimal PriceBT { get; set; }
 
         [Required(ErrorMessage = "Giá sau thuế")]
@@ -68,7 +66,7 @@ namespace DrCleanCare.Models
 
         public IEnumerable<SelectListItem> Categories { get; set; }
 
-        
+
     }
 
     /// <summary>

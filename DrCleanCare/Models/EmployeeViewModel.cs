@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DrCleanCare.Models
 {
@@ -12,7 +7,7 @@ namespace DrCleanCare.Models
         [Key]
         public int EmployeeId { get; set; }
 
-        [Required(ErrorMessage="Employee's name can not blank!!!")]
+        [Required(ErrorMessage = "Employee's name can not blank!!!")]
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "You must choose a day")]
@@ -28,7 +23,7 @@ namespace DrCleanCare.Models
 
         public int MaritalStatus { get; set; }
 
-        [MaxLength(150, ErrorMessage="Address only contains less than 150 characters")]
+        [MaxLength(150, ErrorMessage = "Address only contains less than 150 characters")]
         public string Address { get; set; }
 
         public string Phone { get; set; }

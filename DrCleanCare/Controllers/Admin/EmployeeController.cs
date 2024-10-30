@@ -1,15 +1,12 @@
-﻿using System;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using System;
 using System.Globalization;
-using System.Configuration;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using DrCleanCare.DAL;
-using DrCleanCare.DAL.Security;
-using DrCleanCare.Models;
-using DrCleanCare.Helpers;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -48,7 +45,7 @@ namespace DrCleanCare.Controllers.Admin
                     employee.Phone = model.Phone;
                     employee.Email = model.Email;
                     employee.HireDate = DateTime.ParseExact(model.HireDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-                    if (model.QuitDate != null) 
+                    if (model.QuitDate != null)
                     {
                         employee.QuitDate = DateTime.ParseExact(model.QuitDate, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                     }
@@ -160,7 +157,7 @@ namespace DrCleanCare.Controllers.Admin
         [Authorize]
         [DrCleanCareAuthorize(Roles = "Administrators")]
         public JsonResult Delete(int id = 0)
-        { 
+        {
             try
             {
                 // get emp info

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Configuration;
 
 namespace DrCleanCare.DAL.Security
 {
@@ -12,40 +9,48 @@ namespace DrCleanCare.DAL.Security
     {
         protected virtual DrCleanCarePrinciple CurrentUser
         {
-           get { return HttpContext.Current.User as DrCleanCarePrinciple; } 
+            get { return HttpContext.Current.User as DrCleanCarePrinciple; }
         }
 
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             if (filterContext == null) { throw new ArgumentNullException("filterContext"); }
-    
+
             // validate current logon user
             var currentUser = HttpContext.Current.User as DrCleanCarePrinciple;
-            if (currentUser == null || currentUser.Identity.IsAuthenticated == false) {
-            
+            if (currentUser == null || currentUser.Identity.IsAuthenticated == false)
+            {
+
                 // auth fail, redirect to login page
                 filterContext.Result = new HttpUnauthorizedResult();
-            
-            } else if (currentUser.IsInRole(Roles)) {
-                
+
+            }
+            else if (currentUser.IsInRole(Roles))
+            {
+
                 // user is authenticated and is in roles
                 SetCachePolicy(filterContext);
-            
-            } else if (Users.Contains(currentUser.Identity.Name)) {
-            
+
+            }
+            else if (Users.Contains(currentUser.Identity.Name))
+            {
+
                 // user is in allowed users list
                 SetCachePolicy(filterContext);
-            
+
             }
-            else {
-            
+            else
+            {
+
                 // user do not have any permissions
-                filterContext.Result = new RedirectToRouteResult( 
-                    new RouteValueDictionary( 
-                        new { 
-                            controller = "Admin", 
-                            action = "ErrorMessage", 
-                            message = "Chức năng đang bị giới hạn quyền truy cập!" }));
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary(
+                        new
+                        {
+                            controller = "Admin",
+                            action = "ErrorMessage",
+                            message = "Chức năng đang bị giới hạn quyền truy cập!"
+                        }));
             }
 
             // base.OnAuthorization(filterContext);
@@ -57,7 +62,7 @@ namespace DrCleanCare.DAL.Security
         }
 
         protected void SetCachePolicy(AuthorizationContext filterContext)
-        {      
+        {
             // ** IMPORTANT **
             // Since we're performing authorization at the action level, the authorization code runs
             // after the output caching module. In the worst case this could allow an authorized user

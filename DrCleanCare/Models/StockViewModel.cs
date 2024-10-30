@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
 
 namespace DrCleanCare.Models
 {
     public class AddStockViewModel
     {
-        [Required(ErrorMessage ="Tên kho không được rỗng")]
+        [Required(ErrorMessage = "Tên kho không được rỗng")]
         public String StockName { get; set; }
 
-        [Required(ErrorMessage ="Địa chỉ kho không được rỗng")]
+        [Required(ErrorMessage = "Địa chỉ kho không được rỗng")]
         public String StockAddress { get; set; }
 
         public String Phone { get; set; }

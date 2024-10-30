@@ -1,16 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Drawing;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using System;
 using System.Configuration;
-using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using DrCleanCare.DAL;
-using DrCleanCare.DAL.Security;
-using DrCleanCare.Models;
-using DrCleanCare.Helpers;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -34,7 +32,7 @@ namespace DrCleanCare.Controllers.Admin
              * User access add category form
              */
 
-           AddCategoryViewModel  model = new AddCategoryViewModel();
+            AddCategoryViewModel model = new AddCategoryViewModel();
             model.OrderNumber = 100;
             return View(model);
         }
@@ -281,7 +279,7 @@ namespace DrCleanCare.Controllers.Admin
                     Categories = pageHelper.PagedData
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { Error = 1, Message = ex.Message });
             }

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Data;
-using System.Configuration;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.Models;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
-using DrCleanCare.DAL;
-using DrCleanCare.Models;
 
 namespace DrCleanCare.Controllers
 {
@@ -23,7 +21,7 @@ namespace DrCleanCare.Controllers
                     .OrderBy(r => r.OrderNumber)
                     .ThenBy(r => r.CategoryName)
                     .ToList();
-                
+
                 return View(categories);
             }
             catch (Exception ex)
@@ -121,7 +119,7 @@ namespace DrCleanCare.Controllers
                 return RedirectToAction("ErrorMessage",
                     new RouteValueDictionary(
                         new { message = ex.Message }));
-            } 
+            }
         }
     }
 }

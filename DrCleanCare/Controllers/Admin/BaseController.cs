@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using DrCleanCare.DAL.Security;
 using System.Web.Mvc;
-using DrCleanCare.DAL.Security;
 
 namespace DrCleanCare.Controllers.Admin
 {

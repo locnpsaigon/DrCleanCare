@@ -1,18 +1,17 @@
-﻿using System;
-using System.IO;
-using System.Configuration;
-using System.Globalization;
-using System.Drawing;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using DrCleanCare.DAL;
-using DrCleanCare.DAL.Security;
-using DrCleanCare.Models;
-using DrCleanCare.Helpers;
 
 namespace DrCleanCare.Controllers.Admin
 {

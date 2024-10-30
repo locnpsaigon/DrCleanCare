@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.SqlClient;
-using System.Web.Mvc;
-using System.Globalization;
-using DrCleanCare.DAL;
+﻿using DrCleanCare.DAL;
 using DrCleanCare.DAL.Security;
-using DrCleanCare.Models;
 using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -263,7 +263,7 @@ namespace DrCleanCare.Controllers.Admin
 
                     // insert import
                     var import = new MaterialImport();
-                    import.MaterialImportDate = DateTime.ParseExact(model.MaterialImportDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None) + 
+                    import.MaterialImportDate = DateTime.ParseExact(model.MaterialImportDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None) +
                         new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                     import.MaterialId = model.MaterialId;
                     import.StockId = model.StockId;
@@ -409,7 +409,7 @@ namespace DrCleanCare.Controllers.Admin
                 }
 
                 // update import info
-                import.MaterialImportDate = DateTime.ParseExact(model.MaterialImportDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None) + 
+                import.MaterialImportDate = DateTime.ParseExact(model.MaterialImportDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None) +
                     new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second);
                 import.MaterialId = model.MaterialId;
                 import.StockId = model.StockId;
@@ -603,7 +603,7 @@ namespace DrCleanCare.Controllers.Admin
 
                     // insert import
                     var export = new MaterialExport();
-                    export.MaterialExportDate = DateTime.ParseExact(model.MaterialExportDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None) + 
+                    export.MaterialExportDate = DateTime.ParseExact(model.MaterialExportDate, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None) +
                         new TimeSpan(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second); ;
                     export.MaterialId = model.MaterialId;
                     export.StockId = model.StockId;

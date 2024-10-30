@@ -1,16 +1,10 @@
-﻿using System;
-using System.Globalization;
-using System.Drawing;
-using System.Configuration;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using DrCleanCare.DAL;
+﻿using DrCleanCare.DAL;
 using DrCleanCare.DAL.Security;
-using DrCleanCare.Models;
 using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using System;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -62,7 +56,7 @@ namespace DrCleanCare.Controllers.Admin
                     db.SaveChanges();
                     return RedirectToAction("Index");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ModelState.AddModelError("", ex.Message);
                 }
@@ -94,7 +88,7 @@ namespace DrCleanCare.Controllers.Admin
 
                 return View(model);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
             }
@@ -110,7 +104,7 @@ namespace DrCleanCare.Controllers.Admin
             {
                 // check stock name existed
                 var stock = db.Stocks.Where(
-                    r => string.Compare(r.StockName, model.StockName, true) == 0 && 
+                    r => string.Compare(r.StockName, model.StockName, true) == 0 &&
                     r.StockId != model.StockId)
                     .FirstOrDefault();
                 if (stock == null)
@@ -167,12 +161,12 @@ namespace DrCleanCare.Controllers.Admin
                     return Json(new { Error = 1, Message = "Kho đang sử dụng, xóa thông tin kho thất bại!!!" });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { Error = 1, Message = ex.Message });
             }
         }
-        
+
         [HttpPost]
         [Authorize]
         [DrCleanCareAuthorize(Roles = "Administrators")]
@@ -196,7 +190,7 @@ namespace DrCleanCare.Controllers.Admin
                     Stocks = pagingHelper.PagedData
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { Error = 1, Message = ex.Message });
             }

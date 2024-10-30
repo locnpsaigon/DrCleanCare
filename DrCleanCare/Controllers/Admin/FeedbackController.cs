@@ -1,11 +1,9 @@
-﻿using System;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using System;
 using System.Globalization;
-using System.Data;
 using System.Linq;
 using System.Web.Mvc;
-using DrCleanCare.DAL;
-using DrCleanCare.DAL.Security;
-using DrCleanCare.Helpers;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -70,10 +68,12 @@ namespace DrCleanCare.Controllers.Admin
                     .OrderByDescending(fb => fb.Date)
                     .ToList();
 
-                return Json(new {
+                return Json(new
+                {
                     Error = 0,
                     Message = "Success",
-                    Feedbacks = feedbacks });
+                    Feedbacks = feedbacks
+                });
             }
             catch (Exception ex)
             {
@@ -88,7 +88,7 @@ namespace DrCleanCare.Controllers.Admin
             try
             {
                 var ids = feedbackIds.Split(',');
-                foreach(var id in ids)
+                foreach (var id in ids)
                 {
                     var idToRemove = 0;
                     int.TryParse(id, out idToRemove);
@@ -99,7 +99,7 @@ namespace DrCleanCare.Controllers.Admin
 
                 return Json(new { Error = 0, Message = "Xóa thông tin phản hồi thành công!" });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Json(new { Error = 1, Message = ex.Message });
             }

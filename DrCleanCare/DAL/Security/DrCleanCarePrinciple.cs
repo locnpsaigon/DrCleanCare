@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Security.Principal;
 
 namespace DrCleanCare.DAL.Security
@@ -22,7 +19,7 @@ namespace DrCleanCare.DAL.Security
                 if (userRoles.Contains(role))
                 {
                     return true;
-                }   
+                }
             }
             return false;
         }

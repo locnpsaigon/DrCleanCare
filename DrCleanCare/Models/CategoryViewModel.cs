@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Web;
-using System.ComponentModel.DataAnnotations;
 
 namespace DrCleanCare.Models
 {
@@ -10,7 +7,7 @@ namespace DrCleanCare.Models
     {
         public int CategoryId { get; set; }
 
-        [Required(ErrorMessage="Tên loại sản phẩm không được rỗng")]
+        [Required(ErrorMessage = "Tên loại sản phẩm không được rỗng")]
         public string CategoryName { get; set; }
 
         public string Description { get; set; }
@@ -19,7 +16,7 @@ namespace DrCleanCare.Models
 
         public string IconURL { get; set; }
 
-        [Required(ErrorMessage="Vui lòng nhập thứ tự sắp xếp")]
+        [Required(ErrorMessage = "Vui lòng nhập thứ tự sắp xếp")]
         public int OrderNumber { get; set; }
 
         public bool Displayed { get; set; }

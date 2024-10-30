@@ -1,17 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using DrCleanCare.DAL;
+using DrCleanCare.DAL.Security;
+using DrCleanCare.Helpers;
+using DrCleanCare.Models;
+using OfficeOpenXml;
+using System;
 using System.Globalization;
-using System.Configuration;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using OfficeOpenXml;
-using DrCleanCare.Models;
-using DrCleanCare.DAL.Security;
-using DrCleanCare.DAL;
-using DrCleanCare.Helpers;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -471,7 +468,7 @@ namespace DrCleanCare.Controllers.Admin
                 // get date range
                 DateTime d1, d2;
                 bool parse1 = DateTime.TryParseExact(dateFrom + " 00:00:00", "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out d1);
-                bool parse2 =  DateTime.TryParseExact(dateTo + " 00:00:00", "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out d2);
+                bool parse2 = DateTime.TryParseExact(dateTo + " 00:00:00", "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out d2);
                 if (parse1 == false || parse2 == false)
                     throw new Exception("Fail to get report. Wrong date range");
 

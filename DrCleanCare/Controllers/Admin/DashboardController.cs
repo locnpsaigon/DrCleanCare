@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.SqlClient;
-using System.Web.Mvc;
-using System.Web.Routing;
-using DrCleanCare.DAL;
+﻿using DrCleanCare.DAL;
 using DrCleanCare.DAL.Security;
 using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -20,7 +20,7 @@ namespace DrCleanCare.Controllers.Admin
         //
         // GET: /Dashboard/
         [Authorize]
-        [DrCleanCareAuthorize(Roles="Administrators")]
+        [DrCleanCareAuthorize(Roles = "Administrators")]
         public ActionResult FinanceByDate()
         {
             return View();
@@ -55,16 +55,16 @@ namespace DrCleanCare.Controllers.Admin
                 ViewBag.DateTo = d2;
                 ViewBag.ProductId = productId;
 
-                 reportData = db.Database.SqlQuery<ReportProductByDateDetailsResult>(
-                    "EXEC [dbo].[usp_getProductReportByDateDetails] @DateFrom, @DateTo, @ProductId",
-                    new SqlParameter("DateFrom", d1),
-                    new SqlParameter("DateTo", d2),
-                    new SqlParameter("ProductId", productId))
-                    .ToList<ReportProductByDateDetailsResult>();
+                reportData = db.Database.SqlQuery<ReportProductByDateDetailsResult>(
+                   "EXEC [dbo].[usp_getProductReportByDateDetails] @DateFrom, @DateTo, @ProductId",
+                   new SqlParameter("DateFrom", d1),
+                   new SqlParameter("DateTo", d2),
+                   new SqlParameter("ProductId", productId))
+                   .ToList<ReportProductByDateDetailsResult>();
 
                 return View(reportData);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ModelState.AddModelError("", ex);
             }
@@ -192,7 +192,7 @@ namespace DrCleanCare.Controllers.Admin
 
                 reportData = db.Database.SqlQuery<ReportProductByDateDetailsForCustomerResult>(
                    "EXEC [dbo].[usp_getProductReportByDateDetailsForCustomer]  @CustomerPhone, @DateFrom, @DateTo, @ProductId",
-                   new SqlParameter("CustomerPhone", phone), 
+                   new SqlParameter("CustomerPhone", phone),
                    new SqlParameter("DateFrom", d1),
                    new SqlParameter("DateTo", d2),
                    new SqlParameter("ProductId", productId))

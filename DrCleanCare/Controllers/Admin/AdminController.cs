@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using DrCleanCare.DAL;
+﻿using DrCleanCare.DAL;
 using DrCleanCare.DAL.Security;
+using System;
+using System.Web.Mvc;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -28,7 +25,7 @@ namespace DrCleanCare.Controllers.Admin
         }
 
         [Authorize]
-        [DrCleanCareAuthorize(Roles="Administrators")]
+        [DrCleanCareAuthorize(Roles = "Administrators")]
         public ActionResult UpdateDB()
         {
             try
@@ -41,7 +38,7 @@ namespace DrCleanCare.Controllers.Admin
             {
                 ViewBag.Message = ex.Message;
             }
-            
+
             return View();
         }
 

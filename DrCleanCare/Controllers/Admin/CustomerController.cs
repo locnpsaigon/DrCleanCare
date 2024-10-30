@@ -2,16 +2,10 @@
 using DrCleanCare.DAL.Security;
 using DrCleanCare.Helpers;
 using DrCleanCare.Models;
-using Microsoft.Ajax.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Web.Security;
 
 namespace DrCleanCare.Controllers.Admin
 {
@@ -165,8 +159,8 @@ namespace DrCleanCare.Controllers.Admin
                     customer.ShippingAddress = model.ShippingAddress;
                     customer.ShippingContact = model.ShippingContact;
                     customer.TaxCode = model.TaxCode;
-                    customer.Phone= model.Phone;
-                    customer.Email= model.Email;
+                    customer.Phone = model.Phone;
+                    customer.Email = model.Email;
                     customer.Note = model.Note;
                     customer.Address = model.Address;
 
@@ -218,8 +212,8 @@ namespace DrCleanCare.Controllers.Admin
             {
                 var customers = db.Customers
                     .AsEnumerable()
-                    .Where(x => 
-                        x.FullName.ConvertToUnSign().Contains(searchText.ConvertToUnSign()) || 
+                    .Where(x =>
+                        x.FullName.ConvertToUnSign().Contains(searchText.ConvertToUnSign()) ||
                         string.IsNullOrWhiteSpace(searchText))
                     .ToList();
 

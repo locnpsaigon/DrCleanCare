@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using System.Drawing;
-using System.Drawing.Text;
 using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.IO;
+using System.Web.Mvc;
 
 namespace DrCleanCare.Controllers
 {
@@ -53,7 +50,7 @@ namespace DrCleanCare.Controllers
                         x = rand.Next(0, 150);
                         y = rand.Next(0, 45);
 
-                        gfx.DrawEllipse(pen, x-r, y-r, r, r);
+                        gfx.DrawEllipse(pen, x - r, y - r, r, r);
                     }
                 }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace DrCleanCare.Models
@@ -64,7 +60,7 @@ namespace DrCleanCare.Models
         [Required(ErrorMessage = "Nhập số điện thoại")]
         [MaxLength(15)]
         public string Phone { get; set; }
-        
+
 
         public string Email { get; set; }
 
@@ -77,11 +73,11 @@ namespace DrCleanCare.Models
 
 
         public string ShipName { get; set; }
-        
+
 
         [Required(ErrorMessage = "Vui lòng nhập số điện thoại khách hàng")]
         public string ShippedDate { get; set; }
-        
+
 
         public string ShipAddress { get; set; }
 
@@ -89,13 +85,13 @@ namespace DrCleanCare.Models
         public string ShippingCost { get; set; }
 
         [Required(ErrorMessage = "Vui lòng nhập chiết khấu")]
-        public string Discount { get; set; }    
+        public string Discount { get; set; }
 
         public string DeliveryName { get; set; }
 
 
         public string Notes { get; set; }
-        
+
         public IList<AddSOLineViewModel> OrderDetails { get; set; }
     }
 
@@ -204,6 +200,6 @@ namespace DrCleanCare.Models
 
         [RegularExpression(@"^\d+(,\d{3}){0,}(.\d+){0,1}$", ErrorMessage = "Giá sau thuế không hợp lệ!")]
         public string UnitPrice { get; set; }
-        
+
     }
 }
