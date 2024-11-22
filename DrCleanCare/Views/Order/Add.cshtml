@@ -1,14 +1,11 @@
 ﻿@model DrCleanCare.Models.AddSOViewModel
-
 @{
     ViewBag.Title = "Kinh doanh";
     Layout = "~/Views/Shared/_Admin.cshtml";
-
     decimal soAmountBT = 0;
     decimal soVAT = 0;
     decimal soGrandTotal = 0;
 }
-
 <div id="page-wrapper" class="container-fluid">
     <div class="row">
         <div class="col-lg-12">
@@ -17,10 +14,8 @@
     </div>
     @using (Html.BeginForm("Add", "Order", FormMethod.Post, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
     {
-        <div class="row">
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary(true)
-        </div>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
         <!-- /.col-lg-12 -->
         <div class="row">
             <div class="col-lg-12">
@@ -163,10 +158,10 @@
                                 <div id="tbl-so" style="display:table;">
                                     <div style="display:table-row; padding:2px;">
                                         <div style="display:table-cell; white-space:nowrap; padding:2px;">
-                                            <label class="control-label">Chi tiết đơn hàng</label>
+                                            <label class="control-label">Kho</label>
                                         </div>
                                         <div style="display:table-cell; white-space:nowrap; padding:2px;">
-                                            <label class="control-label">Kho</label>
+                                            <label class="control-label">Sản phẩm</label>
                                         </div>
                                         <div style="display:table-cell; white-space:nowrap; padding:2px;" class="text-center">
                                             <label class="control-label">Số lượng</label>
@@ -200,15 +195,15 @@
                                         soGrandTotal += quantity * (unitPrice - unitPriceBT);
 
                                         <div style="display:table-row;" class="tbl-so-line">
-                                            <div style="display:table-cell; padding:2px; vertical-align:top; width:100%;">
-                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class = "product-id" })
-                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name", @readonly = "readonly", @style = "min-width:140px;" })
-                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].ProductId, null, new { @class = "help-inline" })
-                                            </div>
                                             <div style="display:table-cell; padding:2px; vertical-align:top;">
                                                 @Html.HiddenFor(model => model.OrderDetails[i].StockId, new { @class = "stock-id" })
                                                 @Html.TextBoxFor(model => model.OrderDetails[i].StockName, new { @class = "form-control stock-name", @readonly = "readonly", @style = "margin-left:4px; width:140px;" })
                                                 @Html.ValidationMessageFor(model => model.OrderDetails[i].StockId, null, new { @class = "help-inline" })
+                                            </div>
+                                            <div style="display:table-cell; padding:2px; vertical-align:top; width:100%;">
+                                                @Html.HiddenFor(model => model.OrderDetails[i].ProductId, new { @class = "product-id" })
+                                                @Html.TextBoxFor(model => model.OrderDetails[i].ProductName, new { @class = "form-control product-name", @readonly = "readonly", @style = "min-width:140px;" })
+                                                @Html.ValidationMessageFor(model => model.OrderDetails[i].ProductId, null, new { @class = "help-inline" })
                                             </div>
                                             <div style="display:table-cell; padding:2px; vertical-align:top;">
                                                 @Html.TextBoxFor(model => model.OrderDetails[i].Quantity, new { @class = "form-control text-center quantity-input quantity", @placeholder = "Số lượng", @type = "text", @style = "margin-left:4px; width:75px;" })
@@ -254,7 +249,7 @@
                                     </div>
                                     <div style="display:table-row">
                                         <div style="display:table-cell; padding:2px; width:100%;" class="text-right">
-                                            Tiền thuế GTGT:
+                                            Tiền thuế VAT:
                                         </div>
                                         <div style="display:table-cell; padding:2px;">
                                             <input class="form-control total-amount-vat-input valid text-right" id="TotalVAT" name="TotalVAT" readonly="readonly" style="margin-left:4px; width:140px;" type="text" value="@soVAT.ToString("#,##0.##")">
@@ -345,29 +340,26 @@
     <link href="~/Content/datepicker.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-dialog.min.css" rel="stylesheet" />
 }
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-
     <script src="~/Scripts/bootstrap-datepicker.js"></script>
     <script src="~/Scripts/jquery.number.min.js"></script>
     <script src="~/Scripts/bootstrap-dialog.min.js"></script>
-
     <script>
 
+        // Global variables
         var g_products;
         var g_stocks;
-
         var g_customers;
         var g_page_index = 1;
         var g_page_total = 1;
 
-        $("#menu-sale").attr("class", "active");
-
+        // Get master data and register element's events
         $(document).ready(function () {
             getProducts();
             getStocks();
             ajaxSearchCustomers(g_page_index);
+            $("#menu-sale").attr("class", "active");
             $("#btn-search").click(function () {
                 g_page_index = 1;
                 ajaxSearchCustomers(g_page_index);
@@ -389,14 +381,141 @@
             $("#btn-add-line").on('click', function () {
                 addLine();
                 updateGrandTotal();
-                return false;
             });
             $("#tbl-so").on("click", ".btn-remove-line", function () {
                 removeLine(this);
                 updateGrandTotal();
-                return false;
+            });
+            // Register lines events
+            $(".tbl-so-line").each(function () {
+                register_so_line_events(this);
             });
         })
+
+        function addLine() {
+            var row_index = $("#tbl-so > .tbl-so-line").length;
+            var row_html = "";
+            row_html += "<div style='display:table-row' class='tbl-so-line'>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input data-val='true' class='stock-id-input' data-val-required='?' id='OrderDetails_" + row_index + " __StockId' name='OrderDetails[" + row_index + "].StockId' type='hidden'>"
+            row_html += "       <input data-val='true' class='stock-name-input' data-val-required='?' id='OrderDetails_" + row_index + " __StockName' name='OrderDetails[" + row_index + "].StockName' type='hidden'>"
+            row_html += generateStocksSelect(g_stocks);
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top; width:100%;'>";
+            row_html += "       <input data-val='true' class='product-id-input' data-val-required='?' id='OrderDetails_" + row_index + " __ProductId' name='OrderDetails[" + row_index + "].ProductId' type='hidden'>"
+            row_html += "       <input data-val='true' class='product-name-input' data-val-required='?' id='OrderDetails_" + row_index + " __ProductName' name='OrderDetails[" + row_index + "].ProductName' type='hidden'>"
+            row_html += generateProductsSelect(g_products);
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control text-center quantity-input' data-val='true' data-val-number='The field Quantity must be a number.' data-val-required='The Quantity field is required.' id='OrderDetails_" + row_index + "__Quantity' name='OrderDetails[" + row_index + "].Quantity' placeholder='Số lượng' style='margin-left:4px; width:75px;' type='text' value='1'>";
+            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_index + "].Quantity' data-valmsg-replace='true'></span>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control text-right unit-price-bt-input' data-val='true' data-val-number='The field UnitPriceBT must be a number.' data-val-required='The UnitPriceBT field is required.' id='OrderDetails_" + row_index + "__UnitPriceBT' name='OrderDetails[" + row_index + "].UnitPriceBT' placeholder='Giá trước thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_index + "].UnitPriceBT' data-valmsg-replace='true'></span>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control text-right unit-price-input' data-val='true' data-val-number='The field UnitPrice must be a number.' data-val-required='The UnitPrice field is required.' id='OrderDetails_" + row_index + "__UnitPrice' name='OrderDetails[" + row_index + "].UnitPrice' placeholder='Giá sau thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_index + "].UnitPrice' data-valmsg-replace='true'></span>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
+            row_html += "       <input class='form-control valid text-right line-amount-input' id='OrderDetails_" + row_index + "__Amount' name='OrderDetails[" + row_index + "].Amount' readonly='readonly' style='margin-left:2px; width:115px;' type='text' value='0'>";
+            row_html += "   </div>";
+            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;' class='text-center'>";
+            row_html += "       <a href='#' class='btn btn-danger btn-sm btn-remove-line' style='margin-left:4px; width:40px;'>-</a>";
+            row_html += "   </div>";
+            row_html += "</div>";
+
+            $("#tbl-so").append(row_html);
+
+            // register row events
+            var po_lines = $("#tbl-so > .tbl-so-line");
+            if (typeof po_lines !== "undefined") {
+                register_so_line_events($(po_lines[po_lines.length - 1]));
+                updateGrandTotal();
+            }
+        }
+
+        function removeLine(line) {
+            // remove line
+            $(line).closest('.tbl-so-line').remove();
+
+            // update element names
+            $(".tbl-so-line").each(function (index, line) {
+                $(line).find(".stock-id-input").attr("id", "OrderDetails_" + index + "__StockId");
+                $(line).find(".stock-id-input").attr("name", "OrderDetails[" + index + "].StockId");
+                $(line).find(".stock-name-input").attr("id", "OrderDetails_" + index + "__StockName");
+                $(line).find(".stock-name-input").attr("name", "OrderDetails[" + index + "].StockName");
+                $(line).find(".product-id-input").attr("id", "OrderDetails_" + index + "__ProductId");
+                $(line).find(".product-id-input").attr("name", "OrderDetails[" + index + "].ProductId");
+                $(line).find(".product-name-input").attr("id", "OrderDetails_" + index + "__ProductName");
+                $(line).find(".product-name-input").attr("name", "OrderDetails[" + index + "].ProductName");
+                $(line).find(".quantity-input").attr("id", "OrderDetails_" + index + "__Quantity");
+                $(line).find(".quantity-input").attr("name", "OrderDetails[" + index + "].Quantity");
+                $(line).find(".unit-price-bt-input").attr("id", "OrderDetails_" + index + "__UnitPriceBT");
+                $(line).find(".unit-price-bt-input").attr("name", "OrderDetails[" + index + "].UnitPriceBT");
+                $(line).find(".unit-price-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
+                $(line).find(".unit-price-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
+                $(line).find(".line-amount-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
+                $(line).find(".line-amount-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
+            });
+            updateGrandTotal();
+        }
+
+        // Register so line events
+        function register_so_line_events(so_line) {
+            var select_product_input = so_line.find(".select-product-input");
+            var select_stock_input = so_line.find(".select-stock-input");
+            var product_id_input = so_line.find(".product-id-input");
+            var product_name_input = so_line.find(".product-name-input");
+            var stock_id_input = so_line.find(".stock-id-input");
+            var stock_name_input = so_line.find(".stock-name-input");
+            var quantity_input = so_line.find(".quantity-input");
+            var unit_price_bt_input = so_line.find(".unit-price-bt-input");
+            var unit_price_input = so_line.find(".unit-price-input");
+            var line_amount_input = so_line.find(".line-amount-input");
+            quantity_input.number(true, 0);
+            unit_price_bt_input.number(true, 0);
+            unit_price_input.number(true, 0);
+            line_amount_input.number(true, 0);
+            // product selected changed
+            select_product_input.on("change", function () {
+                var product_id = $(this).val();
+                $.each(g_products, function (index, product) {
+                    if (product.ProductId == product_id) {
+                        product_id_input.val(product.ProductId);
+                        product_name_input.val(product.ProductName);
+                        unit_price_bt_input.val(product.PriceBT);
+                        unit_price_input.val(product.Price);
+                        updateLineTotal(so_line);
+                    }
+                });
+
+            });
+            // stock selected changed
+            select_stock_input.on("change", function () {
+                var stock_id = $(this).val();
+                $.each(g_stocks, function (index, stock) {
+                    if (stock.StockId == stock_id) {
+                        stock_id_input.val(stock.StockId);
+                        stock_name_input.val(stock.StockName);
+                        updateLineTotal(so_line);
+                    }
+                });
+
+            });
+            // quantity changed
+            quantity_input.on("change paste keyup", function () {
+                updateLineTotal(so_line)
+            });
+            // price changed
+            unit_price_bt_input.on("change paste keyup", function () {
+                updateLineTotal(so_line)
+            });
+            unit_price_input.on("change paste keyup", function () {
+                updateLineTotal(so_line)
+            });
+        }
 
         function getProducts() {
             // get products
@@ -551,7 +670,7 @@
             $(".customer-list").html(html);
         }
 
-        function generateProductsSelect(products) {
+        function generateProductsSelect(products, row_index) {
             var html = "";
             html += "   <select class='form-control valid select-product-input' data-live-search='true' style='min-width:140px;'>";
             html += "       <option>--Sản phẩm--</option>";
@@ -562,7 +681,7 @@
             return html;
         }
 
-        function generateStocksSelect(stocks) {
+        function generateStocksSelect(stocks, row_index) {
             var html = "";
             html += "   <select class='form-control valid select-stock-input' data-live-search='true' style='margin-left:4px; width:140px;'>";
             html += "       <option>--Kho--</option>";
@@ -573,136 +692,7 @@
             return html;
         }
 
-        function addLine() {
-            var row_count = $("#tbl-so > .tbl-so-line").length;
-            var row_html = "";
-            row_html += "<div style='display:table-row' class='tbl-so-line'>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top; width:100%;'>";
-            row_html += "       <input data-val='true' class='product-id-input' data-val-required='?' id='OrderDetails_" + row_count + " __ProductId' name='OrderDetails[" + row_count + "].ProductId' type='hidden'>"
-            row_html += "       <input data-val='true' class='product-name-input' data-val-required='?' id='OrderDetails_" + row_count + " __ProductName' name='OrderDetails[" + row_count + "].ProductName' type='hidden'>"
-            row_html += generateProductsSelect(g_products);
-            row_html += "   </div>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input data-val='true' class='stock-id-input' data-val-required='?' id='OrderDetails_" + row_count + " __StockId' name='OrderDetails[" + row_count + "].StockId' type='hidden'>"
-            row_html += "       <input data-val='true' class='stock-name-input' data-val-required='?' id='OrderDetails_" + row_count + " __StockName' name='OrderDetails[" + row_count + "].StockName' type='hidden'>"
-            row_html += generateStocksSelect(g_stocks);
-            row_html += "   </div>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control text-center quantity-input' data-val='true' data-val-number='The field Quantity must be a number.' data-val-required='The Quantity field is required.' id='OrderDetails_" + row_count + "__Quantity' name='OrderDetails[" + row_count + "].Quantity' placeholder='Số lượng' style='margin-left:4px; width:75px;' type='text' value='1'>";
-            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].Quantity' data-valmsg-replace='true'></span>";
-            row_html += "   </div>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control text-right unit-price-bt-input' data-val='true' data-val-number='The field UnitPriceBT must be a number.' data-val-required='The UnitPriceBT field is required.' id='OrderDetails_" + row_count + "__UnitPriceBT' name='OrderDetails[" + row_count + "].UnitPriceBT' placeholder='Giá trước thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
-            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].UnitPriceBT' data-valmsg-replace='true'></span>";
-            row_html += "   </div>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control text-right unit-price-input' data-val='true' data-val-number='The field UnitPrice must be a number.' data-val-required='The UnitPrice field is required.' id='OrderDetails_" + row_count + "__UnitPrice' name='OrderDetails[" + row_count + "].UnitPrice' placeholder='Giá sau thuế' style='margin-left:2px; width:115px;' type='text' value='0'>";
-            row_html += "       <span class='field-validation-valid help-inline' data-valmsg-for='OrderDetails[" + row_count + "].UnitPrice' data-valmsg-replace='true'></span>";
-            row_html += "   </div>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;'>";
-            row_html += "       <input class='form-control valid text-right line-amount-input' id='OrderDetails_" + row_count + "__Amount' name='OrderDetails[" + row_count + "].Amount' readonly='readonly' style='margin-left:2px; width:115px;' type='text' value='0'>";
-            row_html += "   </div>";
-            row_html += "   <div style='display:table-cell; padding:2px; vertical-align:top;' class='text-center'>";
-            row_html += "       <a href='#' class='btn btn-danger btn-sm btn-remove-line' style='margin-left:4px; width:40px;'>-</a>";
-            row_html += "   </div>";
-            row_html += "</div>";
-
-            $("#tbl-so").append(row_html);
-
-            // get the line and register events
-            var lines = $("#tbl-so > .tbl-so-line");
-            if (lines != undefined && length.length > 0) {
-
-                // get current line
-                var last_line_index = lines.length - 1;
-                var current_line = $(lines[last_line_index]);
-
-                var select_product_input = current_line.find(".select-product-input");
-                var select_stock_input = current_line.find(".select-stock-input");
-                var product_id_input = current_line.find(".product-id-input");
-                var product_name_input = current_line.find(".product-name-input");
-                var stock_id_input = current_line.find(".stock-id-input");
-                var stock_name_input = current_line.find(".stock-name-input");
-                var quantity_input = current_line.find(".quantity-input");
-                var unit_price_bt_input = current_line.find(".unit-price-bt-input");
-                var unit_price_input = current_line.find(".unit-price-input");
-                var line_amount_input = current_line.find(".line-amount-input");
-
-                select_product_input.on("change", function () {
-                    var product_id = $(this).val();
-                    $.each(g_products, function (index, element) {
-                        if (element.ProductId == product_id) {
-                            product_id_input.val(element.ProductId);
-                            product_name_input.val(element.ProductName);
-                            quantity_input.val(1);
-                            unit_price_bt_input.val(element.PriceBT);
-                            unit_price_input.val(element.Price);
-                            updateLineTotal(current_line);
-                        }
-                    });
-
-                });
-
-                select_stock_input.on("change", function () {
-                    var stock_id = $(this).val();
-                    console.log(stock_id);
-                    $.each(g_stocks, function (index, element) {
-                        if (element.StockId == stock_id) {
-                            
-                            stock_id_input.val(element.StockId);
-                            stock_name_input.val(element.StockName);
-                            updateLineTotal(current_line);
-                        }
-                    });
-
-                });
-
-                quantity_input.number(true, 0);
-                unit_price_bt_input.number(true, 0);
-                unit_price_input.number(true, 0);
-                line_amount_input.number(true, 0);
-
-                quantity_input.on("change paste keyup", function () {
-                    updateLineTotal(current_line)
-                });
-
-                unit_price_bt_input.on("change paste keyup", function () {
-                    updateLineTotal(current_line)
-                });
-                unit_price_input.on("change paste keyup", function () {
-                    updateLineTotal(current_line)
-                });
-
-                updateGrandTotal();
-            }
-        }
-
-        function removeLine(line) {
-            // remove line
-            $(line).closest('.tbl-so-line').remove();
-
-            // update element names
-            $(".tbl-so-line").each(function (index, line) {
-                $(line).find(".stock-id-input").attr("id", "OrderDetails_" + index + "__StockId");
-                $(line).find(".stock-id-input").attr("name", "OrderDetails[" + index + "].StockId");
-                $(line).find(".stock-name-input").attr("id", "OrderDetails_" + index + "__StockName");
-                $(line).find(".stock-name-input").attr("name", "OrderDetails[" + index + "].StockName");
-                $(line).find(".product-id-input").attr("id", "OrderDetails_" + index + "__ProductId");
-                $(line).find(".product-id-input").attr("name", "OrderDetails[" + index + "].ProductId");
-                $(line).find(".product-name-input").attr("id", "OrderDetails_" + index + "__ProductName");
-                $(line).find(".product-name-input").attr("name", "OrderDetails[" + index + "].ProductName");
-                $(line).find(".quantity-input").attr("id", "OrderDetails_" + index + "__Quantity");
-                $(line).find(".quantity-input").attr("name", "OrderDetails[" + index + "].Quantity");
-                $(line).find(".unit-price-bt-input").attr("id", "OrderDetails_" + index + "__UnitPriceBT");
-                $(line).find(".unit-price-bt-input").attr("name", "OrderDetails[" + index + "].UnitPriceBT");
-                $(line).find(".unit-price-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
-                $(line).find(".unit-price-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
-                $(line).find(".line-amount-input").attr("id", "OrderDetails_" + index + "__UnitPrice");
-                $(line).find(".line-amount-input").attr("name", "OrderDetails[" + index + "].UnitPrice");
-            });
-
-            updateGrandTotal();
-        }
+        
 
         function updateLineTotal(soline) {
 
@@ -779,7 +769,7 @@
             totalAmount -= discount;
 
             total_amount_bt_input.val(totalAmountBT);
-            total_amount_vat_input.val(totalAmount);
+            total_amount_vat_input.val(totalAmountVAT);
             total_amount_input.val(totalAmount);
         };
 
