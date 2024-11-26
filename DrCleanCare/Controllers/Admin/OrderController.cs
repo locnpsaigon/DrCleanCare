@@ -201,18 +201,18 @@ namespace DrCleanCare.Controllers.Admin
         {
             var model = new AddSOViewModel();
 
-            // fake data
-            model.OrderDate = DateTime.Now.ToString("dd/MM/yyyy");
-            model.OrderNo = "HD000000013";
-            model.OrderType = 2;
-            model.Phone = "0909841682";
-            model.CustomerName = "Nguyễn Phước Lộc";
-            model.CustomerAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
-            model.Email = "locnp.saigon@gmail.com";
-            model.TaxCode = "MST0000000012";
-            model.ShippedDate = DateTime.Now.ToString("dd/MM/yyyy");
-            model.ShipName = "A Lộc";
-            model.ShipAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
+            //// fake data
+            //model.OrderDate = DateTime.Now.ToString("dd/MM/yyyy");
+            //model.OrderNo = "HD000000013";
+            //model.OrderType = 2;
+            //model.Phone = "0909841682";
+            //model.CustomerName = "Nguyễn Phước Lộc";
+            //model.CustomerAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
+            //model.Email = "locnp.saigon@gmail.com";
+            //model.TaxCode = "MST0000000012";
+            //model.ShippedDate = DateTime.Now.ToString("dd/MM/yyyy");
+            //model.ShipName = "A Lộc";
+            //model.ShipAddress = "113G/14/44 Lạc Long Quân, F.3, Q.11";
 
             // generate order types select list items
             var orderTypes = db.OrderTypes.OrderBy(ot => ot.OrderTypeName)
