@@ -204,7 +204,7 @@ namespace DrCleanCare.Controllers.Admin
                 var employees = db.Employees.OrderBy(r => r.FullName).AsEnumerable();
                 if (searchText.Trim() != "")
                 {
-                    employees = employees.Where(r => r.FullName.ToLower().Contains(searchText.ToLower()));
+                    employees = employees.Where(r => r.FullName.ToLower().ConvertToUnSign().Contains(searchText.ConvertToUnSign().ToLower()));
                 }
                 var paging = new PagingHelper(employees, pageIndex, AppSettings.DEFAULT_PAGE_SIZE);
                 return Json(new

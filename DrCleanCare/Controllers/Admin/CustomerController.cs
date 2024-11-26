@@ -213,7 +213,7 @@ namespace DrCleanCare.Controllers.Admin
                 var customers = db.Customers
                     .AsEnumerable()
                     .Where(x =>
-                        x.FullName.ConvertToUnSign().Contains(searchText.ConvertToUnSign()) ||
+                        x.FullName.ToLower().ConvertToUnSign().Contains(searchText.ToLower().ConvertToUnSign()) ||
                         string.IsNullOrWhiteSpace(searchText))
                     .ToList();
 

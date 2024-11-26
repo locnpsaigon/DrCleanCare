@@ -265,7 +265,7 @@ namespace DrCleanCare.Controllers.Admin
                 if (searchText.Trim() != "")
                 {
                     categories = from t1 in categories
-                                 where t1.CategoryName.Contains(searchText.Trim())
+                                 where t1.CategoryName.ToLower().ConvertToUnSign().Contains(searchText.ToLower().ConvertToUnSign().Trim())
                                  select t1;
                 }
                 var pageHelper = new PagingHelper(categories, pageIndex, AppSettings.DEFAULT_PAGE_SIZE);
